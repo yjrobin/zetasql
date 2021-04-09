@@ -16,7 +16,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   mac-build:
-    runs-on: macos-10.14
+    runs-on: macos-10.15
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@v2
@@ -35,8 +35,7 @@ jobs:
       - name: build
         run: |
           bazel --version
-          bazel build ...
-
+          bazel build //zetasql/analyzer:all --features=-supports_dynamic_linker
       - name: test
         run: |
           bazel test --test_summary=detailed ...
