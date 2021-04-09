@@ -35,7 +35,7 @@ jobs:
       - name: build
         run: |
           bazel --version
-          bazel build
+          bazel build ...
 
       - name: test
         run: |
