@@ -268,9 +268,9 @@ cc_proto_library(
     if not native.existing_rule("com_github_grpc_grpc"):
         http_archive(
             name = "com_github_grpc_grpc",
-            urls = ["https://github.com/grpc/grpc/archive/v1.25.0.tar.gz"],
-            sha256 = "ffbe61269160ea745e487f79b0fd06b6edd3d50c6d9123f053b5634737cf2f69",
-            strip_prefix = "grpc-1.25.0",
+            urls = ["https://github.com/grpc/grpc/archive/v1.26.0.tar.gz"],
+            sha256 = "2fcb7f1ab160d6fd3aaade64520be3e5446fc4c6fa7ba6581afdc4e26094bd81",
+            strip_prefix = "grpc-1.26.0",
         )
 
     # gRPC Java
@@ -907,7 +907,7 @@ exports_files(["data"])
         name = "icu",
         build_file = "@com_google_zetasql//bazel:icu.BUILD",
         strip_prefix = "icu",
-        sha256 = "53e37466b3d6d6d01ead029e3567d873a43a5d1c668ed2278e253b683136d948",
-        urls = ["https://github.com/unicode-org/icu/releases/download/release-65-1/icu4c-65_1-src.tgz"],
+        sha256 = "c79193dee3907a2199b8296a93b52c5cb74332c26f3d167269487680d479d625",
+        urls = ["https://github.com/unicode-org/icu/releases/download/release-68-2/icu4c-68_2-src.tgz"],
         patches = ["@com_google_zetasql//bazel:icu4c-64_2.patch"],
     )
