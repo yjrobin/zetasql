@@ -8,7 +8,7 @@ on:
   push:
     branches: [ master, dev ]
   pull_request:
-    branches: [ master ]
+    brancheds: [ master ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -34,7 +34,8 @@ jobs:
 
       - name: build
         run: |
-          bazel build ...
+          bazel --version
+          bazel build --features=-supports_dynamic_linker ...
 
       - name: test
         run: |
