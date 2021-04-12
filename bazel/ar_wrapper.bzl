@@ -79,8 +79,12 @@ while [[ ${in_flags} = 1 ]]; do
     exit 1
   fi
   case "${have_operation}:$1" in
+    [01]:-static)
+      # ignore -static flags
+      shift
+      ;;
     0:-*[dmpxt]* | 0:*[dmpxt]*)
-      >&2 echo "delete/move/print/extract/table operations are not supported"
+      >&2 echo "delete/move/print/extract/table operations are not supported" "${have_operation}:$1"
       exit 1
       ;;
     0:-*[qr]* | 0:*[qr]*)

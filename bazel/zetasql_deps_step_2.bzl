@@ -907,7 +907,7 @@ exports_files(["data"])
         name = "icu",
         build_file = "@com_google_zetasql//bazel:icu.BUILD",
         strip_prefix = "icu",
-        sha256 = "c79193dee3907a2199b8296a93b52c5cb74332c26f3d167269487680d479d625",
-        urls = ["https://github.com/unicode-org/icu/releases/download/release-68-2/icu4c-68_2-src.tgz"],
+        sha256 = "53e37466b3d6d6d01ead029e3567d873a43a5d1c668ed2278e253b683136d948",
+        urls = ["https://github.com/unicode-org/icu/releases/download/release-65-1/icu4c-65_1-src.tgz"],
         patches = ["@com_google_zetasql//bazel:icu4c-64_2.patch"],
     )
