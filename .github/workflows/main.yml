@@ -36,6 +36,7 @@ jobs:
         run: |
           bazel --version
           bazel build //bazel:m4
+          cat bazel-out/darwin-fastbuild/bin/bazel/m4/logs/Configure.log
       - name: build
         run: |
           bazel --version
