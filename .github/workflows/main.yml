@@ -32,6 +32,10 @@ jobs:
           python -V
           java -version
 
+      - name: build m4
+        run: |
+          bazel --version
+          bazel build //bazel:m4
       - name: build
         run: |
           bazel --version
