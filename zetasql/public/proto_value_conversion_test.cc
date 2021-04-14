@@ -294,6 +294,8 @@ TEST_F(ProtoValueConversionTest, RoundTrip) {
       // STRUCT with duplicate names.
       "STRUCT(2 as x, 3 as x)",
 
+      // TODO: Support zetasql_test struct and nullable type __apple__
+#ifdef __linux__
       // STRUCT containing a PROTO that is a wrapper.
       "CAST(STRUCT('value: 3') AS STRUCT<zetasql_test.NullableInt>)",
 
@@ -311,6 +313,7 @@ TEST_F(ProtoValueConversionTest, RoundTrip) {
 
       // ARRAYs containing all types.  We don't include NULLs here.  See
       // nullable_element_test_expressions for test expressions with NULLs.
+#endif __linux__
       "[]",
       "ARRAY<INT64>[]",
       "[-64]",
@@ -339,7 +342,9 @@ TEST_F(ProtoValueConversionTest, RoundTrip) {
                    proto_file_name: 'foo.proto'
                    file_descriptor_set_index: 32''']
       )",
-
+      
+      // TODO: Support zetasql_test struct and nullable type __apple__
+#ifdef __linux__
       // ARRAY containing a PROTO that is a wrapper.
       "ARRAY<zetasql_test.NullableInt>['value: 3']",
 
@@ -348,6 +353,7 @@ TEST_F(ProtoValueConversionTest, RoundTrip) {
 
       // ARRAY containing a PROTO that is annotated as a STRUCT.
       "ARRAY<zetasql_test.KeyValueStruct>['''key: 'key' value: 1''']",
+#endif
   };
 
   const std::vector<std::string> nullable_array_test_expressions = {
