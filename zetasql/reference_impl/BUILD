@@ -445,6 +445,7 @@ cc_library(
 
 zetasql_compliance_test(
     name = "reference_compliance_test",
+    srcs = ["use_reference_driver_for_compliance_test.cc", "//zetasql/compliance:compliance_test_cases.cc"],
     size = "large",
     known_error_files = [
         ":reference_impl_known_errors.textproto",
@@ -456,6 +457,7 @@ zetasql_compliance_test(
         ":reference_driver",
         # buildcleaner: keep
         ":use_reference_driver_for_compliance_test",
+        "//zetasql/compliance:test_driver",
     ],
 )
 

@@ -23,6 +23,7 @@ def gen_parser_test(filename):
     native.cc_test(
         name = name,
         size = "small",
+        srcs = ["run_parser_test.cc"],
         data = [datafile],
         deps = [":run_parser_test_lib"],
         args = ["--test_file=$(location " + datafile + ")"],
