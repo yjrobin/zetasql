@@ -31,11 +31,10 @@ jobs:
           g++ -v
           python -V
           java -version
-
       - name: build without jdk and local_service
         run: |
           bazel --version
           bazel build --features=-supports_dynamic_linker -- zetasql/... -zetasql/jdk:all -zetasql/local_service:all
       - name: test without jdk and local_service
         run: |
-          bazel test --test_summary=detailed --features=-supports_dynamic_linker -- zetasql/analyser:all
+          bazel test --test_summary=detailed --features=-supports_dynamic_linker -- zetasql/... -zetasql/jdk:all -zetasql/local_service:all
