@@ -32,15 +32,10 @@ jobs:
           python -V
           java -version
 
-      - name: build m4
+      - name: build without jdk and local_service
         run: |
           bazel --version
-          bazel build //bazel:m4
-          cat bazel-out/darwin-fastbuild/bin/bazel/m4/logs/Configure.log
-      - name: build
+          bazel build --features=-supports_dynamic_linker -- zetasql/... -zetasql/jdk:all -zetasql/local_service:all
+      - name: test without jdk and local_service
         run: |
-          bazel --version
-          bazel build //zetasql/analyzer:all --features=-supports_dynamic_linker
-      - name: test
-        run: |
-          bazel test --test_summary=detailed  //zetasql/analyzer:all --features=-supports_dynamic_linker
+          bazel test --test_summary=detailed --features=-supports_dynamic_linker -- zetasql/analyser:all
