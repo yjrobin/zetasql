@@ -880,7 +880,7 @@ std::vector<FunctionTestCall> GetFunctionTestsToJson(
            .WrapWithFeatureSet({FEATURE_NAMED_ARGUMENTS, FEATURE_JSON_TYPE})},
       {"to_json",
        {Int64(9007199254740993)},
-       values::Json(JSONValue(9007199254740993))},
+       values::Json(JSONValue((int64_t)9007199254740993))},
 
       {"to_json",
        QueryParamsWithResult(
