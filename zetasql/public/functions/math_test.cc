@@ -469,16 +469,16 @@ TEST(TruncAndRoundTest, PrecisionIssues) {
     absl::Status status;
     double out;
     ASSERT_TRUE(TruncDecimal(number, digits, &out, &status)) << status;
-    EXPECT_DOUBLE_EQ(number, out) << "Digits=" << digits;
+    EXPECT_EQ(number, out) << "Digits=" << digits;
     ASSERT_TRUE(RoundDecimal(number, digits, &out, &status)) << status;
-    EXPECT_DOUBLE_EQ(number, out) << "Digits=" << digits;
+    EXPECT_EQ(number, out) << "Digits=" << digits;
 
     float fnumber = number;
     float fout;
     ASSERT_TRUE(TruncDecimal(fnumber, digits, &fout, &status)) << status;
-    EXPECT_FLOAT_EQ(fnumber, fout) << "Digits=" << digits;
+    EXPECT_EQ(fnumber, fout) << "Digits=" << digits;
     ASSERT_TRUE(RoundDecimal(fnumber, digits, &fout, &status)) << status;
-    EXPECT_FLOAT_EQ(fnumber, fout) << "Digits=" << digits;
+    EXPECT_EQ(fnumber, fout) << "Digits=" << digits;
   };
 
   // Make sure that whole numbers don't change values through trunc / round.
