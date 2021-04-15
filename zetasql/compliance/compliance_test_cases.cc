@@ -3108,10 +3108,11 @@ GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     ComplianceFilebasedTests);  // TODO (broken link)
 
 // All file-based tests.
-TEST_P(ComplianceFilebasedTests, FilebasedTest) {
-  #ifdef __apple__
-    if (GetParam() == "timestamp.test") {
+TEST_P(ComplianceFilebasedTests, FilebasedTest) {  
+  #ifdef __APPLE__
+    if (absl::StrContains(GetParam(), "testdata/timestamp.test")) {
       // Skip timestamp test in mac os
+      ZETASQL_LOG(WARNING) << "Skip in macos: " << GetParam() << std::endl;
       return;
     }
   #endif
