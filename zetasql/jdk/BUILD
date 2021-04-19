@@ -15,32 +15,32 @@
 #
 """This module provides access to the jni headers."""
 
-licenses(["notice"])  # Apache v2.0
+# licenses(["notice"])  # Apache v2.0
 
-package(default_visibility = ["//zetasql/base:zetasql_implementation"])
+# package(default_visibility = ["//zetasql/base:zetasql_implementation"])
 
-cc_library(
-    name = "jni",
-    srcs = [
-        "@local_jdk//:jni_header",
-    ] + select({
-        "@bazel_tools//src/conditions:darwin": ["@local_jdk//:jni_md_header-darwin"],
-        "@bazel_tools//src/conditions:linux_x86_64": ["@local_jdk//:jni_md_header-linux"],
-    }),
-    copts = [
-        "-Wno-char-subscripts",
-        "-Wno-return-type",
-        "-Wno-sign-compare",
-        "-Wno-switch",
-        "-Wno-unused-but-set-parameter",
-        "-Wno-unused-function",
-        "-Wnonnull-compare",
-    ],
-    includes = [
-        "../../external/local_jdk/include",
-    ] + select({
-        "@bazel_tools//src/conditions:darwin": ["../../external/local_jdk/include/darwin"],
-        "@bazel_tools//src/conditions:linux_x86_64": ["../../external/local_jdk/include/linux"],
-    }),
-    linkstatic = 1,
-)
+# cc_library(
+#     name = "jni",
+#     srcs = [
+#         "@local_jdk//:jni_header",
+#     ] + select({
+#         "@bazel_tools//src/conditions:darwin": ["@local_jdk//:jni_md_header-darwin"],
+#         "@bazel_tools//src/conditions:linux_x86_64": ["@local_jdk//:jni_md_header-linux"],
+#     }),
+#     copts = [
+#         "-Wno-char-subscripts",
+#         "-Wno-return-type",
+#         "-Wno-sign-compare",
+#         "-Wno-switch",
+#         "-Wno-unused-but-set-parameter",
+#         "-Wno-unused-function",
+#         "-Wnonnull-compare",
+#     ],
+#     includes = [
+#         "../../external/local_jdk/include",
+#     ] + select({
+#         "@bazel_tools//src/conditions:darwin": ["../../external/local_jdk/include/darwin"],
+#         "@bazel_tools//src/conditions:linux_x86_64": ["../../external/local_jdk/include/linux"],
+#     }),
+#     linkstatic = 1,
+# )

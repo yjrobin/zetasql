@@ -14,42 +14,42 @@
 # limitations under the License.
 #
 
-load("@com_github_grpc_grpc//bazel:cc_grpc_library.bzl", "cc_grpc_library")
-load("@io_grpc_grpc_java//:java_grpc_library.bzl", "java_grpc_library")
+# load("@com_github_grpc_grpc//bazel:cc_grpc_library.bzl", "cc_grpc_library")
+# load("@io_grpc_grpc_java//:java_grpc_library.bzl", "java_grpc_library")
 
-package(
-    default_visibility = ["//zetasql/base:zetasql_implementation"],
-)
+# package(
+#     default_visibility = ["//zetasql/base:zetasql_implementation"],
+# )
 
-proto_library(
-    name = "sql_compliance_service_proto",
-    srcs = ["sql_compliance_service.proto"],
-    deps = [
-        "//zetasql/compliance:test_driver_proto",
-        "//zetasql/proto:options_proto",
-        "@com_google_protobuf//:empty_proto",
-    ],
-)
+# proto_library(
+#     name = "sql_compliance_service_proto",
+#     srcs = ["sql_compliance_service.proto"],
+#     deps = [
+#         "//zetasql/compliance:test_driver_proto",
+#         "//zetasql/proto:options_proto",
+#         "@com_google_protobuf//:empty_proto",
+#     ],
+# )
 
-cc_proto_library(
-    name = "sql_compliance_service_cc_proto",
-    deps = [":sql_compliance_service_proto"],
-)
+# cc_proto_library(
+#     name = "sql_compliance_service_cc_proto",
+#     deps = [":sql_compliance_service_proto"],
+# )
 
-cc_grpc_library(
-    name = "sql_compliance_service_cc_grpc",
-    srcs = [":sql_compliance_service_proto"],
-    grpc_only = True,
-    deps = [":sql_compliance_service_cc_proto"],
-)
+# cc_grpc_library(
+#     name = "sql_compliance_service_cc_grpc",
+#     srcs = [":sql_compliance_service_proto"],
+#     grpc_only = True,
+#     deps = [":sql_compliance_service_cc_proto"],
+# )
 
-java_proto_library(
-    name = "sql_compliance_service_java_proto",
-    deps = [":sql_compliance_service_proto"],
-)
+# java_proto_library(
+#     name = "sql_compliance_service_java_proto",
+#     deps = [":sql_compliance_service_proto"],
+# )
 
-java_grpc_library(
-    name = "sql_compliance_service_java_grpc",
-    srcs = [":sql_compliance_service_proto"],
-    deps = [":sql_compliance_service_java_proto"],
-)
+# java_grpc_library(
+#     name = "sql_compliance_service_java_grpc",
+#     srcs = [":sql_compliance_service_proto"],
+#     deps = [":sql_compliance_service_java_proto"],
+# )

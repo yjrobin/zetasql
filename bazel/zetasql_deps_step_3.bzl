@@ -17,8 +17,8 @@
 """ Step 3 to load ZetaSQL dependencies. """
 
 load("@google_bazel_common//:workspace_defs.bzl", "google_common_workspace_rules")
-load("@com_github_grpc_grpc//bazel:grpc_deps.bzl", "grpc_deps")
+# load("@com_github_grpc_grpc//bazel:grpc_deps.bzl", "grpc_deps")
 
 def zetasql_deps_step_3():
     google_common_workspace_rules()
-    grpc_deps()
+    # grpc_deps()

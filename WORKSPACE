@@ -45,6 +45,6 @@ load("@com_google_zetasql//bazel:zetasql_deps_step_3.bzl", "zetasql_deps_step_3"
 
 zetasql_deps_step_3()
 
-load("@com_google_zetasql//bazel:zetasql_deps_step_4.bzl", "zetasql_deps_step_4")
+# load("@com_google_zetasql//bazel:zetasql_deps_step_4.bzl", "zetasql_deps_step_4")
 
-zetasql_deps_step_4()
+# zetasql_deps_step_4()
