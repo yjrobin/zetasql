@@ -240,6 +240,7 @@ constexpr KeywordInfoPOD kAllKeywords[] = {
     {"rollup", KW_ROLLUP, KeywordInfo::kReserved},
     {"row", KW_ROW},
     {"rows", KW_ROWS, KeywordInfo::kReserved},
+    {"rows_range", KW_ROWS_RANGE, KeywordInfo::kReserved},
     {"run", KW_RUN},
     {"safe_cast", KW_SAFE_CAST},
     {"schema", KW_SCHEMA},

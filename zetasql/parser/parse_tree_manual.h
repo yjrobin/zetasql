@@ -2746,6 +2746,7 @@ class ASTWindowFrame final : public ASTNode {
   enum FrameUnit {
     ROWS,
     RANGE,
+    ROWS_RANGE,
   };
 
   ASTWindowFrame() : ASTNode(kConcreteNodeKind) {}

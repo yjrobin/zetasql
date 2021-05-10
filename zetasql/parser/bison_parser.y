@@ -726,6 +726,7 @@ using zetasql::ASTDropStatement;
 %token KW_RIGHT "RIGHT"
 %token KW_ROLLUP "ROLLUP"
 %token KW_ROWS "ROWS"
+%token KW_ROWS_RANGE "ROWS_RANGE"
 %token KW_SELECT "SELECT"
 %token KW_SET "SET"
 %token KW_STRUCT "STRUCT"
@@ -6580,6 +6581,7 @@ window_frame_bound:
 frame_unit:
     "ROWS" { $$ = zetasql::ASTWindowFrame::ROWS; }
     | "RANGE" { $$ = zetasql::ASTWindowFrame::RANGE; }
+    | "ROWS_RANGE" { $$ = zetasql::ASTWindowFrame::ROWS_RANGE; }
     ;
 
 opt_window_frame_clause:
@@ -7016,6 +7018,7 @@ reserved_keyword_rule:
     | "RIGHT"
     | "ROLLUP"
     | "ROWS"
+    | "ROWS_RANGE"
     | "SELECT"
     | "SET"
     | "STRUCT"
