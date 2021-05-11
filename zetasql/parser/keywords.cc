@@ -184,6 +184,7 @@ constexpr KeywordInfoPOD kAllKeywords[] = {
     {"matched", KW_MATCHED},
     {"materialized", KW_MATERIALIZED},
     {"max", KW_MAX},
+    {"maxsize", KW_MAXSIZE},
     {"message", KW_MESSAGE},
     {"min", KW_MIN},
     {"model", KW_MODEL},

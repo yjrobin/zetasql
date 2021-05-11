@@ -1697,7 +1697,6 @@ class ASTOrderBy final : public ASTNode {
   const ASTHint* hint_ = nullptr;
   absl::Span<const ASTOrderingExpression* const> ordering_expressions_;
 };
-
 class ASTLimitOffset final : public ASTNode {
  public:
   static constexpr ASTNodeKind kConcreteNodeKind = AST_LIMIT_OFFSET;
@@ -2738,7 +2737,25 @@ class ASTWindowFrameExpr final : public ASTNode {
   // or OFFSET_FOLLOWING; otherwise, should be NULL.
   const ASTExpression* expression_ = nullptr;
 };
+class ASTMaxSize final : public ASTNode {
+  public:
+  static constexpr ASTNodeKind kConcreteNodeKind = AST_MAX_SIZE;
 
+  ASTMaxSize() : ASTNode(kConcreteNodeKind) {}
+  void Accept(ParseTreeVisitor* visitor, void* data) const override;
+  zetasql_base::StatusOr<VisitResult> Accept(
+      NonRecursiveParseTreeVisitor* visitor) const override;
+
+  const ASTIntLiteral* max_size() const { return maxsize_; }
+
+ private:
+  void InitFields() final {
+    FieldLoader fl(this);
+    fl.AddRequired(&maxsize_);
+  }
+  // The MAXSIZE value. Never NULL.
+  const ASTIntLiteral* maxsize_ = nullptr;
+};
 class ASTWindowFrame final : public ASTNode {
  public:
   static constexpr ASTNodeKind kConcreteNodeKind = AST_WINDOW_FRAME;
@@ -2758,7 +2775,7 @@ class ASTWindowFrame final : public ASTNode {
   void set_unit(FrameUnit frame_unit) { frame_unit_ = frame_unit; }
   const ASTWindowFrameExpr* start_expr() const { return start_expr_; }
   const ASTWindowFrameExpr* end_expr() const { return end_expr_; }
-
+  const ASTMaxSize* max_size() const { return max_size_; }
   FrameUnit frame_unit() const { return frame_unit_; }
   std::string GetFrameUnitString() const;
 
@@ -2769,6 +2786,7 @@ class ASTWindowFrame final : public ASTNode {
     FieldLoader fl(this);
     fl.AddRequired(&start_expr_);
     fl.AddOptional(&end_expr_, AST_WINDOW_FRAME_EXPR);
+    fl.AddOptional(&max_size_, AST_MAX_SIZE);
   }
 
   FrameUnit frame_unit_ = RANGE;
@@ -2778,6 +2796,9 @@ class ASTWindowFrame final : public ASTNode {
   // Ending boundary expression. Can be NULL.
   // When this is NULL, the implicit ending boundary is CURRENT ROW.
   const ASTWindowFrameExpr* end_expr_ = nullptr;
+  // Maximum size of window
+  // When this is NULL, the maximum size is unlimited
+  const ASTMaxSize* max_size_ = nullptr;
 };
 
 
