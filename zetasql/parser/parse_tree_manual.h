@@ -3332,6 +3332,16 @@ class ASTNullLiteral final : public ASTLeaf {
       NonRecursiveParseTreeVisitor* visitor) const override;
 };
 
+class ASTIntervalLiteral final : public ASTLeaf {
+ public:
+  static constexpr ASTNodeKind kConcreteNodeKind = AST_INTERVAL_LITERAL;
+
+  ASTIntervalLiteral() : ASTLeaf(kConcreteNodeKind) {}
+  void Accept(ParseTreeVisitor* visitor, void* data) const override;
+  zetasql_base::StatusOr<VisitResult> Accept(
+      NonRecursiveParseTreeVisitor* visitor) const override;
+};
+
 class ASTDateOrTimeLiteral final : public ASTExpression {
  public:
   static constexpr ASTNodeKind kConcreteNodeKind = AST_DATE_OR_TIME_LITERAL;

@@ -310,6 +310,7 @@ class Unparser : public ParseTreeVisitor {
   void visitASTStructConstructorWithKeyword(
       const ASTStructConstructorWithKeyword* node, void* data) override;
   void visitASTIntLiteral(const ASTIntLiteral* node, void* data) override;
+  void visitASTIntervalLiteral(const ASTIntervalLiteral* node, void* data) override;
   void visitASTNumericLiteral(
       const ASTNumericLiteral* node, void* data) override;
   void visitASTBigNumericLiteral(const ASTBigNumericLiteral* node,

@@ -534,6 +534,36 @@ FROM
   T
 ==
 
+# OFFSET_PRECEDING as the ending boundary.
+select f() over (rows_range between 10s preceding and 5s preceding)
+from T
+--
+QueryStatement [0-74]
+  Query [0-74]
+    Select [0-74]
+      SelectList [7-67]
+        SelectColumn [7-67]
+          AnalyticFunctionCall [7-67]
+            FunctionCall [7-10]
+              PathExpression [7-8]
+                Identifier(f) [7-8]
+            WindowSpecification [16-67]
+              WindowFrame(ROWS_RANGE) [17-66]
+                WindowFrameExpr(OFFSET PRECEDING) [36-49]
+                  IntervalLiteral(10s) [36-39]
+                WindowFrameExpr(OFFSET PRECEDING) [54-66]
+                  IntervalLiteral(5s) [54-56]
+      FromClause [68-74]
+        TablePathExpression [73-74]
+          PathExpression [73-74]
+            Identifier(T) [73-74]
+--
+SELECT
+  f() OVER (ROWS_RANGE BETWEEN 10s PRECEDING AND 5s PRECEDING)
+FROM
+  T
+==
+
 # CURRENT_ROW as the ending boundary.
 select f() over (range between 5+5 preceding and current row)
 from T
@@ -561,6 +591,35 @@ QueryStatement [0-68]
 --
 SELECT
   f() OVER (RANGE BETWEEN 5 + 5 PRECEDING AND CURRENT ROW)
+FROM
+  T
+==
+
+# CURRENT_ROW as the ending boundary.
+select f() over (rows_range between 5s preceding and current row)
+from T
+--
+QueryStatement [0-72]
+  Query [0-72]
+    Select [0-72]
+      SelectList [7-65]
+        SelectColumn [7-65]
+          AnalyticFunctionCall [7-65]
+            FunctionCall [7-10]
+              PathExpression [7-8]
+                Identifier(f) [7-8]
+            WindowSpecification [16-65]
+              WindowFrame(ROWS_RANGE) [17-64]
+                WindowFrameExpr(OFFSET PRECEDING) [36-48]
+                  IntervalLiteral(5s) [36-38]
+                WindowFrameExpr(CURRENT ROW) [53-64]
+      FromClause [66-72]
+        TablePathExpression [71-72]
+          PathExpression [71-72]
+            Identifier(T) [71-72]
+--
+SELECT
+  f() OVER (ROWS_RANGE BETWEEN 5s PRECEDING AND CURRENT ROW)
 FROM
   T
 ==

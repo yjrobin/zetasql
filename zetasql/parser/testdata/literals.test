@@ -26,6 +26,28 @@ SELECT
   1.0
 ==
 
+select 1s, 1m, 1h, 1d;
+--
+QueryStatement [0-21]
+  Query [0-21]
+    Select [0-21]
+      SelectList [7-21]
+        SelectColumn [7-9]
+          IntervalLiteral(1s) [7-9]
+        SelectColumn [11-13]
+          IntervalLiteral(1m) [11-13]
+        SelectColumn [15-17]
+          IntervalLiteral(1h) [15-17]
+        SelectColumn [19-21]
+          IntervalLiteral(1d) [19-21]
+--
+SELECT
+  1s,
+  1m,
+  1h,
+  1d
+==
+
 select 1e10, .1e10, 0.1e10, 1.e10, 1e+10, .1e-10, 0.1e+10, 1.e-10;
 --
 QueryStatement [0-65]
