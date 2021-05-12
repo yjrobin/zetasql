@@ -655,6 +655,68 @@ FROM
   T
 ==
 
+# window with exclude current_time 
+select f() over (rows_range between 5s preceding and current row maxsize 5 exclude current_time)
+from T
+--
+QueryStatement [0-103]
+  Query [0-103]
+    Select [0-103]
+      SelectList [7-96]
+        SelectColumn [7-96]
+          AnalyticFunctionCall [7-96]
+            FunctionCall [7-10]
+              PathExpression [7-8]
+                Identifier(f) [7-8]
+            WindowSpecification(is_exclude_current_time) [16-96]
+              WindowFrame(ROWS_RANGE) [17-74]
+                WindowFrameExpr(OFFSET PRECEDING) [36-48]
+                  IntervalLiteral(5s) [36-38]
+                WindowFrameExpr(CURRENT ROW) [53-64]
+                MaxSize [65-74]
+                  IntLiteral(5) [73-74]
+      FromClause [97-103]
+        TablePathExpression [102-103]
+          PathExpression [102-103]
+            Identifier(T) [102-103]
+--
+SELECT
+  f() OVER (ROWS_RANGE BETWEEN 5s PRECEDING AND CURRENT ROW MAXSIZE 5 EXCLUDE CURRENT_TIME)
+FROM
+  T
+==
+
+# window with instance_not_in_window 
+select f() over (rows_range between 5s preceding and current row maxsize 5 instance_not_in_window)
+from T
+--
+QueryStatement [0-105]
+  Query [0-105]
+    Select [0-105]
+      SelectList [7-98]
+        SelectColumn [7-98]
+          AnalyticFunctionCall [7-98]
+            FunctionCall [7-10]
+              PathExpression [7-8]
+                Identifier(f) [7-8]
+            WindowSpecification(is_instance_not_in_window) [16-98]
+              WindowFrame(ROWS_RANGE) [17-74]
+                WindowFrameExpr(OFFSET PRECEDING) [36-48]
+                  IntervalLiteral(5s) [36-38]
+                WindowFrameExpr(CURRENT ROW) [53-64]
+                MaxSize [65-74]
+                  IntLiteral(5) [73-74]
+      FromClause [99-105]
+        TablePathExpression [104-105]
+          PathExpression [104-105]
+            Identifier(T) [104-105]
+--
+SELECT
+  f() OVER (ROWS_RANGE BETWEEN 5s PRECEDING AND CURRENT ROW MAXSIZE 5 INSTANCE_NOT_IN_WINDOW)
+FROM
+  T
+==
+
 select f() over (range between 5+5 preceding and current {{rows|blah}})
 from T
 --

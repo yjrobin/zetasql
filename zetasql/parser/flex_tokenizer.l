@@ -399,6 +399,7 @@ create { return BisonParserImpl::token::KW_CREATE; }
 cross { return BisonParserImpl::token::KW_CROSS; }
 cube { return BisonParserImpl::token::KW_CUBE; }
 current { return BisonParserImpl::token::KW_CURRENT; }
+current_time { return BisonParserImpl::token::KW_CURRENT_TIME;}
 data { return BisonParserImpl::token::KW_DATA; }
 database { return BisonParserImpl::token::KW_DATABASE; }
 date { return BisonParserImpl::token::KW_DATE; }
@@ -480,6 +481,7 @@ include { return BisonParserImpl::token::KW_INCLUDE; }
 inout { return BisonParserImpl::token::KW_INOUT; }
 index { return BisonParserImpl::token::KW_INDEX; }
 inner { return BisonParserImpl::token::KW_INNER; }
+instance_not_in_window { return BisonParserImpl::token::KW_INSTANCE_NOT_IN_WINDOW; }
 insert { return BisonParserImpl::token::KW_INSERT; }
 intersect { return BisonParserImpl::token::KW_INTERSECT; }
 interval { return BisonParserImpl::token::KW_INTERVAL; }

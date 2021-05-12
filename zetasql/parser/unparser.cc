@@ -2111,6 +2111,13 @@ void Unparser::visitASTWindowDefinition(
 void Unparser::visitASTWindowSpecification(
     const ASTWindowSpecification* node, void* data) {
   UnparseChildrenWithSeparator(node, data, "");
+  if (node->is_exclude_current_time()) {
+    print("EXCLUDE CURRENT_TIME");
+  }
+
+  if (node->is_instance_not_in_window()) {
+    print("INSTANCE_NOT_IN_WINDOW");
+  }
 }
 
 void Unparser::visitASTPartitionBy(const ASTPartitionBy* node, void* data) {
