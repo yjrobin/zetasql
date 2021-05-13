@@ -427,7 +427,8 @@ class Unparser : public ParseTreeVisitor {
   void visitASTWindowFrame(const ASTWindowFrame* node, void* data) override;
   void visitASTWindowFrameExpr(const ASTWindowFrameExpr* node,
                                void* data) override;
-
+  void visitASTMaxSize(const ASTMaxSize* node, void* data) override;
+                                                              
   void visitASTDefaultLiteral(const ASTDefaultLiteral* node,
                               void* data) override;
   void visitASTAnalyzeStatement(const ASTAnalyzeStatement* node,

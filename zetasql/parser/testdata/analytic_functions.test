@@ -624,6 +624,37 @@ FROM
   T
 ==
 
+# window with MAXSIZE 
+select f() over (rows_range between 5s preceding and current row maxsize 5)
+from T
+--
+QueryStatement [0-82]
+  Query [0-82]
+    Select [0-82]
+      SelectList [7-75]
+        SelectColumn [7-75]
+          AnalyticFunctionCall [7-75]
+            FunctionCall [7-10]
+              PathExpression [7-8]
+                Identifier(f) [7-8]
+            WindowSpecification [16-75]
+              WindowFrame(ROWS_RANGE) [17-74]
+                WindowFrameExpr(OFFSET PRECEDING) [36-48]
+                  IntervalLiteral(5s) [36-38]
+                WindowFrameExpr(CURRENT ROW) [53-64]
+                MaxSize [65-74]
+                  IntLiteral(5) [73-74]
+      FromClause [76-82]
+        TablePathExpression [81-82]
+          PathExpression [81-82]
+            Identifier(T) [81-82]
+--
+SELECT
+  f() OVER (ROWS_RANGE BETWEEN 5s PRECEDING AND CURRENT ROW MAXSIZE 5)
+FROM
+  T
+==
+
 select f() over (range between 5+5 preceding and current {{rows|blah}})
 from T
 --

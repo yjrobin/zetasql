@@ -848,6 +848,7 @@ using zetasql::ASTDropStatement;
 %token KW_MATCHED "MATCHED"
 %token KW_MATERIALIZED "MATERIALIZED"
 %token KW_MAX "MAX"
+%token KW_MAXSIZE "MAXSIZE"
 %token KW_MESSAGE "MESSAGE"
 %token KW_MIN "MIN"
 %token KW_MODEL "MODEL"
@@ -1149,6 +1150,7 @@ using zetasql::ASTDropStatement;
 %type <node> opt_like_string_literal
 %type <node> opt_like_path_expression
 %type <node> opt_limit_offset_clause
+%type <node> opt_maxsize
 %type <node> opt_on_or_using_clause_list
 %type <node> on_or_using_clause_list
 %type <node> on_or_using_clause
@@ -6596,19 +6598,26 @@ frame_unit:
     ;
 
 opt_window_frame_clause:
-    frame_unit "BETWEEN" window_frame_bound "AND for BETWEEN" window_frame_bound
+    frame_unit "BETWEEN" window_frame_bound "AND for BETWEEN" window_frame_bound opt_maxsize
       {
-        auto* frame = MAKE_NODE(ASTWindowFrame, @$, {$3, $5});
+        auto* frame = MAKE_NODE(ASTWindowFrame, @$, {$3, $5, $6});
         frame->set_unit($1);
         $$ = frame;
       }
-    | frame_unit window_frame_bound
+    | frame_unit window_frame_bound opt_maxsize
       {
-        auto* frame = MAKE_NODE(ASTWindowFrame, @$, {$2});
+        auto* frame = MAKE_NODE(ASTWindowFrame, @$, {$2, nullptr, $3});
         frame->set_unit($1);
         $$ = frame;
       }
     | /* Nothing */ { $$ = nullptr; }
+
+opt_maxsize:
+  "MAXSIZE" integer_literal
+    {
+      $$ = MAKE_NODE(ASTMaxSize, @$, {$2});
+    }
+  | /* Nothing */ { $$ = nullptr; }
 
 window_specification:
     identifier
@@ -7147,6 +7156,7 @@ keyword_as_identifier:
     | "MATCHED"
     | "MATERIALIZED"
     | "MAX"
+    | "MAXSIZE"
     | "MESSAGE"
     | "MIN"
     | "MODEL"

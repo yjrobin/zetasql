@@ -2138,6 +2138,9 @@ void Unparser::visitASTWindowFrame(const ASTWindowFrame* node,
     print("AND");
     node->end_expr()->Accept(this, data);
   }
+  if (nullptr != node->max_size()) {
+    node->max_size()->Accept(this, data);
+  }
 }
 
 void Unparser::visitASTWindowFrameExpr(
@@ -2159,6 +2162,11 @@ void Unparser::visitASTWindowFrameExpr(
   }
 }
 
+void Unparser::visitASTMaxSize(
+  const ASTMaxSize* node, void* data) {
+    print("MAXSIZE");
+    node->max_size()->Accept(this, data);
+}
 void Unparser::visitASTDefaultLiteral(const ASTDefaultLiteral* node,
                                       void* data) {
   print("DEFAULT");

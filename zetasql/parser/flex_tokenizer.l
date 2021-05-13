@@ -505,6 +505,7 @@ match { return BisonParserImpl::token::KW_MATCH; }
 matched { return BisonParserImpl::token::KW_MATCHED; }
 materialized  { return BisonParserImpl::token::KW_MATERIALIZED; }
 max { return BisonParserImpl::token::KW_MAX; }
+maxsize { return BisonParserImpl::token::KW_MAXSIZE; }
 merge { return BisonParserImpl::token::KW_MERGE; }
 message { return BisonParserImpl::token::KW_MESSAGE; }
 min { return BisonParserImpl::token::KW_MIN; }
