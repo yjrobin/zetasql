@@ -1286,7 +1286,7 @@ class ASTJoin final : public ASTTableExpression {
   std::string GetSQLForJoinType() const;
   std::string GetSQLForJoinHint() const;
 
-  enum JoinType { DEFAULT_JOIN_TYPE, COMMA, CROSS, FULL, INNER, LEFT, RIGHT };
+  enum JoinType { DEFAULT_JOIN_TYPE, COMMA, CROSS, FULL, INNER, LEFT, RIGHT, LAST};
 
   JoinType join_type() const { return join_type_; }
   void set_join_type(JoinType join_type) { join_type_ = join_type; }

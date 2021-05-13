@@ -703,6 +703,7 @@ using zetasql::ASTDropStatement;
 %token KW_INTO "INTO"
 %token KW_IS "IS"
 %token KW_JOIN "JOIN"
+%token KW_LAST "LAST"
 %token KW_LEFT "LEFT"
 %token KW_LIKE "LIKE"
 %token KW_LIMIT "LIMIT"
@@ -842,7 +843,6 @@ using zetasql::ASTDropStatement;
 %token KW_JSON "JSON"
 %token KW_KEY "KEY"
 %token KW_LANGUAGE "LANGUAGE"
-%token KW_LAST "LAST"
 %token KW_LEAVE "LEAVE"
 %token KW_LEVEL "LEVEL"
 %token KW_LOOP "LOOP"
@@ -4631,6 +4631,7 @@ join_type:
     | "INNER" { $$ = zetasql::ASTJoin::INNER; }
     | "LEFT" opt_outer { $$ = zetasql::ASTJoin::LEFT; }
     | "RIGHT" opt_outer { $$ = zetasql::ASTJoin::RIGHT; }
+    | "LAST" { $$ = zetasql::ASTJoin::LAST; }
     | /* Nothing */  { $$ = zetasql::ASTJoin::DEFAULT_JOIN_TYPE; }
     ;
 
@@ -7036,6 +7037,7 @@ reserved_keyword_rule:
     | "INTO"
     | "IS"
     | "JOIN"
+    | "LAST"
     | "LEFT"
     | "LIKE"
     | "LIMIT"
@@ -7171,7 +7173,6 @@ keyword_as_identifier:
     | "JSON"
     | "KEY"
     | "LANGUAGE"
-    | "LAST"
     | "LEAVE"
     | "LEVEL"
     | "LOOP"
