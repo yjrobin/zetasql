@@ -574,6 +574,7 @@ rollback { return BisonParserImpl::token::KW_ROLLBACK; }
 rollup { return BisonParserImpl::token::KW_ROLLUP; }
 row { return BisonParserImpl::token::KW_ROW; }
 rows { return BisonParserImpl::token::KW_ROWS; }
+rows_range { return BisonParserImpl::token::KW_ROWS_RANGE; }
 run { return BisonParserImpl::token::KW_RUN; }
 safe_cast { return BisonParserImpl::token::KW_SAFE_CAST; }
 schema { return BisonParserImpl::token::KW_SCHEMA; }

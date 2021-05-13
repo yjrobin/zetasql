@@ -230,7 +230,7 @@ select f() over (order by a partition by a) from T
 ==
 
 # One-sided window.
-select f() over ({{rows|range}} unbounded preceding)
+select f() over ({{rows|range|rows_range}} unbounded preceding)
 --
 ALTERNATION GROUP: rows
 --
@@ -267,9 +267,27 @@ QueryStatement [0-43]
 --
 SELECT
   f() OVER (RANGE UNBOUNDED PRECEDING)
+--
+ALTERNATION GROUP: rows_range
+--
+QueryStatement [0-48]
+  Query [0-48]
+    Select [0-48]
+      SelectList [7-48]
+        SelectColumn [7-48]
+          AnalyticFunctionCall [7-48]
+            FunctionCall [7-10]
+              PathExpression [7-8]
+                Identifier(f) [7-8]
+            WindowSpecification [16-48]
+              WindowFrame(ROWS_RANGE) [17-47]
+                WindowFrameExpr(UNBOUNDED PRECEDING) [28-47]
+--
+SELECT
+  f() OVER (ROWS_RANGE UNBOUNDED PRECEDING)
 ==
 
-select f() over ({{rows|range}} 5+5 preceding)
+select f() over ({{rows|range|rows_range}} 5+5 preceding)
 --
 ALTERNATION GROUP: rows
 --
@@ -312,9 +330,30 @@ QueryStatement [0-37]
 --
 SELECT
   f() OVER (RANGE 5 + 5 PRECEDING)
+--
+ALTERNATION GROUP: rows_range
+--
+QueryStatement [0-42]
+  Query [0-42]
+    Select [0-42]
+      SelectList [7-42]
+        SelectColumn [7-42]
+          AnalyticFunctionCall [7-42]
+            FunctionCall [7-10]
+              PathExpression [7-8]
+                Identifier(f) [7-8]
+            WindowSpecification [16-42]
+              WindowFrame(ROWS_RANGE) [17-41]
+                WindowFrameExpr(OFFSET PRECEDING) [28-41]
+                  BinaryExpression(+) [28-31]
+                    IntLiteral(5) [28-29]
+                    IntLiteral(5) [30-31]
+--
+SELECT
+  f() OVER (ROWS_RANGE 5 + 5 PRECEDING)
 ==
 
-select f() over ({{rows|range}} current row)
+select f() over ({{rows|range|rows_range}} current row)
 --
 ALTERNATION GROUP: rows
 --
@@ -351,11 +390,29 @@ QueryStatement [0-35]
 --
 SELECT
   f() OVER (RANGE CURRENT ROW)
+--
+ALTERNATION GROUP: rows_range
+--
+QueryStatement [0-40]
+  Query [0-40]
+    Select [0-40]
+      SelectList [7-40]
+        SelectColumn [7-40]
+          AnalyticFunctionCall [7-40]
+            FunctionCall [7-10]
+              PathExpression [7-8]
+                Identifier(f) [7-8]
+            WindowSpecification [16-40]
+              WindowFrame(ROWS_RANGE) [17-39]
+                WindowFrameExpr(CURRENT ROW) [28-39]
+--
+SELECT
+  f() OVER (ROWS_RANGE CURRENT ROW)
 ==
 
 # Two-sided window. Invalid framing boundaries will be captured by the resolver.
 # UNBOUNDED_PRECEDING as the ending boundary.
-select f() over ({{rows|range}} between 5+5 preceding and unbounded preceding)
+select f() over ({{rows|range|rows_range}} between 5+5 preceding and unbounded preceding)
 from T
 --
 ALTERNATION GROUP: rows
@@ -411,6 +468,34 @@ QueryStatement [0-76]
 --
 SELECT
   f() OVER (RANGE BETWEEN 5 + 5 PRECEDING AND UNBOUNDED PRECEDING)
+FROM
+  T
+--
+ALTERNATION GROUP: rows_range
+--
+QueryStatement [0-81]
+  Query [0-81]
+    Select [0-81]
+      SelectList [7-74]
+        SelectColumn [7-74]
+          AnalyticFunctionCall [7-74]
+            FunctionCall [7-10]
+              PathExpression [7-8]
+                Identifier(f) [7-8]
+            WindowSpecification [16-74]
+              WindowFrame(ROWS_RANGE) [17-73]
+                WindowFrameExpr(OFFSET PRECEDING) [36-49]
+                  BinaryExpression(+) [36-39]
+                    IntLiteral(5) [36-37]
+                    IntLiteral(5) [38-39]
+                WindowFrameExpr(UNBOUNDED PRECEDING) [54-73]
+      FromClause [75-81]
+        TablePathExpression [80-81]
+          PathExpression [80-81]
+            Identifier(T) [80-81]
+--
+SELECT
+  f() OVER (ROWS_RANGE BETWEEN 5 + 5 PRECEDING AND UNBOUNDED PRECEDING)
 FROM
   T
 ==

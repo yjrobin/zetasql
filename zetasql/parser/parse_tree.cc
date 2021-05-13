@@ -912,6 +912,8 @@ std::string ASTWindowFrame::FrameUnitToString(FrameUnit unit) {
       return "ROWS";
     case RANGE:
       return "RANGE";
+    case ROWS_RANGE:
+      return "ROWS_RANGE";
     default:
       ZETASQL_LOG(DFATAL) << "Unknown analytic window frame unit: " << unit;
       return "";
