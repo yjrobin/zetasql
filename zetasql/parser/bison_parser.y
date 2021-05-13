@@ -488,6 +488,7 @@ class DashedIdentifierTmpNode final : public zetasql::ASTNode {
 %token BYTES_LITERAL "bytes literal"
 %token INTEGER_LITERAL "integer literal"
 %token FLOATING_POINT_LITERAL "floating point literal"
+%token INTERVAL_LITERAL "interval literal"
 %token IDENTIFIER "identifier"
 
 // Comments. They are only returned if the tokenizer is run in a special comment
@@ -1079,6 +1080,7 @@ using zetasql::ASTDropStatement;
 %type <node> insert_values_row_prefix
 %type <expression> int_literal_or_parameter
 %type <expression> integer_literal
+%type <expression> interval_literal
 %type <node> join
 %type <node> join_input
 %type <expression> json_literal
@@ -5259,6 +5261,7 @@ expression:
     | json_literal
     | floating_point_literal
     | date_or_time_literal
+    | interval_literal
     | parameter_expression
     | system_variable_expression
     | array_constructor
@@ -5863,6 +5866,14 @@ date_or_time_literal:
       }
     ;
 
+interval_literal:
+  INTERVAL_LITERAL
+  {
+    auto* literal = MAKE_NODE(ASTIntervalLiteral, @1);
+    literal->set_image(std::string(parser->GetInputText(@1)));
+    $$ = literal;
+  }
+  ;
 interval_expression:
     "INTERVAL" expression identifier
       {

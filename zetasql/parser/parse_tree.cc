@@ -208,6 +208,7 @@ static absl::flat_hash_map<ASTNodeKind, std::string> CreateNodeNamesMap() {
   map[AST_INSERT_VALUES_ROW_LIST] = "InsertValuesRowList";
   map[AST_INSERT_VALUES_ROW] = "InsertValuesRow";
   map[AST_INTERVAL_EXPR] = "IntervalExpr";
+  map[AST_INTERVAL_LITERAL] = "IntervalLiteral";
   map[AST_INTO_ALIAS] = "IntoAlias";
   map[AST_INT_LITERAL] = "IntLiteral";
   map[AST_JOIN] = "Join";

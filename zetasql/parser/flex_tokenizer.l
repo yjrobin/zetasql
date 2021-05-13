@@ -684,7 +684,14 @@ zone { return BisonParserImpl::token::KW_ZONE; }
   SetOverrideError(*yylloc, "Syntax error: Unclosed identifier literal");
   yyterminate();
 }
-
+ /* Time interval literals. For instance, 
+    10d can be regarded as day interval literals which is equal to INTERVAL 10 DAY.
+    10h can be regarded as hour interval literals which is equal to INTERVAL 10 HOUR.
+    10m can be regarded as minute interval literals which is equal to INTERVAL 10 MINUTE.
+    10s can be regarded as second interval literals which is equal to INTERVAL 10 SECOND. */
+{decimal_digits}[SMHD] {
+  return BisonParserImpl::token::INTERVAL_LITERAL;
+}
  /* Error rules for a number followed by an identifier without white space in
     between. We don't want to parse the identifier as accidental alias. For
     instance, 123abc should be error, and we don't want it to be parsed as

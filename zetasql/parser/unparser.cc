@@ -1531,7 +1531,9 @@ void Unparser::visitASTStructConstructorWithKeyword(
 void Unparser::visitASTIntLiteral(const ASTIntLiteral* node, void* data) {
   UnparseLeafNode(node);
 }
-
+void Unparser::visitASTIntervalLiteral(const ASTIntervalLiteral* node, void* data) {
+  UnparseLeafNode(node);
+}
 void Unparser::visitASTNumericLiteral(
     const ASTNumericLiteral* node, void* data) {
   print("NUMERIC");
