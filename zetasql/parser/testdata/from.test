@@ -970,7 +970,8 @@ select * from A, B JOIN (C, D)
 ==
 
 # RIGHT JOIN and FULL JOIN require parentheses when following a comma join.
-select * FROM A, B {{INNER|CROSS|LEFT|RIGHT|FULL}} JOIN C
+# LAST JOIN require to be followed by ON/USING clause
+select * FROM A, B {{INNER|CROSS|LEFT|RIGHT|FULL|LAST}} JOIN C
 --
 ALTERNATION GROUP: INNER
 --
@@ -1070,6 +1071,13 @@ ALTERNATION GROUP: FULL
 ERROR: Syntax error: FULL JOIN must be parenthesized when following a comma join.  Also, if the preceding comma join is a correlated CROSS JOIN that unnests an array, then CROSS JOIN syntax must be used in place of the comma join [at 1:20]
 select * FROM A, B FULL JOIN C
                    ^
+
+--
+ALTERNATION GROUP: LAST
+--
+ERROR: Syntax error: Expected keyword ON or keyword USING but got end of statement [at 1:31]
+select * FROM A, B LAST JOIN C
+                              ^
 ==
 
 # Comma join error happens even after chains of other joins.
