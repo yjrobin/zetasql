@@ -38,7 +38,6 @@ jobs:
           java-version: '11'
 
       - name: install deps (debian)
-        if: ${{ startsWith(matrix.container, 'debian') || startsWith(matrix.container, 'ubuntu') }}
         run: |
           apt-get update
           DEBIAN_FRONTEND=noninteractive apt-get install -y -q curl build-essential unzip python3
