@@ -20,14 +20,8 @@ env:
 jobs:
   # This workflow contains a single job called "build"
   linux-build:
-    strategy:
-      fail-fast: false
-      matrix:
-        container: ['debian:buster', 'ubuntu:bionic', 'ubuntu:focal', 'archlinux:latest', 'centos:8']
-
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
-    container: ${{ matrix.container }}
+    container: 'debian:buster'
     timeout-minutes: 120
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -48,29 +42,10 @@ jobs:
           DEBIAN_FRONTEND=noninteractive apt-get install -y -q curl build-essential unzip python3
           update-alternatives --install /usr/bin/python python /usr/bin/python3 100
 
-      - name: choose python (ubuntu:bionic)
-        if: ${{ matrix.container == 'ubuntu:bionic' }}
-        run: |
-          apt-get install -y gcc-8 g++-8 python3.8
-          update-alternatives --install /usr/bin/python python /usr/bin/python3.8 200
-          update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 80 --slave /usr/bin/g++ g++ /usr/bin/g++-8 --slave /usr/bin/gcov gcov /usr/bin/gcov-8
-
-      - name: install deps (arch)
-        if: ${{ startsWith(matrix.container, 'archlinux') }}
-        run: |
-          pacman -Sy --noconfirm curl base-devel unzip python
-
-      - name: install deps (centos8)
-        if: ${{ startsWith(matrix.container, 'centos') }}
-        run: |
-          yum install -y curl unzip python38
-          yum group install -y 'Development Tools'
-          alternatives --set python /usr/bin/python3.8
-
       # Runs a single command using the runners shell
       - name: Install Bazelisk
         run: |
-          curl --create-dirs -SLo /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.7.5/bazelisk-linux-amd64
+          curl --create-dirs -SLo /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.8.0/bazelisk-linux-amd64
           chmod +x /usr/local/bin/bazel
 
       - name: print toolchain info
@@ -100,7 +75,7 @@ jobs:
 
       - name: update bazel version
         run: echo ${{ env.bazel_version }} > .bazelversion
-        
+
       - name: install bazelisk
         run: |
           brew install bazelisk
@@ -124,7 +99,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        toolchain: ['devtoolset-7', 'devtoolset-8', 'devtoolset-9']
+        toolchain: ['devtoolset-8', 'devtoolset-9']
         container: ['centos:7']
 
     runs-on: ubuntu-latest
@@ -171,3 +146,52 @@ jobs:
           bazel test ${{ env.build_argv }} --test_summary=detailed --test_output=errors ${{ env.target }}
 
 
+  release:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    container:
+      image: ghcr.io/aceforeverd/hybridsql-base:0.0.8
+    env:
+      BAZEL_LINKOPTS: '-static-libstdc++:-lm'
+      BAZEL_LINKLIBS: '-l%:libstdc++.a'
+      target: '//zetasql/...'
+      build_argv: ''
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Bazel
+        run: |
+          curl --create-dirs -SLo /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.8.0/bazelisk-linux-amd64
+          chmod +x /usr/local/bin/bazel
+      - name: Install Java
+        run: |
+          yum install -y java-1.8.0-openjdk-devel
+
+      - name: build zetasql
+        run: |
+          source /opt/rh/devtoolset-8/enable
+          source /opt/rh/rh-python38/enable
+          bazel build ${{ env.build_argv }} ${{ env.target }}
+
+      - name: Find Orphan Library
+        run: |
+          ./find_orphan_so.sh
+
+      - name: Determine Version
+        run: |
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          VERSION=$(echo $VERSION | sed -e 's/^v//')
+          echo "TAG=$VERSION" >> $GITHUB_ENV
+
+      - name: pack libzetasql
+        run: |
+          ./pack_zetasql.sh
+        env:
+          TAG: ${{ env.TAG }}
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            libzetasql-*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
