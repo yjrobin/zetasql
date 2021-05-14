@@ -394,6 +394,7 @@ ASTNode* JoinRuleAction(
     const zetasql_bison_parser::location& end_location, ASTNode* lhs,
     bool opt_natural, ASTJoin::JoinType join_type, ASTJoin::JoinHint join_hint,
     ASTNode* opt_hint, ASTNode* table_primary,
+    ASTNode* opt_order_by,
     ASTNode* opt_on_or_using_clause_list,
     BisonParser* parser, ErrorInfo* error_info);
 

@@ -4631,7 +4631,6 @@ join_type:
     | "INNER" { $$ = zetasql::ASTJoin::INNER; }
     | "LEFT" opt_outer { $$ = zetasql::ASTJoin::LEFT; }
     | "RIGHT" opt_outer { $$ = zetasql::ASTJoin::RIGHT; }
-    | "LAST" { $$ = zetasql::ASTJoin::LAST; }
     | /* Nothing */  { $$ = zetasql::ASTJoin::DEFAULT_JOIN_TYPE; }
     ;
 
@@ -4658,7 +4657,20 @@ join:
         zetasql::parser::ErrorInfo error_info;
         auto node = zetasql::parser::JoinRuleAction(
             FirstNonEmptyLocation({@2, @3, @4, @5}), @$,
-            $1, $2, $3, $4, $6, $7, $8, parser, &error_info);
+            $1, $2, $3, $4, $6, $7, nullptr, $8, parser, &error_info);
+        if (node == nullptr) {
+          YYERROR_AND_ABORT_AT(error_info.location, error_info.message);
+        }
+
+        $$ = node;
+      }
+    | join_input opt_natural "LAST" join_hint "JOIN" opt_hint table_primary
+    opt_order_by_clause opt_on_or_using_clause_list
+      {
+        zetasql::parser::ErrorInfo error_info;
+        auto node = zetasql::parser::JoinRuleAction(
+            FirstNonEmptyLocation({@2, @3, @4, @5}), @$,
+            $1, $2, zetasql::ASTJoin::LAST, $4, $6, $7, $8, $9, parser, &error_info);
         if (node == nullptr) {
           YYERROR_AND_ABORT_AT(error_info.location, error_info.message);
         }
@@ -4716,7 +4728,7 @@ from_clause_contents:
         zetasql::parser::ErrorInfo error_info;
         auto node = zetasql::parser::JoinRuleAction(
             FirstNonEmptyLocation({@2, @3, @4, @5}), @$,
-            $1, $2, $3, $4, $6, $7, $8,
+            $1, $2, $3, $4, $6, $7, nullptr, $8,
             parser, &error_info);
         if (node == nullptr) {
           YYERROR_AND_ABORT_AT(error_info.location, error_info.message);
@@ -4724,7 +4736,25 @@ from_clause_contents:
 
         $$ = node;
       }
-    | "@"
+    | from_clause_contents opt_natural "LAST" join_hint "JOIN" opt_hint
+      table_primary opt_order_by_clause on_or_using_clause_list
+      {
+        // Give an error if we have a RIGHT or FULL JOIN following a comma
+        // join since our left-to-right binding would violate the standard.
+        // See (broken link).
+        zetasql::parser::ErrorInfo error_info;
+        auto node = zetasql::parser::JoinRuleAction(
+            FirstNonEmptyLocation({@2, @3, @4, @5}), @$,
+            $1, $2, zetasql::ASTJoin::LAST, $4, $6, $7, $8, $9,
+            parser, &error_info);
+        if (node == nullptr) {
+          YYERROR_AND_ABORT_AT(error_info.location, error_info.message);
+        }
+
+        $$ = node;
+      }
+    |
+    "@"
       {
         YYERROR_AND_ABORT_AT(
             @1, "Query parameters cannot be used in place of table names");
