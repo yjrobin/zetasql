@@ -255,6 +255,7 @@ class Unparser : public ParseTreeVisitor {
   void visitASTTransformClause(const ASTTransformClause* node,
                                void* data) override;
   void visitASTWithOffset(const ASTWithOffset* node, void* data) override;
+  void visitASTUnionTableReferenceList(const ASTUnionTableReferenceList* node, void* data) override;
   void visitASTUnnestExpression(const ASTUnnestExpression* node,
                                 void* data) override;
   void visitASTUnnestExpressionWithOptAliasAndOffset(

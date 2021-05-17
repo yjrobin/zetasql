@@ -323,6 +323,7 @@ static absl::flat_hash_map<ASTNodeKind, std::string> CreateNodeNamesMap() {
   map[AST_TVF_SCHEMA] = "TVFSchema";
   map[AST_TVF] = "TVF";
   map[AST_TYPE_PARAMETER_LIST] = "TypeParameterList";
+  map[AST_UNION_TABLE_REFERENCE_LIST] = "UnionTableReferenceList";
   map[AST_UNARY_EXPRESSION] = "UnaryExpression";
   map[AST_UNNEST_EXPRESSION] = "UnnestExpression";
   map[AST_UNNEST_EXPRESSION_WITH_OPT_ALIAS_AND_OFFSET] =

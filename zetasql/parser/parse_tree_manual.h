@@ -2820,6 +2820,7 @@ class ASTWindowSpecification final : public ASTNode {
   zetasql_base::StatusOr<VisitResult> Accept(
       NonRecursiveParseTreeVisitor* visitor) const override;
 
+  const ASTUnionTableReferenceList* union_table_references() const { return union_table_references_; }
   const ASTPartitionBy* partition_by() const { return partition_by_; }
   const ASTOrderBy* order_by() const { return order_by_; }
   const ASTWindowFrame* window_frame() const { return window_frame_; }
@@ -2836,6 +2837,7 @@ class ASTWindowSpecification final : public ASTNode {
   void InitFields() final {
     FieldLoader fl(this);
     fl.AddOptional(&base_window_name_, AST_IDENTIFIER);
+    fl.AddOptional(&union_table_references_, AST_UNION_TABLE_REFERENCE_LIST);
     fl.AddOptional(&partition_by_, AST_PARTITION_BY);
     fl.AddOptional(&order_by_, AST_ORDER_BY);
     fl.AddOptional(&window_frame_, AST_WINDOW_FRAME);
@@ -2843,6 +2845,7 @@ class ASTWindowSpecification final : public ASTNode {
 
   // All are optional, can be NULL.
   const ASTIdentifier* base_window_name_ = nullptr;
+  const ASTUnionTableReferenceList* union_table_references_ = nullptr;
   const ASTPartitionBy* partition_by_ = nullptr;
   const ASTOrderBy* order_by_ = nullptr;
   const ASTWindowFrame* window_frame_ = nullptr;
@@ -3790,6 +3793,28 @@ class ASTTableClause final : public ASTNode {
   // Exactly one of these will be non-null.
   const ASTPathExpression* table_path_ = nullptr;
   const ASTTVF* tvf_ = nullptr;
+};
+
+class ASTUnionTableReferenceList final : public ASTNode {
+ public:
+  static constexpr ASTNodeKind kConcreteNodeKind = AST_UNION_TABLE_REFERENCE_LIST;
+
+  ASTUnionTableReferenceList() : ASTNode(kConcreteNodeKind) {}
+  void Accept(ParseTreeVisitor* visitor, void* data) const override;
+  zetasql_base::StatusOr<VisitResult> Accept(
+      NonRecursiveParseTreeVisitor* visitor) const override;
+
+  const absl::Span<const ASTNode* const>& table_references() const {
+    return table_references_;
+  }
+
+ private:
+  void InitFields() final {
+    FieldLoader fl(this);
+    fl.AddRestAsRepeated(&table_references_);
+  }
+
+  absl::Span<const ASTNode* const> table_references_;
 };
 
 // This represents a clause of form "MODEL <target>", where <target> is a model

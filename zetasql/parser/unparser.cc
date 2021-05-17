@@ -1213,6 +1213,11 @@ void Unparser::visitASTWithOffset(const ASTWithOffset* node, void* data) {
   visitASTChildren(node, data);
 }
 
+void Unparser::visitASTUnionTableReferenceList(const ASTUnionTableReferenceList* node, void* data) {
+  print("UNION");
+  UnparseVectorWithSeparator(node->table_references(), data, ", ");
+}
+  
 void Unparser::visitASTUnnestExpression(const ASTUnnestExpression* node,
                                         void* data) {
   print("UNNEST(");
