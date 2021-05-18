@@ -200,6 +200,7 @@ static absl::flat_hash_map<ASTNodeKind, std::string> CreateNodeNamesMap() {
   map[AST_IMPORT_STATEMENT] = "ImportStatement";
   map[AST_IN_EXPRESSION] = "InExpression";
   map[AST_IN_LIST] = "InList";
+  map[AST_INDEX_DEFINITION] = "IndexDefinition";
   map[AST_INDEX_ITEM_LIST] = "IndexItemList";
   map[AST_INDEX_STORING_EXPRESSION_LIST] = "IndexStoringExpressionList";
   map[AST_INDEX_UNNEST_EXPRESSION_LIST] = "IndexUnnestExpressionList";

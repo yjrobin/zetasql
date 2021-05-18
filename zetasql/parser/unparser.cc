@@ -1485,7 +1485,19 @@ void Unparser::visitASTNewConstructor(const ASTNewConstructor* node,
   }
   print(")");
 }
-
+void Unparser::visitASTIndexDefinition(const ASTIndexDefinition* node, 
+                                void* data) {
+  print("INDEX");
+  if (node->name() != nullptr) {
+    node->name()->Accept(this, data);
+  }
+  if (node->column_key_list() != nullptr) {
+    node->column_key_list()->Accept(this, data);
+  }
+  if (node->options_list() != nullptr) {
+    node->options_list()->Accept(this, data);
+  }
+}
 void Unparser::visitASTInferredTypeColumnSchema(
     const ASTInferredTypeColumnSchema* node, void* data) {
   UnparseColumnSchema(node, data);

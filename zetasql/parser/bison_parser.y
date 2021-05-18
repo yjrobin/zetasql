@@ -702,6 +702,7 @@ using zetasql::ASTDropStatement;
 %token KW_INTERVAL "INTERVAL"
 %token KW_INTO "INTO"
 %token KW_IS "IS"
+%token KW_INDEX "INDEX"
 %token KW_JOIN "JOIN"
 %token KW_LAST "LAST"
 %token KW_LEFT "LEFT"
@@ -834,7 +835,6 @@ using zetasql::ASTDropStatement;
 %token KW_IMMUTABLE "IMMUTABLE"
 %token KW_IMPORT "IMPORT"
 %token KW_INCLUDE "INCLUDE"
-%token KW_INDEX "INDEX"
 %token KW_INOUT "INOUT"
 %token KW_INSERT "INSERT"
 %token KW_INVOKER "INVOKER"
@@ -1282,6 +1282,7 @@ using zetasql::ASTDropStatement;
 %type <node> table_column_definition
 %type <node> table_column_schema
 %type <node> table_constraint_definition
+%type <node> table_index_definition
 %type <node> table_constraint_spec
 %type <node> table_element
 %type <node> table_element_list
@@ -2624,9 +2625,18 @@ table_element_list_prefix:
 //
 table_element:
     table_column_definition
+    | table_index_definition
     | table_constraint_definition
     ;
 
+table_index_definition:
+    opt_unique "INDEX" opt_identifier options_list /* HybridSE index constraint index(key=(c1),ts=c4,ttl=0m, ttl_type=absolute) */ 
+      {
+        auto* node = MAKE_NODE(ASTIndexDefinition, @$, {$3, nullptr, $4});
+        node->set_is_unique($1);
+        $$ = node;
+      }
+    ;
 table_column_definition:
     identifier table_column_schema opt_column_attributes opt_options_list
       {
@@ -7070,6 +7080,7 @@ reserved_keyword_rule:
     | "INTERVAL"
     | "INTO"
     | "IS"
+    | "INDEX"
     | "JOIN"
     | "LAST"
     | "LEFT"
@@ -7198,7 +7209,6 @@ keyword_as_identifier:
     | "IMMUTABLE"
     | "IMPORT"
     | "INCLUDE"
-    | "INDEX"
     | "INSERT"
     | "INOUT"
     | "INVOKER"

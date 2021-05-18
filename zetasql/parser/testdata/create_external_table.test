@@ -662,7 +662,7 @@ create external table projectid.datasetid.tablename(x int64, y int64)
 create external table a.b.c.T()
 options ()
 --
-ERROR: Syntax error: Unexpected ")" [at 1:31]
+ERROR: Syntax error: Expected keyword INDEX but got ")" [at 1:31]
 create external table a.b.c.T()
                               ^
 ==
