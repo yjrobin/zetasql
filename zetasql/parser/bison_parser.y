@@ -798,6 +798,7 @@ using zetasql::ASTDropStatement;
 %token KW_COMMIT "COMMIT"
 %token KW_CONNECTION "CONNECTION"
 %token KW_CONTINUE "CONTINUE"
+%token KW_CONST "CONST"
 %token KW_CONSTANT "CONSTANT"
 %token KW_CONSTRAINT "CONSTRAINT"
 %token KW_CURRENT_TIME "CURRENT_TIME"
@@ -1372,6 +1373,7 @@ using zetasql::ASTDropStatement;
 %type <boolean> opt_recursive
 %type <boolean> opt_unique
 %type <boolean> opt_search
+%type <boolean> opt_const
 %type <boolean> opt_instance_not_in_window
 %type <boolean> opt_exclude_current_time
 %type <node> opt_with_anonymization
@@ -2158,21 +2160,25 @@ procedure_parameter_termination:
     | ","
     ;
 
+opt_const:
+  "CONST" { $$ = true; }
+  | /* Nothing */ { $$ = false; }
 procedure_parameter:
-    opt_procedure_parameter_mode identifier type_or_tvf_schema
+    opt_const opt_procedure_parameter_mode identifier type_or_tvf_schema
       {
-        auto* parameter = MAKE_NODE(ASTFunctionParameter, @$, {$2, $3});
-        parameter->set_procedure_parameter_mode($1);
+        auto* parameter = MAKE_NODE(ASTFunctionParameter, @$, {$3, $4});
+        parameter->set_is_constant($1);
+        parameter->set_procedure_parameter_mode($2);
         $$ = parameter;
       }
-    | opt_procedure_parameter_mode identifier procedure_parameter_termination
+    | opt_const opt_procedure_parameter_mode identifier procedure_parameter_termination
       {
         // There may be 3 cases causing this error:
         // 1. OUT int32_t where mode is empty and intended identifier name is
         //    "OUT"
         // 2. OUT int32_t where mode is OUT and identifier is missing
         // 3. OUT param_a where type is missing
-        YYERROR_AND_ABORT_AT(@3,
+        YYERROR_AND_ABORT_AT(@4,
                              "Syntax error: Unexpected end of parameter."
                              " Parameters should be in the format "
                              "[<parameter mode>] <parameter name> <type>. "
@@ -7170,6 +7176,7 @@ keyword_as_identifier:
     | "COLUMNS"
     | "COMMIT"
     | "CONNECTION"
+    | "CONST"
     | "CONSTANT"
     | "CONSTRAINT"
     | "CONTINUE"
