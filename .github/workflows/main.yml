@@ -81,6 +81,10 @@ jobs:
         run: |
           brew install bazelisk
 
+      - name: install gun util
+        run: |
+          brew install coreutils
+          brew install binutils
       - name: print toolchain info
         run: |
           gcc -v
