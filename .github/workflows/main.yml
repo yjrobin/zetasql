@@ -147,7 +147,7 @@ jobs:
           bazel test ${{ env.build_argv }} --test_summary=detailed --test_output=errors ${{ env.target }}
 
 
-  release:
+  linux-release:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     container:
@@ -183,6 +183,53 @@ jobs:
           VERSION=$(echo $VERSION | sed -e 's/^v//')
           echo "TAG=$VERSION" >> $GITHUB_ENV
 
+      - name: pack libzetasql
+        run: |
+          ./pack_zetasql.sh
+        env:
+          TAG: ${{ env.TAG }}
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            libzetasql-*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  mac-release:
+    runs-on: macos-latest
+    timeout-minutes: 120
+    env:
+      build_argv: '--features=-supports_dynamic_linker '
+      bazel_version: '3.7.2'
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: update bazel version
+        run: echo ${{ env.bazel_version }} > .bazelversion
+
+      - name: install bazelisk
+        run: |
+          brew install bazelisk
+
+      - name: print toolchain info
+        run: |
+          gcc -v
+          g++ -v
+          python -V
+          java -version
+
+      - name: build
+        run: |
+          bazel build ${{ env.build_argv }} ${{ env.target }}
+
+      - name: Determine Version
+        run: |
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          VERSION=$(echo $VERSION | sed -e 's/^v//')
+          echo "TAG=$VERSION" >> $GITHUB_ENV
+      
       - name: pack libzetasql
         run: |
           ./pack_zetasql.sh
