@@ -64,17 +64,28 @@ jobs:
       - name: Test
         run: |
           bazel test ${{ env.build_argv }} --test_summary=detailed ${{ env.target }}
+      
       - name: Determine Version
+        if: ${{ github.event_name == 'push' }}
         run: |
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           VERSION=$(echo $VERSION | sed -e 's/^v//')
           echo "TAG=$VERSION" >> $GITHUB_ENV
       
       - name: pack libzetasql
+        if: ${{ github.event_name == 'push' }}
         run: |
           ./pack_zetasql.sh
         env:
           TAG: ${{ env.TAG }}
+
+      - name: Upload Artifacts
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/upload-artifact@v2
+        with:
+          path: libzetasql-*.tar.gz
+          name: release-artifacts
+
   macos-build:
     runs-on: macos-latest
     timeout-minutes: 120
@@ -111,12 +122,14 @@ jobs:
           bazel test ${{ env.build_argv }} --test_summary=detailed ${{ env.target }}
       
       - name: Determine Version
+        if: ${{ github.event_name == 'push' }}
         run: |
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           VERSION=$(echo $VERSION | sed -e 's/^v//')
           echo "TAG=$VERSION" >> $GITHUB_ENV
       
       - name: pack libzetasql
+        if: ${{ github.event_name == 'push' }}
         run: |
           ./pack_zetasql.sh
         env:
@@ -179,60 +192,9 @@ jobs:
           source /opt/rh/rh-python38/enable
           bazel test ${{ env.build_argv }} --test_summary=detailed --test_output=errors ${{ env.target }}
 
-
-  linux-release:
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v')
-    container:
-      image: ghcr.io/aceforeverd/hybridsql-base:0.0.8
-    env:
-      BAZEL_LINKOPTS: '-static-libstdc++:-lm'
-      BAZEL_LINKLIBS: '-l%:libstdc++.a'
-      target: '//zetasql/...'
-      build_argv: ''
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup Bazel
-        run: |
-          curl --create-dirs -SLo /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.8.0/bazelisk-linux-amd64
-          chmod +x /usr/local/bin/bazel
-      - name: Install Java
-        run: |
-          yum install -y java-1.8.0-openjdk-devel
-
-      - name: build zetasql
-        run: |
-          source /opt/rh/devtoolset-8/enable
-          source /opt/rh/rh-python38/enable
-          bazel build ${{ env.build_argv }} ${{ env.target }}
-
-      - name: Find Orphan Library
-        run: |
-          ./find_orphan_so.sh
-
-      - name: Determine Version
-        run: |
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          VERSION=$(echo $VERSION | sed -e 's/^v//')
-          echo "TAG=$VERSION" >> $GITHUB_ENV
-
-      - name: pack libzetasql
-        run: |
-          ./pack_zetasql.sh
-        env:
-          TAG: ${{ env.TAG }}
-
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            libzetasql-*.tar.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  mac-release:
+  release:
     runs-on: macos-latest
-    needs: ["macos-build"]
+    needs: ["linux-build", "macos-build"]
     if: startsWith(github.ref, 'refs/tags/v')
     timeout-minutes: 120
     steps:
