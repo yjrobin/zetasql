@@ -124,7 +124,7 @@ then
 
     ar -M <libzetasql.mri
     ranlib libzetasql.a
-    mv tmp-lib/*.so "$PREFIX/lib/"
+    mv tmp-lib/*.a "$PREFIX/lib/"
     mv libzetasql.a "$PREFIX/lib/"
 else
     libtool -static -o libzetasql.a tmp-lib/*.a
