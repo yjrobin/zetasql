@@ -16,7 +16,7 @@ on:
 
 env:
   target: '//zetasql/parser/...'
-  build_argv: ''
+  build_argv: '--features=-supports_dynamic_linker '
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:

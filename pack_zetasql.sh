@@ -130,6 +130,8 @@ else
     libtool -static -o libzetasql.a tmp-lib/*.a
     mv libzetasql.a "$PREFIX/lib"
 fi
+echo "ls zetasqllib"
+ls "${ZETASQL_LIB_NAME}"/
 if [[ "$OSTYPE" == "linux-gnu"* ]]
 then
     tar czf "${ZETASQL_LIB_NAME}-linux-x86_64.tar.gz" "${ZETASQL_LIB_NAME}"/
