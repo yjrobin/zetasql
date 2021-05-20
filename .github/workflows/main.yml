@@ -81,7 +81,7 @@ jobs:
         run: |
           brew install bazelisk
 
-      - name: install gun util
+      - name: install utils tools
         run: |
           brew install coreutils
           brew install binutils
@@ -203,6 +203,7 @@ jobs:
 
   mac-release:
     runs-on: macos-latest
+    if: startsWith(github.ref, 'refs/tags/v')
     timeout-minutes: 120
     env:
       build_argv: '--features=-supports_dynamic_linker '
