@@ -66,14 +66,14 @@ jobs:
           bazel test ${{ env.build_argv }} --test_summary=detailed ${{ env.target }}
       
       - name: Determine Version
-        if: ${{ github.event_name == 'push' }}
+        # if: ${{ github.event_name == 'push' }}
         run: |
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           VERSION=$(echo $VERSION | sed -e 's/^v//')
           echo "TAG=$VERSION" >> $GITHUB_ENV
       
       - name: pack libzetasql
-        if: ${{ github.event_name == 'push' }}
+        # if: ${{ github.event_name == 'push' }}
         run: |
           ./pack_zetasql.sh
         env:
