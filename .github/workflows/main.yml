@@ -124,8 +124,7 @@ jobs:
     env:
       BAZEL_LINKOPTS: '-static-libstdc++:-lm'
       BAZEL_LINKLIBS: '-l%:libstdc++.a'
-      target: '//zetasql/parser:all'
-      build_argv: ''
+      build_argv: '--features=-supports_dynamic_linker '
     steps:
       - uses: actions/checkout@v2
       - name: Setup Bazel
@@ -147,6 +146,7 @@ jobs:
           bazel test ${{ env.build_argv }} --test_summary=detailed ${{ env.target }}
 
       - name: build zetasql parser dependencies
+        if: ${{ github.event_name == 'push' }}
         run: |
           bazel query 'deps(${{ env.target }})' |grep //zetasql|xargs bazel build ${{ env.build_argv }} 
           bazel build "@com_googleapis_googleapis//:all" ${{ env.build_argv }}
