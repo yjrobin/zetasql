@@ -140,15 +140,19 @@ jobs:
         run: |
           source /opt/rh/devtoolset-8/enable
           source /opt/rh/rh-python38/enable
-          bazel query 'deps(${{ env.target }})' |grep //zetasql|xargs bazel build ${{ env.build_argv }} 
-          bazel build "@com_googleapis_googleapis//:all" ${{ env.build_argv }}
-          bazel build "@com_google_file_based_test_driver//file_based_test_driver:all" ${{ env.build_argv }}
-          bazel build "@com_googlesource_code_re2//:re2" ${{ env.build_argv }}
+          bazel build ${{ env.target }} ${{ env.build_argv }}
       
       - name: Test
         run: |
           bazel test ${{ env.build_argv }} --test_summary=detailed ${{ env.target }}
 
+      - name: build zetasql parser dependencies
+        run: |
+          bazel query 'deps(${{ env.target }})' |grep //zetasql|xargs bazel build ${{ env.build_argv }} 
+          bazel build "@com_googleapis_googleapis//:all" ${{ env.build_argv }}
+          bazel build "@com_google_file_based_test_driver//file_based_test_driver:all" ${{ env.build_argv }}
+          bazel build "@com_googlesource_code_re2//:re2" ${{ env.build_argv }}
+          
       - name: Determine Version
         if: ${{ github.event_name == 'push' }}
         run: |

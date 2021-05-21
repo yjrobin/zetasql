@@ -72,11 +72,6 @@ else
 fi
 
 pushd bazel-bin/
-if [[ "$OSTYPE" == "linux-gnu"* ]]
-then
-    # exlucde test so
-    find zetasql -maxdepth 4 -type f -iname '*.so' -exec bash -c 'install_lib $0' {} \;
-fi
 find zetasql -type f -iname '*.a' -exec bash -c 'install_lib $0' {} \;
 
 # external lib headers
@@ -95,18 +90,11 @@ popd
 # external lib
 pushd external
 
-if [[ "$OSTYPE" == "linux-gnu"* ]]
-then
-    find icu -type f -iregex ".*/.*\.\(so\|a\)\$" -exec bash -c 'install_external_lib $0' {} \;
-    find com_googlesource_code_re2 -type f -iregex ".*/.*\.\(so\|a\)\$" -exec bash -c 'install_external_lib $0' {} \;
-    find com_googleapis_googleapis -type f -iregex ".*/.*\.\(so\|a\)\$" -exec bash -c 'install_external_lib $0' {} \;
-    find com_google_file_based_test_driver -type f -iregex ".*/.*\.\(so\|a\)\$" -exec bash -c 'install_external_lib $0' {} \;
-else
-    find icu -type f -iname '*.a' -exec bash -c 'install_external_lib $0' {} \;
-    find com_googlesource_code_re2 -type f -iname '*.a' -exec bash -c 'install_external_lib $0' {} \;
-    find com_googleapis_googleapis -type f -iname '*.a' -exec bash -c 'install_external_lib $0' {} \;
-    find com_google_file_based_test_driver -type f -iname '*.a' -exec bash -c 'install_external_lib $0' {} \;
-fi
+find icu -type f -iname '*.a' -exec bash -c 'install_external_lib $0' {} \;
+find com_googlesource_code_re2 -type f -iname '*.a' -exec bash -c 'install_external_lib $0' {} \;
+find com_googleapis_googleapis -type f -iname '*.a' -exec bash -c 'install_external_lib $0' {} \;
+find com_google_file_based_test_driver -type f -iname '*.a' -exec bash -c 'install_external_lib $0' {} \;
+
 popd
 
 # zetasql generated files: protobuf & template generated files
