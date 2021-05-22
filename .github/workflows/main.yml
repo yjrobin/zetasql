@@ -156,7 +156,7 @@ jobs:
       BAZEL_LINKOPTS: '-static-libstdc++:-lm'
       BAZEL_LINKLIBS: '-l%:libstdc++.a'
       target: '//zetasql/...'
-      build_argv: ''
+      build_argv: '--features=-supports_dynamic_linker'
     steps:
       - uses: actions/checkout@v2
       - name: Setup Bazel
