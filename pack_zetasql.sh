@@ -43,7 +43,6 @@ export -f install_external_lib
 
 pushd bazel-bin/
 # exlucde test so
-find zetasql -maxdepth 4 -type f -iname '*.so' -exec bash -c 'install_lib $0' {} \;
 find zetasql -type f -iname '*.a' -exec bash -c 'install_lib $0' {} \;
 
 # external lib headers
@@ -55,7 +54,7 @@ popd
 pushd external
 find icu -type f -iregex ".*/.*\.\(so\|a\)\$" -exec bash -c 'install_external_lib $0' {} \;
 find com_googlesource_code_re2 -type f -iregex ".*/.*\.\(so\|a\)\$" -exec bash -c 'install_external_lib $0' {} \;
-find com_googleapis_googleapis -type f -iname '*.so' -exec bash -c 'install_external_lib $0' {} \;
+find com_googleapis_googleapis -type f -iname '*.a' -exec bash -c 'install_external_lib $0' {} \;
 popd
 
 # zetasql generated files: protobuf & template generated files
@@ -75,7 +74,5 @@ echo "end" >> libzetasql.mri
 ar -M <libzetasql.mri
 ranlib libzetasql.a
 mv libzetasql.a "$PREFIX/lib"
-mv tmp-lib/*.so "$PREFIX/lib"
-
 
 tar czf "libzetasql-$VERSION.tar.gz" "libzetasql-$VERSION"/
