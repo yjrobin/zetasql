@@ -155,7 +155,7 @@ jobs:
     env:
       BAZEL_LINKOPTS: '-static-libstdc++:-lm'
       BAZEL_LINKLIBS: '-l%:libstdc++.a'
-      target: '//zetasql/...'
+      target: '-- //zetasql/...  -zetasql/local_service/...'
       build_argv: '--features=-supports_dynamic_linker'
     steps:
       - uses: actions/checkout@v2
