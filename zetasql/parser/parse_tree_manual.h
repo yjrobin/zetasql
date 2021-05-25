@@ -2817,7 +2817,13 @@ class ASTWindowSpecification final : public ASTNode {
   const ASTWindowFrame* window_frame() const { return window_frame_; }
 
   const ASTIdentifier* base_window_name() const { return base_window_name_; }
+  
+  bool is_instance_not_in_window() const { return is_instance_not_in_window_; }
+  void set_is_instance_not_in_window(bool value) { is_instance_not_in_window_ = value; }
 
+  bool is_exclude_current_time() const { return is_exclude_current_time_; }
+  void set_is_exclude_current_time(bool value) { is_exclude_current_time_ = value; }
+  std::string SingleNodeDebugString() const override;
  private:
   void InitFields() final {
     FieldLoader fl(this);
@@ -2832,6 +2838,9 @@ class ASTWindowSpecification final : public ASTNode {
   const ASTPartitionBy* partition_by_ = nullptr;
   const ASTOrderBy* order_by_ = nullptr;
   const ASTWindowFrame* window_frame_ = nullptr;
+
+  bool is_instance_not_in_window_ = false;
+  bool is_exclude_current_time_ = false;
 };
 
 class ASTWindowDefinition final : public ASTNode {

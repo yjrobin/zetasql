@@ -697,6 +697,7 @@ using zetasql::ASTDropStatement;
 %token KW_IGNORE "IGNORE"
 %token KW_IN "IN"
 %token KW_INNER "INNER"
+%token KW_INSTANCE_NOT_IN_WINDOW "INSTANCE_NOT_IN_WINDOW"
 %token KW_INTERSECT "INTERSECT"
 %token KW_INTERVAL "INTERVAL"
 %token KW_INTO "INTO"
@@ -797,6 +798,7 @@ using zetasql::ASTDropStatement;
 %token KW_CONTINUE "CONTINUE"
 %token KW_CONSTANT "CONSTANT"
 %token KW_CONSTRAINT "CONSTRAINT"
+%token KW_CURRENT_TIME "CURRENT_TIME"
 %token KW_DATA "DATA"
 %token KW_DATABASE "DATABASE"
 %token KW_DATE "DATE"
@@ -1366,6 +1368,8 @@ using zetasql::ASTDropStatement;
 %type <boolean> opt_recursive
 %type <boolean> opt_unique
 %type <boolean> opt_search
+%type <boolean> opt_instance_not_in_window
+%type <boolean> opt_exclude_current_time
 %type <node> opt_with_anonymization
 %type <node> primary_key_column_attribute
 %type <node> hidden_column_attribute
@@ -6598,7 +6602,7 @@ frame_unit:
     ;
 
 opt_window_frame_clause:
-    frame_unit "BETWEEN" window_frame_bound "AND for BETWEEN" window_frame_bound opt_maxsize
+    frame_unit "BETWEEN" window_frame_bound "AND for BETWEEN" window_frame_bound opt_maxsize 
       {
         auto* frame = MAKE_NODE(ASTWindowFrame, @$, {$3, $5, $6});
         frame->set_unit($1);
@@ -6611,23 +6615,40 @@ opt_window_frame_clause:
         $$ = frame;
       }
     | /* Nothing */ { $$ = nullptr; }
-
+    ;
 opt_maxsize:
   "MAXSIZE" integer_literal
     {
       $$ = MAKE_NODE(ASTMaxSize, @$, {$2});
     }
   | /* Nothing */ { $$ = nullptr; }
-
+  ;
+opt_instance_not_in_window:
+  "INSTANCE_NOT_IN_WINDOW"
+    {
+      $$ = true;
+    };
+  | /* Nothing */ { $$ = false; }
+  ;
+opt_exclude_current_time:
+  "EXCLUDE" "CURRENT_TIME"
+    {
+      $$ = true;
+    };
+  | /* Nothing */ { $$ = false; }
+  ;
 window_specification:
     identifier
       {
         $$ = MAKE_NODE(ASTWindowSpecification, @$, {$1});
       }
     | "(" opt_identifier opt_partition_by_clause opt_order_by_clause
-          opt_window_frame_clause ")"
+          opt_window_frame_clause opt_exclude_current_time opt_instance_not_in_window ")"
       {
-        $$ = MAKE_NODE(ASTWindowSpecification, @$, {$2, $3, $4, $5});
+        auto *window_spec = MAKE_NODE(ASTWindowSpecification, @$, {$2, $3, $4, $5});
+        window_spec->set_is_exclude_current_time($6);
+        window_spec->set_is_instance_not_in_window($7);
+        $$ = window_spec;
       }
    ;
 
@@ -7009,6 +7030,7 @@ reserved_keyword_rule:
     | "IGNORE"
     | "IN"
     | "INNER"
+    | "INSTANCE_NOT_IN_WINDOW"
     | "INTERSECT"
     | "INTERVAL"
     | "INTO"
@@ -7104,6 +7126,7 @@ keyword_as_identifier:
     | "CONSTANT"
     | "CONSTRAINT"
     | "CONTINUE"
+    | "CURRENT_TIME"
     | "DATA"
     | "DATABASE"
     | "DATE"

@@ -906,6 +906,21 @@ std::string ASTWindowFrame::SingleNodeDebugString() const {
   return absl::StrCat(ASTNode::SingleNodeDebugString(), "(",
                       GetFrameUnitString(), ")");
 }
+std::string ASTWindowSpecification::SingleNodeDebugString() const {
+  if (is_instance_not_in_window_ && is_exclude_current_time_) {
+    return absl::StrCat(ASTNode::SingleNodeDebugString(), 
+    "(is_exclude_current_time, is_instance_not_in_window)");
+  }
+  if (is_instance_not_in_window_) {
+    return absl::StrCat(ASTNode::SingleNodeDebugString(), 
+    "(is_instance_not_in_window)");
+  }
+  if (is_exclude_current_time_) {
+    return absl::StrCat(ASTNode::SingleNodeDebugString(), 
+    "(is_exclude_current_time)");
+  }
+  return ASTNode::SingleNodeDebugString();
+}
 
 // static
 std::string ASTWindowFrame::FrameUnitToString(FrameUnit unit) {
