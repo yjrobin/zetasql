@@ -300,6 +300,8 @@ class Unparser : public ParseTreeVisitor {
                                  void* data) override;
   void visitASTNewConstructor(const ASTNewConstructor* node,
                               void* data) override;
+  void visitASTIndexDefinition(const ASTIndexDefinition* node, 
+                                void* data) override;
   void visitASTInferredTypeColumnSchema(const ASTInferredTypeColumnSchema* node,
                                         void* data) override;
   void visitASTArrayConstructor(const ASTArrayConstructor* node,

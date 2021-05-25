@@ -5577,8 +5577,8 @@ class ASTGeneratedColumnInfo final : public ASTNode {
   StoredMode stored_mode_ = StoredMode::NON_STORED;
 };
 
-// Base class for CREATE TABLE elements, including column definitions and
-// table constraints.
+// Base class for CREATE TABLE elements, including column definitions, 
+// table indexs and table constraints.
 class ASTTableElement : public ASTNode {
  public:
   explicit ASTTableElement(ASTNodeKind kind) : ASTNode(kind) {}
@@ -5701,6 +5701,34 @@ class ASTCheckConstraint final : public ASTTableConstraint {
   const ASTExpression* expression_ = nullptr;
   const ASTOptionsList* options_list_ = nullptr;
   bool is_enforced_ = true;
+};
+
+class ASTIndexDefinition final : public ASTTableElement {
+ public:
+  static constexpr ASTNodeKind kConcreteNodeKind = AST_INDEX_DEFINITION;
+
+  ASTIndexDefinition() : ASTTableElement(kConcreteNodeKind) {}
+  void Accept(ParseTreeVisitor* visitor, void* data) const override;
+  zetasql_base::StatusOr<VisitResult> Accept(
+      NonRecursiveParseTreeVisitor* visitor) const override;
+
+  const ASTIdentifier* name() const { return name_; }
+  const ASTColumnList* column_key_list() const { return column_key_list_; }
+  const ASTOptionsList* options_list() const { return options_list_; }
+
+  bool is_unique() const { return is_unique_; }
+  void set_is_unique(bool is_unique) { is_unique_ = is_unique; }
+ private:
+  void InitFields() final {
+    FieldLoader fl(this);
+    fl.AddOptional(&name_, AST_IDENTIFIER);
+    fl.AddOptional(&column_key_list_, AST_COLUMN_LIST);
+    fl.AddOptional(&options_list_, AST_OPTIONS_LIST);
+  }
+  const ASTIdentifier* name_ = nullptr;
+  const ASTColumnList* column_key_list_ = nullptr;
+  const ASTOptionsList* options_list_ = nullptr;
+  bool is_unique_ = false;
 };
 
 class ASTTableElementList final : public ASTNode {

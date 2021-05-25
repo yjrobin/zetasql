@@ -158,7 +158,7 @@ constexpr KeywordInfoPOD kAllKeywords[] = {
     {"in", KW_IN, KeywordInfo::kReserved},
     {"include", KW_INCLUDE},
     {"inout", KW_INOUT},
-    {"index", KW_INDEX},
+    {"index", KW_INDEX, KeywordInfo::kReserved},
     {"inner", KW_INNER, KeywordInfo::kReserved},
     {"insert", KW_INSERT},
     {"instance_not_in_window", KW_INSTANCE_NOT_IN_WINDOW, KeywordInfo::kReserved},

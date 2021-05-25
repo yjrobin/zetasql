@@ -57,37 +57,37 @@ DescribeStatement [0-18]
 DESCRIBE namespace.foo
 ==
 
-{{describe|desc}} INDEX myindex;
+{{describe|desc}} `INDEX` myindex;
 --
 
 ALTERNATION GROUP: describe
 --
-DescribeStatement [0-22]
-  Identifier(INDEX) [9-14]
-  PathExpression [15-22]
-    Identifier(myindex) [15-22]
+DescribeStatement [0-24]
+  Identifier(`INDEX`) [9-16]
+  PathExpression [17-24]
+    Identifier(myindex) [17-24]
 --
-DESCRIBE INDEX myindex
+DESCRIBE `INDEX` myindex
 --
 ALTERNATION GROUP: desc
 --
-DescribeStatement [0-18]
-  Identifier(INDEX) [5-10]
-  PathExpression [11-18]
-    Identifier(myindex) [11-18]
+DescribeStatement [0-20]
+  Identifier(`INDEX`) [5-12]
+  PathExpression [13-20]
+    Identifier(myindex) [13-20]
 --
-DESCRIBE INDEX myindex
+DESCRIBE `INDEX` myindex
 ==
 
-describe INDEX mynamespace.myindex;
+describe `INDEX` mynamespace.myindex;
 --
-DescribeStatement [0-34]
-  Identifier(INDEX) [9-14]
-  PathExpression [15-34]
-    Identifier(mynamespace) [15-26]
-    Identifier(myindex) [27-34]
+DescribeStatement [0-36]
+  Identifier(`INDEX`) [9-16]
+  PathExpression [17-36]
+    Identifier(mynamespace) [17-28]
+    Identifier(myindex) [29-36]
 --
-DESCRIBE INDEX mynamespace.myindex
+DESCRIBE `INDEX` mynamespace.myindex
 ==
 
 describe FUNCTION myfunction;

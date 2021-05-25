@@ -908,7 +908,7 @@ CREATE PRIVATE TABLE T
 
 CREATE TABLE t ();
 --
-ERROR: Syntax error: Unexpected ")" [at 1:17]
+ERROR: Syntax error: Expected keyword INDEX but got ")" [at 1:17]
 CREATE TABLE t ();
                 ^
 ==
@@ -3062,6 +3062,361 @@ CREATE TABLE t
   primary int64,
   foreign int64,
   a key
+)
+==
+
+# create table with index definition
+# single key 
+create table t (c1 int32, c2 string, c3 int64, index(key=c2, ts=c3));
+--
+CreateTableStatement [0-68]
+  PathExpression [13-14]
+    Identifier(t) [13-14]
+  TableElementList [15-68]
+    ColumnDefinition [16-24]
+      Identifier(c1) [16-18]
+      SimpleColumnSchema [19-24]
+        PathExpression [19-24]
+          Identifier(int32) [19-24]
+    ColumnDefinition [26-35]
+      Identifier(c2) [26-28]
+      SimpleColumnSchema [29-35]
+        PathExpression [29-35]
+          Identifier(string) [29-35]
+    ColumnDefinition [37-45]
+      Identifier(c3) [37-39]
+      SimpleColumnSchema [40-45]
+        PathExpression [40-45]
+          Identifier(int64) [40-45]
+    IndexDefinition [46-67]
+      OptionsList [52-67]
+        OptionsEntry [53-59]
+          Identifier(key) [53-56]
+          PathExpression [57-59]
+            Identifier(c2) [57-59]
+        OptionsEntry [61-66]
+          Identifier(ts) [61-63]
+          PathExpression [64-66]
+            Identifier(c3) [64-66]
+--
+CREATE TABLE t
+(
+  c1 int32,
+  c2 string,
+  c3 int64,
+  INDEX(key = c2, ts = c3)
+)
+==
+
+# create table with index definition
+# multiple keys
+create table t (c1 int32, c2 string, c3 int64, index(key=(c1,c2), ts=c3));
+--
+CreateTableStatement [0-73]
+  PathExpression [13-14]
+    Identifier(t) [13-14]
+  TableElementList [15-73]
+    ColumnDefinition [16-24]
+      Identifier(c1) [16-18]
+      SimpleColumnSchema [19-24]
+        PathExpression [19-24]
+          Identifier(int32) [19-24]
+    ColumnDefinition [26-35]
+      Identifier(c2) [26-28]
+      SimpleColumnSchema [29-35]
+        PathExpression [29-35]
+          Identifier(string) [29-35]
+    ColumnDefinition [37-45]
+      Identifier(c3) [37-39]
+      SimpleColumnSchema [40-45]
+        PathExpression [40-45]
+          Identifier(int64) [40-45]
+    IndexDefinition [46-72]
+      OptionsList [52-72]
+        OptionsEntry [53-64]
+          Identifier(key) [53-56]
+          StructConstructorWithParens [57-64]
+            PathExpression [58-60]
+              Identifier(c1) [58-60]
+            PathExpression [61-63]
+              Identifier(c2) [61-63]
+        OptionsEntry [66-71]
+          Identifier(ts) [66-68]
+          PathExpression [69-71]
+            Identifier(c3) [69-71]
+--
+CREATE TABLE t
+(
+  c1 int32,
+  c2 string,
+  c3 int64,
+  INDEX(key = (c1, c2), ts = c3)
+)
+==
+
+# create table with index definition
+# multiple keys, ttl_type = absolute
+create table t (c1 int32, c2 string, c3 int64, index(key=(c1,c2), ts=c3, ttl_type=absolute));
+--
+CreateTableStatement [0-92]
+  PathExpression [13-14]
+    Identifier(t) [13-14]
+  TableElementList [15-92]
+    ColumnDefinition [16-24]
+      Identifier(c1) [16-18]
+      SimpleColumnSchema [19-24]
+        PathExpression [19-24]
+          Identifier(int32) [19-24]
+    ColumnDefinition [26-35]
+      Identifier(c2) [26-28]
+      SimpleColumnSchema [29-35]
+        PathExpression [29-35]
+          Identifier(string) [29-35]
+    ColumnDefinition [37-45]
+      Identifier(c3) [37-39]
+      SimpleColumnSchema [40-45]
+        PathExpression [40-45]
+          Identifier(int64) [40-45]
+    IndexDefinition [46-91]
+      OptionsList [52-91]
+        OptionsEntry [53-64]
+          Identifier(key) [53-56]
+          StructConstructorWithParens [57-64]
+            PathExpression [58-60]
+              Identifier(c1) [58-60]
+            PathExpression [61-63]
+              Identifier(c2) [61-63]
+        OptionsEntry [66-71]
+          Identifier(ts) [66-68]
+          PathExpression [69-71]
+            Identifier(c3) [69-71]
+        OptionsEntry [73-90]
+          Identifier(ttl_type) [73-81]
+          PathExpression [82-90]
+            Identifier(absolute) [82-90]
+--
+CREATE TABLE t
+(
+  c1 int32,
+  c2 string,
+  c3 int64,
+  INDEX(key = (c1, c2), ts = c3, ttl_type = absolute)
+)
+==
+
+# create table with index definition
+# multiple keys, ttl_type = absolute, ttl = 365d
+create table t (c1 int32, c2 string, c3 int64, index(key=(c1,c2), ts=c3, ttl_type=absolute, ttl=356d));
+--
+CreateTableStatement [0-102]
+  PathExpression [13-14]
+    Identifier(t) [13-14]
+  TableElementList [15-102]
+    ColumnDefinition [16-24]
+      Identifier(c1) [16-18]
+      SimpleColumnSchema [19-24]
+        PathExpression [19-24]
+          Identifier(int32) [19-24]
+    ColumnDefinition [26-35]
+      Identifier(c2) [26-28]
+      SimpleColumnSchema [29-35]
+        PathExpression [29-35]
+          Identifier(string) [29-35]
+    ColumnDefinition [37-45]
+      Identifier(c3) [37-39]
+      SimpleColumnSchema [40-45]
+        PathExpression [40-45]
+          Identifier(int64) [40-45]
+    IndexDefinition [46-101]
+      OptionsList [52-101]
+        OptionsEntry [53-64]
+          Identifier(key) [53-56]
+          StructConstructorWithParens [57-64]
+            PathExpression [58-60]
+              Identifier(c1) [58-60]
+            PathExpression [61-63]
+              Identifier(c2) [61-63]
+        OptionsEntry [66-71]
+          Identifier(ts) [66-68]
+          PathExpression [69-71]
+            Identifier(c3) [69-71]
+        OptionsEntry [73-90]
+          Identifier(ttl_type) [73-81]
+          PathExpression [82-90]
+            Identifier(absolute) [82-90]
+        OptionsEntry [92-100]
+          Identifier(ttl) [92-95]
+          IntervalLiteral(356d) [96-100]
+--
+CREATE TABLE t
+(
+  c1 int32,
+  c2 string,
+  c3 int64,
+  INDEX(key = (c1, c2), ts = c3, ttl_type = absolute, ttl = 356d)
+)
+==
+
+# create table with index definition
+# multiple keys, ttl_type = latest, ttl = 0
+create table t (c1 int32, c2 string, c3 int64, index(key=(c1,c2), ts=c3, ttl_type=latest, ttl=0));
+--
+CreateTableStatement [0-97]
+  PathExpression [13-14]
+    Identifier(t) [13-14]
+  TableElementList [15-97]
+    ColumnDefinition [16-24]
+      Identifier(c1) [16-18]
+      SimpleColumnSchema [19-24]
+        PathExpression [19-24]
+          Identifier(int32) [19-24]
+    ColumnDefinition [26-35]
+      Identifier(c2) [26-28]
+      SimpleColumnSchema [29-35]
+        PathExpression [29-35]
+          Identifier(string) [29-35]
+    ColumnDefinition [37-45]
+      Identifier(c3) [37-39]
+      SimpleColumnSchema [40-45]
+        PathExpression [40-45]
+          Identifier(int64) [40-45]
+    IndexDefinition [46-96]
+      OptionsList [52-96]
+        OptionsEntry [53-64]
+          Identifier(key) [53-56]
+          StructConstructorWithParens [57-64]
+            PathExpression [58-60]
+              Identifier(c1) [58-60]
+            PathExpression [61-63]
+              Identifier(c2) [61-63]
+        OptionsEntry [66-71]
+          Identifier(ts) [66-68]
+          PathExpression [69-71]
+            Identifier(c3) [69-71]
+        OptionsEntry [73-88]
+          Identifier(ttl_type) [73-81]
+          PathExpression [82-88]
+            Identifier(latest) [82-88]
+        OptionsEntry [90-95]
+          Identifier(ttl) [90-93]
+          IntLiteral(0) [94-95]
+--
+CREATE TABLE t
+(
+  c1 int32,
+  c2 string,
+  c3 int64,
+  INDEX(key = (c1, c2), ts = c3, ttl_type = latest, ttl = 0)
+)
+==
+
+# create table with index definition
+# multiple keys, ttl_type = absandlat, ttl = (10d,100)
+create table t (c1 int32, c2 string, c3 int64, index(key=(c1,c2), ts=c3, ttl_type=absandlat, ttl=(10d, 100)));
+--
+CreateTableStatement [0-109]
+  PathExpression [13-14]
+    Identifier(t) [13-14]
+  TableElementList [15-109]
+    ColumnDefinition [16-24]
+      Identifier(c1) [16-18]
+      SimpleColumnSchema [19-24]
+        PathExpression [19-24]
+          Identifier(int32) [19-24]
+    ColumnDefinition [26-35]
+      Identifier(c2) [26-28]
+      SimpleColumnSchema [29-35]
+        PathExpression [29-35]
+          Identifier(string) [29-35]
+    ColumnDefinition [37-45]
+      Identifier(c3) [37-39]
+      SimpleColumnSchema [40-45]
+        PathExpression [40-45]
+          Identifier(int64) [40-45]
+    IndexDefinition [46-108]
+      OptionsList [52-108]
+        OptionsEntry [53-64]
+          Identifier(key) [53-56]
+          StructConstructorWithParens [57-64]
+            PathExpression [58-60]
+              Identifier(c1) [58-60]
+            PathExpression [61-63]
+              Identifier(c2) [61-63]
+        OptionsEntry [66-71]
+          Identifier(ts) [66-68]
+          PathExpression [69-71]
+            Identifier(c3) [69-71]
+        OptionsEntry [73-91]
+          Identifier(ttl_type) [73-81]
+          PathExpression [82-91]
+            Identifier(absandlat) [82-91]
+        OptionsEntry [93-107]
+          Identifier(ttl) [93-96]
+          StructConstructorWithParens [97-107]
+            IntervalLiteral(10d) [98-101]
+            IntLiteral(100) [103-106]
+--
+CREATE TABLE t
+(
+  c1 int32,
+  c2 string,
+  c3 int64,
+  INDEX(key = (c1, c2), ts = c3, ttl_type = absandlat, ttl = (10d, 100))
+)
+==
+
+# create table with index definition
+# multiple keys, ttl_type = absorlat, ttl = (10d,100)
+create table t (c1 int32, c2 string, c3 int64, index(key=(c1,c2), ts=c3, ttl_type=absorlat, ttl=(10d, 100)));
+--
+CreateTableStatement [0-108]
+  PathExpression [13-14]
+    Identifier(t) [13-14]
+  TableElementList [15-108]
+    ColumnDefinition [16-24]
+      Identifier(c1) [16-18]
+      SimpleColumnSchema [19-24]
+        PathExpression [19-24]
+          Identifier(int32) [19-24]
+    ColumnDefinition [26-35]
+      Identifier(c2) [26-28]
+      SimpleColumnSchema [29-35]
+        PathExpression [29-35]
+          Identifier(string) [29-35]
+    ColumnDefinition [37-45]
+      Identifier(c3) [37-39]
+      SimpleColumnSchema [40-45]
+        PathExpression [40-45]
+          Identifier(int64) [40-45]
+    IndexDefinition [46-107]
+      OptionsList [52-107]
+        OptionsEntry [53-64]
+          Identifier(key) [53-56]
+          StructConstructorWithParens [57-64]
+            PathExpression [58-60]
+              Identifier(c1) [58-60]
+            PathExpression [61-63]
+              Identifier(c2) [61-63]
+        OptionsEntry [66-71]
+          Identifier(ts) [66-68]
+          PathExpression [69-71]
+            Identifier(c3) [69-71]
+        OptionsEntry [73-90]
+          Identifier(ttl_type) [73-81]
+          PathExpression [82-90]
+            Identifier(absorlat) [82-90]
+        OptionsEntry [92-106]
+          Identifier(ttl) [92-95]
+          StructConstructorWithParens [96-106]
+            IntervalLiteral(10d) [97-100]
+            IntLiteral(100) [102-105]
+--
+CREATE TABLE t
+(
+  c1 int32,
+  c2 string,
+  c3 int64,
+  INDEX(key = (c1, c2), ts = c3, ttl_type = absorlat, ttl = (10d, 100))
 )
 ==
 
