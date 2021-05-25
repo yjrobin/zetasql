@@ -1286,7 +1286,7 @@ class ASTJoin final : public ASTTableExpression {
   std::string GetSQLForJoinType() const;
   std::string GetSQLForJoinHint() const;
 
-  enum JoinType { DEFAULT_JOIN_TYPE, COMMA, CROSS, FULL, INNER, LEFT, RIGHT };
+  enum JoinType { DEFAULT_JOIN_TYPE, COMMA, CROSS, FULL, INNER, LEFT, RIGHT, LAST};
 
   JoinType join_type() const { return join_type_; }
   void set_join_type(JoinType join_type) { join_type_ = join_type; }
@@ -1302,6 +1302,8 @@ class ASTJoin final : public ASTTableExpression {
   const ASTHint* hint() const { return hint_; }
   const ASTTableExpression* lhs() const { return lhs_; }
   const ASTTableExpression* rhs() const { return rhs_; }
+  // If present, order rhs before apply using clause
+  const ASTOrderBy* order_by() const { return order_by_; }
   const ASTOnClause* on_clause() const { return on_clause_; }
   const ASTUsingClause* using_clause() const { return using_clause_; }
 
@@ -1331,6 +1333,7 @@ class ASTJoin final : public ASTTableExpression {
     fl.AddRequired(&lhs_);
     fl.AddOptional(&hint_, AST_HINT);
     fl.AddRequired(&rhs_);
+    fl.AddOptional(&order_by_, AST_ORDER_BY);
     fl.AddOptional(&on_clause_, AST_ON_CLAUSE);
     fl.AddOptional(&using_clause_, AST_USING_CLAUSE);
 
@@ -1345,6 +1348,7 @@ class ASTJoin final : public ASTTableExpression {
   const ASTHint* hint_ = nullptr;
   const ASTTableExpression* lhs_ = nullptr;
   const ASTTableExpression* rhs_ = nullptr;
+  const ASTOrderBy* order_by_ = nullptr;
   const ASTOnClause* on_clause_ = nullptr;
   const ASTUsingClause* using_clause_ = nullptr;
   const ASTOnOrUsingClauseList* clause_list_ = nullptr;
@@ -1405,9 +1409,9 @@ class ASTOnClause final : public ASTNode {
     FieldLoader fl(this);
     fl.AddRequired(&expression_);
   }
-
   const ASTExpression* expression_ = nullptr;
 };
+
 
 class ASTUsingClause final : public ASTNode {
  public:
@@ -1418,6 +1422,9 @@ class ASTUsingClause final : public ASTNode {
   zetasql_base::StatusOr<VisitResult> Accept(
       NonRecursiveParseTreeVisitor* visitor) const override;
 
+  // If present, order dataset before apply using clause
+  const ASTOrderBy* order_by() const { return order_by_; }
+  
   const absl::Span<const ASTIdentifier* const>& keys() const {
     return keys_;
   }
@@ -1425,9 +1432,10 @@ class ASTUsingClause final : public ASTNode {
  private:
   void InitFields() final {
     FieldLoader fl(this);
+    fl.AddRequired(&order_by_);
     fl.AddRestAsRepeated(&keys_);
   }
-
+  const ASTOrderBy* order_by_ = nullptr;
   absl::Span<const ASTIdentifier* const> keys_;
 };
 

@@ -90,6 +90,202 @@ FROM
   USING(c, d)
 ==
 
+select T1.a as a, T2.b as b from Table1 as T1 last join Table2 T2 using (c, d);
+--
+QueryStatement [0-78]
+  Query [0-78]
+    Select [0-78]
+      SelectList [7-27]
+        SelectColumn [7-16]
+          PathExpression [7-11]
+            Identifier(T1) [7-9]
+            Identifier(a) [10-11]
+          Alias [12-16]
+            Identifier(a) [15-16]
+        SelectColumn [18-27]
+          PathExpression [18-22]
+            Identifier(T2) [18-20]
+            Identifier(b) [21-22]
+          Alias [23-27]
+            Identifier(b) [26-27]
+      FromClause [28-78]
+        Join(LAST) [46-78]
+          TablePathExpression [33-45]
+            PathExpression [33-39]
+              Identifier(Table1) [33-39]
+            Alias [40-45]
+              Identifier(T1) [43-45]
+          TablePathExpression [56-65]
+            PathExpression [56-62]
+              Identifier(Table2) [56-62]
+            Alias [63-65]
+              Identifier(T2) [63-65]
+          UsingClause [66-78]
+            Identifier(c) [73-74]
+            Identifier(d) [76-77]
+--
+SELECT
+  T1.a AS a,
+  T2.b AS b
+FROM
+  Table1 AS T1
+  LAST JOIN
+  Table2 AS T2
+  USING(c, d)
+==
+
+select T1.a as a, T2.b as b from Table1 as T1 last join Table2 T2 order by e using (c, d);
+--
+QueryStatement [0-89]
+  Query [0-89]
+    Select [0-89]
+      SelectList [7-27]
+        SelectColumn [7-16]
+          PathExpression [7-11]
+            Identifier(T1) [7-9]
+            Identifier(a) [10-11]
+          Alias [12-16]
+            Identifier(a) [15-16]
+        SelectColumn [18-27]
+          PathExpression [18-22]
+            Identifier(T2) [18-20]
+            Identifier(b) [21-22]
+          Alias [23-27]
+            Identifier(b) [26-27]
+      FromClause [28-89]
+        Join(LAST) [46-89]
+          TablePathExpression [33-45]
+            PathExpression [33-39]
+              Identifier(Table1) [33-39]
+            Alias [40-45]
+              Identifier(T1) [43-45]
+          TablePathExpression [56-65]
+            PathExpression [56-62]
+              Identifier(Table2) [56-62]
+            Alias [63-65]
+              Identifier(T2) [63-65]
+          OrderBy [66-76]
+            OrderingExpression(ASC) [75-76]
+              PathExpression [75-76]
+                Identifier(e) [75-76]
+          UsingClause [77-89]
+            Identifier(c) [84-85]
+            Identifier(d) [87-88]
+--
+SELECT
+  T1.a AS a,
+  T2.b AS b
+FROM
+  Table1 AS T1
+  LAST JOIN
+  Table2 AS T2
+  ORDER BY e
+  USING(c, d)
+==
+
+select T1.a as a, T2.b as b from Table1 as T1 last join Table2 T2 on T1.c = T2.c;
+--
+QueryStatement [0-80]
+  Query [0-80]
+    Select [0-80]
+      SelectList [7-27]
+        SelectColumn [7-16]
+          PathExpression [7-11]
+            Identifier(T1) [7-9]
+            Identifier(a) [10-11]
+          Alias [12-16]
+            Identifier(a) [15-16]
+        SelectColumn [18-27]
+          PathExpression [18-22]
+            Identifier(T2) [18-20]
+            Identifier(b) [21-22]
+          Alias [23-27]
+            Identifier(b) [26-27]
+      FromClause [28-80]
+        Join(LAST) [46-80]
+          TablePathExpression [33-45]
+            PathExpression [33-39]
+              Identifier(Table1) [33-39]
+            Alias [40-45]
+              Identifier(T1) [43-45]
+          TablePathExpression [56-65]
+            PathExpression [56-62]
+              Identifier(Table2) [56-62]
+            Alias [63-65]
+              Identifier(T2) [63-65]
+          OnClause [66-80]
+            BinaryExpression(=) [69-80]
+              PathExpression [69-73]
+                Identifier(T1) [69-71]
+                Identifier(c) [72-73]
+              PathExpression [76-80]
+                Identifier(T2) [76-78]
+                Identifier(c) [79-80]
+--
+SELECT
+  T1.a AS a,
+  T2.b AS b
+FROM
+  Table1 AS T1
+  LAST JOIN
+  Table2 AS T2
+  ON T1.c = T2.c
+==
+
+select T1.a as a, T2.b as b from Table1 as T1 last join Table2 T2 order by e on T1.c = T2.c;
+--
+QueryStatement [0-91]
+  Query [0-91]
+    Select [0-91]
+      SelectList [7-27]
+        SelectColumn [7-16]
+          PathExpression [7-11]
+            Identifier(T1) [7-9]
+            Identifier(a) [10-11]
+          Alias [12-16]
+            Identifier(a) [15-16]
+        SelectColumn [18-27]
+          PathExpression [18-22]
+            Identifier(T2) [18-20]
+            Identifier(b) [21-22]
+          Alias [23-27]
+            Identifier(b) [26-27]
+      FromClause [28-91]
+        Join(LAST) [46-91]
+          TablePathExpression [33-45]
+            PathExpression [33-39]
+              Identifier(Table1) [33-39]
+            Alias [40-45]
+              Identifier(T1) [43-45]
+          TablePathExpression [56-65]
+            PathExpression [56-62]
+              Identifier(Table2) [56-62]
+            Alias [63-65]
+              Identifier(T2) [63-65]
+          OrderBy [66-76]
+            OrderingExpression(ASC) [75-76]
+              PathExpression [75-76]
+                Identifier(e) [75-76]
+          OnClause [77-91]
+            BinaryExpression(=) [80-91]
+              PathExpression [80-84]
+                Identifier(T1) [80-82]
+                Identifier(c) [83-84]
+              PathExpression [87-91]
+                Identifier(T2) [87-89]
+                Identifier(c) [90-91]
+--
+SELECT
+  T1.a AS a,
+  T2.b AS b
+FROM
+  Table1 AS T1
+  LAST JOIN
+  Table2 AS T2
+  ORDER BY e
+  ON T1.c = T2.c
+==
+
 select a as x, b as y from Table1 as T1 inner join
     Table2 T2 on T2.x = T3.y join Table3 as T3 using(c);
 --
@@ -774,7 +970,8 @@ select * from A, B JOIN (C, D)
 ==
 
 # RIGHT JOIN and FULL JOIN require parentheses when following a comma join.
-select * FROM A, B {{INNER|CROSS|LEFT|RIGHT|FULL}} JOIN C
+# LAST JOIN require to be followed by ON/USING clause
+select * FROM A, B {{INNER|CROSS|LEFT|RIGHT|FULL|LAST}} JOIN C
 --
 ALTERNATION GROUP: INNER
 --
@@ -874,6 +1071,13 @@ ALTERNATION GROUP: FULL
 ERROR: Syntax error: FULL JOIN must be parenthesized when following a comma join.  Also, if the preceding comma join is a correlated CROSS JOIN that unnests an array, then CROSS JOIN syntax must be used in place of the comma join [at 1:20]
 select * FROM A, B FULL JOIN C
                    ^
+
+--
+ALTERNATION GROUP: LAST
+--
+ERROR: Syntax error: Expected keyword ON or keyword USING but got end of statement [at 1:31]
+select * FROM A, B LAST JOIN C
+                              ^
 ==
 
 # Comma join error happens even after chains of other joins.

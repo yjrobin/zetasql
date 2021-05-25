@@ -591,10 +591,10 @@ FROM
 ORDER BY a DESC NULLS LAST
 ==
 
-select a from T order by 1 nulls last, first desc nulls first, last asc nulls last;
+select a from T order by 1 nulls last, first desc nulls first, `last` asc nulls last;
 --
-QueryStatement [0-82]
-  Query [0-82]
+QueryStatement [0-84]
+  Query [0-84]
     Select [0-15]
       SelectList [7-8]
         SelectColumn [7-8]
@@ -604,7 +604,7 @@ QueryStatement [0-82]
         TablePathExpression [14-15]
           PathExpression [14-15]
             Identifier(T) [14-15]
-    OrderBy [16-82]
+    OrderBy [16-84]
       OrderingExpression(ASC) [25-37]
         IntLiteral(1) [25-26]
         NullOrder(NULLS LAST) [27-37]
@@ -612,13 +612,13 @@ QueryStatement [0-82]
         PathExpression [39-44]
           Identifier(first) [39-44]
         NullOrder(NULLS FIRST) [50-61]
-      OrderingExpression(ASC EXPLICITLY) [63-82]
-        PathExpression [63-67]
-          Identifier(last) [63-67]
-        NullOrder(NULLS LAST) [72-82]
+      OrderingExpression(ASC EXPLICITLY) [63-84]
+        PathExpression [63-69]
+          Identifier(`last`) [63-69]
+        NullOrder(NULLS LAST) [74-84]
 --
 SELECT
   a
 FROM
   T
-ORDER BY 1 NULLS LAST, first DESC NULLS FIRST, last ASC NULLS LAST
+ORDER BY 1 NULLS LAST, first DESC NULLS FIRST, `last` ASC NULLS LAST

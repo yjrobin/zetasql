@@ -173,7 +173,7 @@ constexpr KeywordInfoPOD kAllKeywords[] = {
     {"json", KW_JSON},
     {"key", KW_KEY},
     {"language", KW_LANGUAGE},
-    {"last", KW_LAST},
+    {"last", KW_LAST, KeywordInfo::kReserved},
     {"lateral", KW_LATERAL, KeywordInfo::kReserved},
     {"leave", KW_LEAVE},
     {"left", KW_LEFT, KeywordInfo::kReserved},

@@ -400,7 +400,8 @@ ASTNode* JoinRuleAction(
     const zetasql_bison_parser::location& start_location,
     const zetasql_bison_parser::location& end_location, ASTNode* lhs,
     bool natural, ASTJoin::JoinType join_type, ASTJoin::JoinHint join_hint,
-    ASTNode* hint, ASTNode* table_primary, ASTNode* on_or_using_clause_list,
+    ASTNode* hint, ASTNode* table_primary, ASTNode* order_by,
+    ASTNode* on_or_using_clause_list,
     BisonParser* parser,
     ErrorInfo* error_info) {
   auto clause_list =
@@ -440,11 +441,11 @@ ASTNode* JoinRuleAction(
     }
     join = parser->CreateASTNode<ASTJoin>(
         start_location, end_location,
-        {lhs, hint, table_primary, on_or_using_clause});
+        {lhs, hint, table_primary, order_by, on_or_using_clause});
     join->set_transformation_needed(IsTransformationNeeded(lhs));
   } else {
     join = parser->CreateASTNode<ASTJoin>(
-        start_location, end_location, {lhs, hint, table_primary, clause_list});
+        start_location, end_location, {lhs, hint, table_primary, order_by, clause_list});
     join->set_transformation_needed(true);
   }
 

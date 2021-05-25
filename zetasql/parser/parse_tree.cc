@@ -649,6 +649,8 @@ std::string ASTJoin::GetSQLForJoinType() const {
       return "LEFT";
     case RIGHT:
       return "RIGHT";
+    case LAST:
+      return "LAST";
   }
 }
 
