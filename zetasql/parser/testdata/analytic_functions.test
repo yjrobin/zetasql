@@ -717,6 +717,272 @@ FROM
   T
 ==
 
+# window with instance_not_in_window and exclude current_time
+select f() over (rows_range between 5s preceding and current row maxsize 5 exclude current_time instance_not_in_window)
+from T
+--
+QueryStatement [0-126]
+  Query [0-126]
+    Select [0-126]
+      SelectList [7-119]
+        SelectColumn [7-119]
+          AnalyticFunctionCall [7-119]
+            FunctionCall [7-10]
+              PathExpression [7-8]
+                Identifier(f) [7-8]
+            WindowSpecification(is_exclude_current_time, is_instance_not_in_window) [16-119]
+              WindowFrame(ROWS_RANGE) [17-74]
+                WindowFrameExpr(OFFSET PRECEDING) [36-48]
+                  IntervalLiteral(5s) [36-38]
+                WindowFrameExpr(CURRENT ROW) [53-64]
+                MaxSize [65-74]
+                  IntLiteral(5) [73-74]
+      FromClause [120-126]
+        TablePathExpression [125-126]
+          PathExpression [125-126]
+            Identifier(T) [125-126]
+--
+SELECT
+  f() OVER (ROWS_RANGE BETWEEN 5s PRECEDING AND CURRENT ROW MAXSIZE 5 EXCLUDE CURRENT_TIME INSTANCE_NOT_IN_WINDOW)
+FROM
+  T
+==
+
+# window with union single table
+select f() over (union T2 rows_range between 5s preceding and current row maxsize 5 exclude current_time instance_not_in_window)
+from T
+--
+QueryStatement [0-135]
+  Query [0-135]
+    Select [0-135]
+      SelectList [7-128]
+        SelectColumn [7-128]
+          AnalyticFunctionCall [7-128]
+            FunctionCall [7-10]
+              PathExpression [7-8]
+                Identifier(f) [7-8]
+            WindowSpecification(is_exclude_current_time, is_instance_not_in_window) [16-128]
+              UnionTableReferenceList [23-25]
+                PathExpression [23-25]
+                  Identifier(T2) [23-25]
+              WindowFrame(ROWS_RANGE) [26-83]
+                WindowFrameExpr(OFFSET PRECEDING) [45-57]
+                  IntervalLiteral(5s) [45-47]
+                WindowFrameExpr(CURRENT ROW) [62-73]
+                MaxSize [74-83]
+                  IntLiteral(5) [82-83]
+      FromClause [129-135]
+        TablePathExpression [134-135]
+          PathExpression [134-135]
+            Identifier(T) [134-135]
+--
+SELECT
+  f() OVER (UNION T2 ROWS_RANGE BETWEEN 5s PRECEDING AND CURRENT ROW MAXSIZE 5 EXCLUDE CURRENT_TIME INSTANCE_NOT_IN_WINDOW)
+FROM
+  T
+==
+
+# window with union multi tables
+select f() over (union T2, T3 rows_range between 5s preceding and current row maxsize 5 exclude current_time instance_not_in_window)
+from T
+--
+QueryStatement [0-139]
+  Query [0-139]
+    Select [0-139]
+      SelectList [7-132]
+        SelectColumn [7-132]
+          AnalyticFunctionCall [7-132]
+            FunctionCall [7-10]
+              PathExpression [7-8]
+                Identifier(f) [7-8]
+            WindowSpecification(is_exclude_current_time, is_instance_not_in_window) [16-132]
+              UnionTableReferenceList [23-29]
+                PathExpression [23-25]
+                  Identifier(T2) [23-25]
+                PathExpression [27-29]
+                  Identifier(T3) [27-29]
+              WindowFrame(ROWS_RANGE) [30-87]
+                WindowFrameExpr(OFFSET PRECEDING) [49-61]
+                  IntervalLiteral(5s) [49-51]
+                WindowFrameExpr(CURRENT ROW) [66-77]
+                MaxSize [78-87]
+                  IntLiteral(5) [86-87]
+      FromClause [133-139]
+        TablePathExpression [138-139]
+          PathExpression [138-139]
+            Identifier(T) [138-139]
+--
+SELECT
+  f() OVER (UNION T2, T3 ROWS_RANGE BETWEEN 5s PRECEDING AND CURRENT ROW MAXSIZE 5 EXCLUDE CURRENT_TIME INSTANCE_NOT_IN_WINDOW)
+FROM
+  T
+==
+
+# window with union subquery
+select f() over (union (select col1 as c1, col2 as c2, col3 as c3 from T2) rows_range between 5s preceding and current row maxsize 5 exclude current_time instance_not_in_window)
+from T
+--
+QueryStatement [0-184]
+  Query [0-184]
+    Select [0-184]
+      SelectList [7-177]
+        SelectColumn [7-177]
+          AnalyticFunctionCall [7-177]
+            FunctionCall [7-10]
+              PathExpression [7-8]
+                Identifier(f) [7-8]
+            WindowSpecification(is_exclude_current_time, is_instance_not_in_window) [16-177]
+              UnionTableReferenceList [23-74]
+                TableSubquery [23-74]
+                  Query [24-73]
+                    Select [24-73]
+                      SelectList [31-65]
+                        SelectColumn [31-41]
+                          PathExpression [31-35]
+                            Identifier(col1) [31-35]
+                          Alias [36-41]
+                            Identifier(c1) [39-41]
+                        SelectColumn [43-53]
+                          PathExpression [43-47]
+                            Identifier(col2) [43-47]
+                          Alias [48-53]
+                            Identifier(c2) [51-53]
+                        SelectColumn [55-65]
+                          PathExpression [55-59]
+                            Identifier(col3) [55-59]
+                          Alias [60-65]
+                            Identifier(c3) [63-65]
+                      FromClause [66-73]
+                        TablePathExpression [71-73]
+                          PathExpression [71-73]
+                            Identifier(T2) [71-73]
+              WindowFrame(ROWS_RANGE) [75-132]
+                WindowFrameExpr(OFFSET PRECEDING) [94-106]
+                  IntervalLiteral(5s) [94-96]
+                WindowFrameExpr(CURRENT ROW) [111-122]
+                MaxSize [123-132]
+                  IntLiteral(5) [131-132]
+      FromClause [178-184]
+        TablePathExpression [183-184]
+          PathExpression [183-184]
+            Identifier(T) [183-184]
+--
+SELECT
+  f() OVER (UNION
+    (
+      SELECT
+        col1 AS c1,
+        col2 AS c2,
+        col3 AS c3
+      FROM
+        T2
+    ) ROWS_RANGE BETWEEN 5s PRECEDING AND CURRENT ROW MAXSIZE 5 EXCLUDE CURRENT_TIME INSTANCE_NOT_IN_WINDOW)
+FROM
+  T
+==
+
+# window with union multiple subquery and table
+select f() over (union 
+  (select col1 as c1, col2 as c2, col3 as c3 from T2) as T3,
+  (select col1 as c1, col2 as c2, col3 as c3 from T4) as T5, T6 rows_range between 5s preceding and current row maxsize 5 exclude current_time instance_not_in_window)
+from T
+--
+QueryStatement [0-258]
+  Query [0-258]
+    Select [0-258]
+      SelectList [7-251]
+        SelectColumn [7-251]
+          AnalyticFunctionCall [7-251]
+            FunctionCall [7-10]
+              PathExpression [7-8]
+                Identifier(f) [7-8]
+            WindowSpecification(is_exclude_current_time, is_instance_not_in_window) [16-251]
+              UnionTableReferenceList [26-148]
+                TableSubquery [26-83]
+                  Query [27-76]
+                    Select [27-76]
+                      SelectList [34-68]
+                        SelectColumn [34-44]
+                          PathExpression [34-38]
+                            Identifier(col1) [34-38]
+                          Alias [39-44]
+                            Identifier(c1) [42-44]
+                        SelectColumn [46-56]
+                          PathExpression [46-50]
+                            Identifier(col2) [46-50]
+                          Alias [51-56]
+                            Identifier(c2) [54-56]
+                        SelectColumn [58-68]
+                          PathExpression [58-62]
+                            Identifier(col3) [58-62]
+                          Alias [63-68]
+                            Identifier(c3) [66-68]
+                      FromClause [69-76]
+                        TablePathExpression [74-76]
+                          PathExpression [74-76]
+                            Identifier(T2) [74-76]
+                  Alias [26-83]
+                    Identifier(T3) [81-83]
+                TableSubquery [87-144]
+                  Query [88-137]
+                    Select [88-137]
+                      SelectList [95-129]
+                        SelectColumn [95-105]
+                          PathExpression [95-99]
+                            Identifier(col1) [95-99]
+                          Alias [100-105]
+                            Identifier(c1) [103-105]
+                        SelectColumn [107-117]
+                          PathExpression [107-111]
+                            Identifier(col2) [107-111]
+                          Alias [112-117]
+                            Identifier(c2) [115-117]
+                        SelectColumn [119-129]
+                          PathExpression [119-123]
+                            Identifier(col3) [119-123]
+                          Alias [124-129]
+                            Identifier(c3) [127-129]
+                      FromClause [130-137]
+                        TablePathExpression [135-137]
+                          PathExpression [135-137]
+                            Identifier(T4) [135-137]
+                  Alias [87-144]
+                    Identifier(T5) [142-144]
+                PathExpression [146-148]
+                  Identifier(T6) [146-148]
+              WindowFrame(ROWS_RANGE) [149-206]
+                WindowFrameExpr(OFFSET PRECEDING) [168-180]
+                  IntervalLiteral(5s) [168-170]
+                WindowFrameExpr(CURRENT ROW) [185-196]
+                MaxSize [197-206]
+                  IntLiteral(5) [205-206]
+      FromClause [252-258]
+        TablePathExpression [257-258]
+          PathExpression [257-258]
+            Identifier(T) [257-258]
+--
+SELECT
+  f() OVER (UNION
+    (
+      SELECT
+        col1 AS c1,
+        col2 AS c2,
+        col3 AS c3
+      FROM
+        T2
+    ) AS T3, 
+    (
+      SELECT
+        col1 AS c1,
+        col2 AS c2,
+        col3 AS c3
+      FROM
+        T4
+    ) AS T5, T6 ROWS_RANGE BETWEEN 5s PRECEDING AND CURRENT ROW MAXSIZE 5 EXCLUDE CURRENT_TIME INSTANCE_NOT_IN_WINDOW)
+FROM
+  T
+==
+
 select f() over (range between 5+5 preceding and current {{rows|blah}})
 from T
 --

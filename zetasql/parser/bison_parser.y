@@ -1291,6 +1291,9 @@ using zetasql::ASTDropStatement;
 %type <node> table_path_expression
 %type <node> table_path_expression_base
 %type <node> table_primary
+%type <node> union_table_reference
+%type <node> union_table_reference_list
+%type <node> opt_union_table_reference_list
 %type <node> table_subquery
 %type <node> templated_parameter_type
 %type <node> terminated_statement
@@ -6668,17 +6671,18 @@ opt_exclude_current_time:
     };
   | /* Nothing */ { $$ = false; }
   ;
+
 window_specification:
     identifier
       {
         $$ = MAKE_NODE(ASTWindowSpecification, @$, {$1});
       }
-    | "(" opt_identifier opt_partition_by_clause opt_order_by_clause
+    | "(" opt_identifier opt_union_table_reference_list opt_partition_by_clause opt_order_by_clause
           opt_window_frame_clause opt_exclude_current_time opt_instance_not_in_window ")"
       {
-        auto *window_spec = MAKE_NODE(ASTWindowSpecification, @$, {$2, $3, $4, $5});
-        window_spec->set_is_exclude_current_time($6);
-        window_spec->set_is_instance_not_in_window($7);
+        auto *window_spec = MAKE_NODE(ASTWindowSpecification, @$, {$2, $3, $4, $5, $6});
+        window_spec->set_is_exclude_current_time($7);
+        window_spec->set_is_instance_not_in_window($8);
         $$ = window_spec;
       }
    ;
@@ -8219,6 +8223,54 @@ execute_using_argument_list:
     }
   ;
 
+union_table_reference:
+  maybe_dashed_path_expression
+  | "(" query ")"
+    {
+      zetasql::ASTQuery* query = $2;
+      query->set_is_nested(true);
+      $$ = MAKE_NODE(ASTTableSubquery, @$, {
+          $2, nullptr, nullptr, nullptr, nullptr});
+    }
+  | "(" query ")" "AS" identifier
+    {
+      auto* alias = MAKE_NODE(ASTAlias, @$, {$5});
+      zetasql::ASTQuery* query = $2;
+      query->set_is_nested(true);
+      $$ = MAKE_NODE(ASTTableSubquery, @$, {
+          $2, alias, nullptr, nullptr, nullptr});
+    }
+  | "(" query ")" identifier
+    {
+      auto* alias = MAKE_NODE(ASTAlias, @$, {$4});
+      zetasql::ASTQuery* query = $2;
+      query->set_is_nested(true);
+      $$ = MAKE_NODE(ASTTableSubquery, @$, {
+          $2, alias, nullptr, nullptr, nullptr});
+    }
+  ;
+
+union_table_reference_list:
+  union_table_reference
+    {
+      $$ = MAKE_NODE(ASTUnionTableReferenceList, @$, {$1});
+    }
+  | union_table_reference_list "," union_table_reference
+    {
+      $$ = WithEndLocation(WithExtraChildren($1, {$3}), @$);
+    }
+  ;
+
+opt_union_table_reference_list:
+  KW_UNION union_table_reference_list
+    {
+      $$ = $2;
+    }
+  | /* Nothing */
+    {
+      $$ = nullptr;
+    }
+  ;
 opt_execute_using_clause:
   KW_USING execute_using_argument_list
     {
