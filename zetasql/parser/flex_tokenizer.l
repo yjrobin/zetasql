@@ -391,6 +391,7 @@ column { return BisonParserImpl::token::KW_COLUMN; }
 columns { return BisonParserImpl::token::KW_COLUMNS; }
 commit { return BisonParserImpl::token::KW_COMMIT; }
 connection { return BisonParserImpl::token::KW_CONNECTION; }
+const { return BisonParserImpl::token::KW_CONST; }
 constant { return BisonParserImpl::token::KW_CONSTANT; }
 constraint { return BisonParserImpl::token::KW_CONSTRAINT; }
 continue { return BisonParserImpl::token::KW_CONTINUE; }

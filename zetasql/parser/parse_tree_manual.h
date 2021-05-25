@@ -3596,6 +3596,9 @@ class ASTFunctionParameter final : public ASTNode {
     return templated_parameter_type_ != nullptr;
   }
 
+
+  bool is_constant() const { return is_constant_; }
+  void set_is_constant(bool value) { is_constant_ = value; }
   bool is_not_aggregate() const { return is_not_aggregate_; }
   void set_is_not_aggregate(bool value) { is_not_aggregate_ = value; }
 
@@ -3644,7 +3647,8 @@ class ASTFunctionParameter final : public ASTNode {
 
   // True if the NOT AGGREGATE modifier is present.
   bool is_not_aggregate_ = false;
-
+  // True if the parameter is constant
+  bool is_constant_ = false;
   // Function parameter doesn't use this field and always has value NOT_SET.
   // Procedure parameter should have this field set during parsing.
   ProcedureParameterMode procedure_parameter_mode_ =

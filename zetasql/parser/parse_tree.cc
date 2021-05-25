@@ -1071,6 +1071,9 @@ std::string ASTFunctionParameter::SingleNodeDebugString() const {
   if (is_not_aggregate()) {
     modifiers.push_back("is_not_aggregate=true");
   }
+  if (is_constant()) {
+    modifiers.push_back("CONST");
+  }
   if (procedure_parameter_mode() != ProcedureParameterMode::NOT_SET) {
     modifiers.push_back(absl::StrCat(
         "mode=", ProcedureParameterModeToString(procedure_parameter_mode())));

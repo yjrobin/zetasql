@@ -241,6 +241,9 @@ void Unparser::visitASTQueryStatement(const ASTQueryStatement* node,
 
 void Unparser::visitASTFunctionParameter(
     const ASTFunctionParameter* node, void* data) {
+  if (node->is_constant()) {
+    print("CONST");
+  }
   print(ASTFunctionParameter::ProcedureParameterModeToString(
       node->procedure_parameter_mode()));
   if (node->name() != nullptr) {

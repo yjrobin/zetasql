@@ -116,13 +116,13 @@ CreateProcedureStatement [0-222]
     FunctionParameter [117-136]
       Identifier(param_e) [120-127]
       TemplatedParameterType [128-136]
-    FunctionParameter(mode=OUT) [140-160]
+    FunctionParameter(mode=OUT) [137-160]
       Identifier(param_f) [144-151]
       TemplatedParameterType [152-160]
     FunctionParameter [161-181]
       Identifier(param_g) [164-171]
       TemplatedParameterType [172-181]
-    FunctionParameter(mode=INOUT) [185-208]
+    FunctionParameter(mode=INOUT) [182-208]
       Identifier(param_h) [191-198]
       TemplatedParameterType [199-208]
   Script [213-222]
@@ -309,6 +309,200 @@ CreateProcedureStatement [0-58]
 --
 CREATE PROCEDURE procedure_name(param_a int32)
 BEGIN
+END
+==
+
+# valid parameter with CONST IN/OUT/INOUT and empty mode
+CREATE PROCEDURE procedure_name (CONST {{IN|OUT|INOUT|}} param_a int32)
+BEGIN
+END;
+--
+ALTERNATION GROUP: IN
+--
+CreateProcedureStatement [0-66]
+  PathExpression [17-31]
+    Identifier(procedure_name) [17-31]
+  FunctionParameters [32-56]
+    FunctionParameter(CONST, mode=IN) [33-55]
+      Identifier(param_a) [42-49]
+      SimpleType [50-55]
+        PathExpression [50-55]
+          Identifier(int32) [50-55]
+  Script [57-66]
+    StatementList [57-66]
+      BeginEndBlock [57-66]
+        StatementList [62-62]
+--
+CREATE PROCEDURE procedure_name(CONST IN param_a int32)
+BEGIN
+END
+--
+ALTERNATION GROUP: OUT
+--
+CreateProcedureStatement [0-67]
+  PathExpression [17-31]
+    Identifier(procedure_name) [17-31]
+  FunctionParameters [32-57]
+    FunctionParameter(CONST, mode=OUT) [33-56]
+      Identifier(param_a) [43-50]
+      SimpleType [51-56]
+        PathExpression [51-56]
+          Identifier(int32) [51-56]
+  Script [58-67]
+    StatementList [58-67]
+      BeginEndBlock [58-67]
+        StatementList [63-63]
+--
+CREATE PROCEDURE procedure_name(CONST OUT param_a int32)
+BEGIN
+END
+--
+ALTERNATION GROUP: INOUT
+--
+CreateProcedureStatement [0-69]
+  PathExpression [17-31]
+    Identifier(procedure_name) [17-31]
+  FunctionParameters [32-59]
+    FunctionParameter(CONST, mode=INOUT) [33-58]
+      Identifier(param_a) [45-52]
+      SimpleType [53-58]
+        PathExpression [53-58]
+          Identifier(int32) [53-58]
+  Script [60-69]
+    StatementList [60-69]
+      BeginEndBlock [60-69]
+        StatementList [65-65]
+--
+CREATE PROCEDURE procedure_name(CONST INOUT param_a int32)
+BEGIN
+END
+--
+ALTERNATION GROUP: <empty>
+--
+CreateProcedureStatement [0-64]
+  PathExpression [17-31]
+    Identifier(procedure_name) [17-31]
+  FunctionParameters [32-54]
+    FunctionParameter(CONST) [33-53]
+      Identifier(param_a) [40-47]
+      SimpleType [48-53]
+        PathExpression [48-53]
+          Identifier(int32) [48-53]
+  Script [55-64]
+    StatementList [55-64]
+      BeginEndBlock [55-64]
+        StatementList [60-60]
+--
+CREATE PROCEDURE procedure_name(CONST param_a int32)
+BEGIN
+END
+==
+
+# Procedure with const parameters and normal paramenters
+create procedure sp1(const c1 string, const c3 int, c4 bigint, c5 float, c6 double, c7 timestamp, c8 date)
+begin
+    SELECT c1, c3, sum(c4) OVER w1 as w1_c4_sum
+        FROM trans
+        WINDOW w1 AS (PARTITION BY trans.c1 ORDER BY trans.c7 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW);
+end;
+--
+CreateProcedureStatement [0-288]
+  PathExpression [17-20]
+    Identifier(sp1) [17-20]
+  FunctionParameters [20-106]
+    FunctionParameter(CONST) [21-36]
+      Identifier(c1) [27-29]
+      SimpleType [30-36]
+        PathExpression [30-36]
+          Identifier(string) [30-36]
+    FunctionParameter(CONST) [38-50]
+      Identifier(c3) [44-46]
+      SimpleType [47-50]
+        PathExpression [47-50]
+          Identifier(int) [47-50]
+    FunctionParameter [51-61]
+      Identifier(c4) [52-54]
+      SimpleType [55-61]
+        PathExpression [55-61]
+          Identifier(bigint) [55-61]
+    FunctionParameter [62-71]
+      Identifier(c5) [63-65]
+      SimpleType [66-71]
+        PathExpression [66-71]
+          Identifier(float) [66-71]
+    FunctionParameter [72-82]
+      Identifier(c6) [73-75]
+      SimpleType [76-82]
+        PathExpression [76-82]
+          Identifier(double) [76-82]
+    FunctionParameter [83-96]
+      Identifier(c7) [84-86]
+      SimpleType [87-96]
+        PathExpression [87-96]
+          Identifier(timestamp) [87-96]
+    FunctionParameter [97-105]
+      Identifier(c8) [98-100]
+      SimpleType [101-105]
+        PathExpression [101-105]
+          Identifier(date) [101-105]
+  Script [107-288]
+    StatementList [107-288]
+      BeginEndBlock [107-288]
+        StatementList [117-285]
+          QueryStatement [117-283]
+            Query [117-283]
+              Select [117-283]
+                SelectList [124-160]
+                  SelectColumn [124-126]
+                    PathExpression [124-126]
+                      Identifier(c1) [124-126]
+                  SelectColumn [128-130]
+                    PathExpression [128-130]
+                      Identifier(c3) [128-130]
+                  SelectColumn [132-160]
+                    AnalyticFunctionCall [132-147]
+                      FunctionCall [132-139]
+                        PathExpression [132-135]
+                          Identifier(sum) [132-135]
+                        PathExpression [136-138]
+                          Identifier(c4) [136-138]
+                      WindowSpecification [145-147]
+                        Identifier(w1) [145-147]
+                    Alias [148-160]
+                      Identifier(w1_c4_sum) [151-160]
+                FromClause [169-179]
+                  TablePathExpression [174-179]
+                    PathExpression [174-179]
+                      Identifier(trans) [174-179]
+                WindowClause [188-283]
+                  WindowDefinition [195-283]
+                    Identifier(w1) [195-197]
+                    WindowSpecification [201-283]
+                      PartitionBy [202-223]
+                        PathExpression [215-223]
+                          Identifier(trans) [215-220]
+                          Identifier(c1) [221-223]
+                      OrderBy [224-241]
+                        OrderingExpression(ASC) [233-241]
+                          PathExpression [233-241]
+                            Identifier(trans) [233-238]
+                            Identifier(c7) [239-241]
+                      WindowFrame(ROWS) [242-282]
+                        WindowFrameExpr(OFFSET PRECEDING) [255-266]
+                          IntLiteral(2) [255-256]
+                        WindowFrameExpr(CURRENT ROW) [271-282]
+--
+CREATE PROCEDURE sp1(CONST c1 string, CONST c3 int, c4 bigint, c5 float, c6 double, c7 timestamp, c8 date)
+BEGIN
+  SELECT
+    c1,
+    c3,
+    sum(c4) OVER (w1) AS w1_c4_sum
+  FROM
+    trans
+  WINDOW w1 AS (PARTITION BY trans.c1
+    ORDER BY trans.c7 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)
+  ;
 END
 ==
 
