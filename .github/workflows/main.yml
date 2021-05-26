@@ -16,12 +16,12 @@ on:
 
 env:
   target: '//zetasql/parser/...'
-  build_argv: ''
+  build_argv: '--features=-supports_dynamic_linker '
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  linux-build:
+  debian-build:
     runs-on: ubuntu-latest
     container: 'debian:buster'
     timeout-minutes: 120
@@ -65,36 +65,6 @@ jobs:
         run: |
           bazel test ${{ env.build_argv }} --test_summary=detailed ${{ env.target }}
 
-  mac-build:
-    runs-on: macos-latest
-    timeout-minutes: 120
-    env:
-      build_argv: '--features=-supports_dynamic_linker '
-      bazel_version: '3.7.2'
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: update bazel version
-        run: echo ${{ env.bazel_version }} > .bazelversion
-
-      - name: install bazelisk
-        run: |
-          brew install bazelisk
-
-      - name: print toolchain info
-        run: |
-          gcc -v
-          g++ -v
-          python -V
-          java -version
-
-      - name: build
-        run: |
-          bazel build ${{ env.build_argv }} ${{ env.target }}
-
-      - name: test
-        run: |
-          bazel test ${{ env.build_argv }} --test_summary=detailed ${{ env.target }}
 
   centos7-build:
     strategy:
@@ -146,17 +116,15 @@ jobs:
           source /opt/rh/rh-python38/enable
           bazel test ${{ env.build_argv }} --test_summary=detailed --test_output=errors ${{ env.target }}
 
-
-  release:
+  
+  linux-build:
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v')
     container:
       image: ghcr.io/aceforeverd/hybridsql-base:0.0.8
     env:
       BAZEL_LINKOPTS: '-static-libstdc++:-lm'
       BAZEL_LINKLIBS: '-l%:libstdc++.a'
-      target: '//zetasql/...'
-      build_argv: ''
+      build_argv: '--features=-supports_dynamic_linker '
     steps:
       - uses: actions/checkout@v2
       - name: Setup Bazel
@@ -167,32 +135,121 @@ jobs:
         run: |
           yum install -y java-1.8.0-openjdk-devel
 
-      - name: build zetasql
+      - name: build zetasql parser
         run: |
           source /opt/rh/devtoolset-8/enable
           source /opt/rh/rh-python38/enable
-          bazel build ${{ env.build_argv }} ${{ env.target }}
-
-      - name: Find Orphan Library
+          bazel build ${{ env.target }} ${{ env.build_argv }}
+      
+      - name: Test
         run: |
-          ./find_orphan_so.sh
+          bazel test ${{ env.build_argv }} --test_summary=detailed ${{ env.target }}
 
+      - name: build zetasql parser dependencies
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          bazel query 'deps(${{ env.target }})' |grep //zetasql|xargs bazel build ${{ env.build_argv }} 
+          bazel build "@com_googleapis_googleapis//:all" ${{ env.build_argv }}
+          bazel build "@com_google_file_based_test_driver//file_based_test_driver:all" ${{ env.build_argv }}
+          bazel build "@com_googlesource_code_re2//:re2" ${{ env.build_argv }}
+          
       - name: Determine Version
+        if: ${{ github.event_name == 'push' }}
         run: |
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           VERSION=$(echo $VERSION | sed -e 's/^v//')
           echo "TAG=$VERSION" >> $GITHUB_ENV
-
+      
       - name: pack libzetasql
+        if: ${{ github.event_name == 'push' }}
         run: |
           ./pack_zetasql.sh
         env:
           TAG: ${{ env.TAG }}
 
+      - name: Upload Artifacts
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/upload-artifact@v2
+        with:
+          path: libzetasql-*.tar.gz
+          name: release-artifacts
+
+  macos-build:
+    runs-on: macos-latest
+    timeout-minutes: 120
+    env:
+      build_argv: '--features=-supports_dynamic_linker '
+      bazel_version: '3.7.2'
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: update bazel version
+        run: echo ${{ env.bazel_version }} > .bazelversion
+
+      - name: install bazelisk
+        run: |
+          brew install bazelisk
+
+      - name: install utils tools
+        run: |
+          brew install coreutils
+          brew install binutils
+      - name: print toolchain info
+        run: |
+          gcc -v
+          g++ -v
+          python -V
+          java -version
+
+      - name: build
+        run: |
+          bazel build ${{ env.build_argv }} ${{ env.target }}
+          bazel build "@com_googleapis_googleapis//:all" ${{ env.build_argv }}
+          bazel build "@com_google_file_based_test_driver//file_based_test_driver:all" ${{ env.build_argv }}
+          bazel build "@com_googlesource_code_re2//:re2" ${{ env.build_argv }}
+
+      - name: test
+        run: |
+          bazel test ${{ env.build_argv }} --test_summary=detailed ${{ env.target }}
+      
+      - name: Determine Version
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          VERSION=$(echo $VERSION | sed -e 's/^v//')
+          echo "TAG=$VERSION" >> $GITHUB_ENV
+      
+      - name: pack libzetasql
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          ./pack_zetasql.sh
+        env:
+          TAG: ${{ env.TAG }}
+
+      - name: Upload Artifacts
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/upload-artifact@v2
+        with:
+          path: libzetasql-*.tar.gz
+          name: release-artifacts
+          
+  release:
+    runs-on: ubuntu-latest
+    needs: ["linux-build", "macos-build"]
+    if: startsWith(github.ref, 'refs/tags/v')
+    timeout-minutes: 120
+    steps:
+      - name: Download Release Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: release-artifacts
+
       - name: Release
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         uses: softprops/action-gh-release@v1
         with:
           files: |
             libzetasql-*.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
