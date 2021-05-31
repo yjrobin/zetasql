@@ -3808,7 +3808,7 @@ class ASTUnionTableReferenceList final : public ASTNode {
   zetasql_base::StatusOr<VisitResult> Accept(
       NonRecursiveParseTreeVisitor* visitor) const override;
 
-  const absl::Span<const ASTNode* const>& table_references() const {
+  const absl::Span<const ASTTableExpression* const>& table_references() const {
     return table_references_;
   }
 
@@ -3818,7 +3818,7 @@ class ASTUnionTableReferenceList final : public ASTNode {
     fl.AddRestAsRepeated(&table_references_);
   }
 
-  absl::Span<const ASTNode* const> table_references_;
+  absl::Span<const ASTTableExpression* const> table_references_;
 };
 
 // This represents a clause of form "MODEL <target>", where <target> is a model

@@ -8241,7 +8241,9 @@ execute_using_argument_list:
   ;
 
 union_table_reference:
-  maybe_dashed_path_expression
+  maybe_dashed_path_expression {
+    $$ = MAKE_NODE(ASTTablePathExpression, @$, {$1});
+  }
   | "(" query ")"
     {
       zetasql::ASTQuery* query = $2;
