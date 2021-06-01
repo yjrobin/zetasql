@@ -159,6 +159,39 @@ SELECT
   col IN ('a') AND col NOT BETWEEN x + y AND f(x, y)
 ==
 
+select col IN ('a') && col NOT BETWEEN x + y AND f(x,y)
+--
+QueryStatement [0-55]
+  Query [0-55]
+    Select [0-55]
+      SelectList [7-55]
+        SelectColumn [7-55]
+          AndExpr [7-55]
+            InExpression(IN) [11-19]
+              PathExpression [7-10]
+                Identifier(col) [7-10]
+              InList [15-18]
+                StringLiteral('a') [15-18]
+            BetweenExpression(NOT BETWEEN) [31-55]
+              PathExpression [23-26]
+                Identifier(col) [23-26]
+              BinaryExpression(+) [39-44]
+                PathExpression [39-40]
+                  Identifier(x) [39-40]
+                PathExpression [43-44]
+                  Identifier(y) [43-44]
+              FunctionCall [49-55]
+                PathExpression [49-50]
+                  Identifier(f) [49-50]
+                PathExpression [51-52]
+                  Identifier(x) [51-52]
+                PathExpression [53-54]
+                  Identifier(y) [53-54]
+--
+SELECT
+  col IN ('a') && col NOT BETWEEN x + y AND f(x, y)
+==
+
 select * from T where @Id IN (@ValidIds)
 --
 QueryStatement [0-40]

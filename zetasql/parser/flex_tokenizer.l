@@ -357,6 +357,7 @@ and {
   }
   return BisonParserImpl::token::KW_AND;
 }
+"&&" { return BisonParserImpl::token::KW_AND; }
 anonymization { return BisonParserImpl::token::KW_ANONYMIZATION; }
 any { return BisonParserImpl::token::KW_ANY; }
 array { return BisonParserImpl::token::KW_ARRAY; }
