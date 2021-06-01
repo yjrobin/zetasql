@@ -143,6 +143,12 @@ static absl::Status ConvertBisonToken(int bison_token,
 
     case BisonParserImpl::token::FLOATING_POINT_LITERAL: {
       double double_value;
+      
+      
+      size_t image_len = image.size();
+      if ('F' == image[image_len-1] || 'f' == image[image_len-1]) {
+        image = image.substr(0, image_len - 1);
+      }
       if (!functions::StringToNumeric(image, &double_value, nullptr)) {
         return MakeSqlErrorAtPoint(location.start())
                << "Invalid floating point literal: " << image;

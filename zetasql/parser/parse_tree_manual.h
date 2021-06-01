@@ -3361,6 +3361,10 @@ class ASTFloatLiteral final : public ASTLeaf {
   void Accept(ParseTreeVisitor* visitor, void* data) const override;
   zetasql_base::StatusOr<VisitResult> Accept(
       NonRecursiveParseTreeVisitor* visitor) const override;
+  const bool is_single_precision() const { return is_single_precision_; }
+  void set_single_precision(bool flag) { is_single_precision_ = flag; }
+  private:
+    bool is_single_precision_ = false;
 };
 
 class ASTNullLiteral final : public ASTLeaf {

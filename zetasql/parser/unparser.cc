@@ -1572,7 +1572,11 @@ void Unparser::visitASTJSONLiteral(const ASTJSONLiteral* node, void* data) {
 }
 
 void Unparser::visitASTFloatLiteral(const ASTFloatLiteral* node, void* data) {
-  UnparseLeafNode(node);
+  if (node->is_single_precision()) {
+    print(absl::StrCat(node->image(), "F"));
+  } else {
+    print(node->image());
+  }
 }
 
 void Unparser::visitASTStringLiteral(const ASTStringLiteral* node, void* data) {

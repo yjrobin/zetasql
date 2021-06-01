@@ -712,6 +712,15 @@ zone { return BisonParserImpl::token::KW_ZONE; }
       *yylloc, "Syntax error: Missing whitespace between literal and alias");
   yyterminate();
 }
+{floating_point_literal}[F] {
+  if (YYText()[0] == '.' &&
+      IsDotGeneralizedIdentifierPrefixToken(prev_token_)) {
+    yy_push_state(DOT_IDENTIFIER);
+    SET_RETURN_PREFIX_LENGTH(1);
+    return '.';
+  }
+  return BisonParserImpl::token::FLOATING_POINT_LITERAL;
+}
 {floating_point_literal}/[A-Z_] {
   // If the floating point literal starts with a ".", and the preceding token
   // is an identifier or unreserved keyword, then we should tokenize this
