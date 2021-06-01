@@ -521,7 +521,8 @@ class DashedIdentifierTmpNode final : public zetasql::ASTNode {
 %token KW_CONCAT_OP "||"
 %token '+' "+"
 %token '-' "-"
-%token '/' "/"
+%token KW_DIVIDE "/"
+%token KW_MOD "%"
 %token '~' "~"
 %token '.' "."
 %token KW_DOT_STAR ".*"
@@ -560,7 +561,7 @@ class DashedIdentifierTmpNode final : public zetasql::ASTNode {
 %left "<<" ">>"
 %left "+" "-"
 %left "||"
-%left "*" "/"
+%left "*" "/" "%"
 %left UNARY_PRECEDENCE  // For all unary operators
 %precedence DOUBLE_AT_PRECEDENCE // Needs to appear before "."
 %left PRIMARY_PRECEDENCE "(" ")" "[" "]" "." // For ., .(...), [], etc.
@@ -5224,7 +5225,7 @@ additive_operator:
 
 multiplicative_operator:
     "*" { $$ = zetasql::ASTBinaryExpression::MULTIPLY; }
-    | "/" { $$ = zetasql::ASTBinaryExpression::DIVIDE; }
+    | KW_DIVIDE { $$ = zetasql::ASTBinaryExpression::DIVIDE; }
     ;
 
 // Returns ShiftOperator to indicate the operator type.
