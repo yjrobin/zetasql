@@ -521,8 +521,8 @@ class DashedIdentifierTmpNode final : public zetasql::ASTNode {
 %token KW_CONCAT_OP "||"
 %token '+' "+"
 %token '-' "-"
-%token KW_DIVIDE "/"
-%token KW_MOD "%"
+%token '/' "/"
+%token '%' "%"
 %token '~' "~"
 %token '.' "."
 %token KW_DOT_STAR ".*"
@@ -561,7 +561,7 @@ class DashedIdentifierTmpNode final : public zetasql::ASTNode {
 %left "<<" ">>"
 %left "+" "-"
 %left "||"
-%left "*" "/" "%"
+%left "*" "/" "DIV" "%" 
 %left UNARY_PRECEDENCE  // For all unary operators
 %precedence DOUBLE_AT_PRECEDENCE // Needs to appear before "."
 %left PRIMARY_PRECEDENCE "(" ")" "[" "]" "." // For ., .(...), [], etc.
@@ -672,6 +672,7 @@ using zetasql::ASTDropStatement;
 %token KW_DEFINE "DEFINE"
 %token KW_DESC "DESC"
 %token KW_DISTINCT "DISTINCT"
+%token KW_DIVIDE "DIV"
 %token KW_ELSE "ELSE"
 %token KW_END "END"
 %token KW_ENUM "ENUM"
@@ -5224,8 +5225,9 @@ additive_operator:
     ;
 
 multiplicative_operator:
-    "*" { $$ = zetasql::ASTBinaryExpression::MULTIPLY; }
-    | KW_DIVIDE { $$ = zetasql::ASTBinaryExpression::DIVIDE; }
+    "*" { $$ = zetasql::ASTBinaryExpression::MULTIPLY; } %prec "*"
+    | "/" { $$ = zetasql::ASTBinaryExpression::DIVIDE; } %prec "/"
+    | "DIV" { $$ = zetasql::ASTBinaryExpression::DIVIDE; }
     ;
 
 // Returns ShiftOperator to indicate the operator type.
@@ -7075,6 +7077,7 @@ reserved_keyword_rule:
     | "DEFINE"
     | "DESC"
     | "DISTINCT"
+    | "DIV"
     | "ELSE"
     | "END"
     | "ENUM"

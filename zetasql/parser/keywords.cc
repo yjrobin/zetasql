@@ -111,6 +111,7 @@ constexpr KeywordInfoPOD kAllKeywords[] = {
     {"descriptor", KW_DESCRIPTOR},
     {"deterministic", KW_DETERMINISTIC},
     {"distinct", KW_DISTINCT, KeywordInfo::kReserved},
+    {"div", KW_DIVIDE, KeywordInfo::kReserved},
     {"do", KW_DO},
     {"drop", KW_DROP},
     {"else", KW_ELSE, KeywordInfo::kReserved},

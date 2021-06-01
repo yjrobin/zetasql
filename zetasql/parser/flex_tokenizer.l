@@ -278,8 +278,6 @@ comment               ({cs_comment}|{dash_comment}|{pound_comment})
 
 not                   (not|"!")
 
-mod                   (mod|"%")
-
 %%
  /* RULES SECTION
 
@@ -879,8 +877,9 @@ zone { return BisonParserImpl::token::KW_ZONE; }
 "&"                       { return '&'; }
 "+"                       { return '+'; }
 "-"                       { return '-'; }
-("/"|div)                 { return BisonParserImpl::token::KW_DIVIDE; }
-{mod}                     { return BisonParserImpl::token::KW_MOD; }
+"/"                       { return '/'; }
+div                       { return BisonParserImpl::token::KW_DIVIDE; }
+"%"                       { return '%'; }
 "~"                       { return '~'; }
 "?"                       { return '?'; }
 "@"{opt_whitespace}"{"    {
