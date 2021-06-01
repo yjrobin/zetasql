@@ -189,7 +189,7 @@ QueryStatement [0-55]
                   Identifier(y) [53-54]
 --
 SELECT
-  col IN ('a') && col NOT BETWEEN x + y AND f(x, y)
+  col IN ('a') AND col NOT BETWEEN x + y AND f(x, y)
 ==
 
 select * from T where @Id IN (@ValidIds)
