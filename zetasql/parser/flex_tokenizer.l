@@ -688,6 +688,10 @@ zone { return BisonParserImpl::token::KW_ZONE; }
   SetOverrideError(*yylloc, "Syntax error: Unclosed identifier literal");
   yyterminate();
 }
+ /* Long integer literals. */
+{decimal_digits}[L] {
+  return BisonParserImpl::token::INTEGER_LITERAL;
+}
  /* Time interval literals. For instance, 
     10d can be regarded as day interval literals which is equal to INTERVAL 10 DAY.
     10h can be regarded as hour interval literals which is equal to INTERVAL 10 HOUR.
@@ -713,12 +717,6 @@ zone { return BisonParserImpl::token::KW_ZONE; }
   yyterminate();
 }
 {floating_point_literal}[F] {
-  if (YYText()[0] == '.' &&
-      IsDotGeneralizedIdentifierPrefixToken(prev_token_)) {
-    yy_push_state(DOT_IDENTIFIER);
-    SET_RETURN_PREFIX_LENGTH(1);
-    return '.';
-  }
   return BisonParserImpl::token::FLOATING_POINT_LITERAL;
 }
 {floating_point_literal}/[A-Z_] {

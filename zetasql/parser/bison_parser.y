@@ -6980,14 +6980,7 @@ floating_point_literal:
     FLOATING_POINT_LITERAL
       {
         auto* literal = MAKE_NODE(ASTFloatLiteral, @1);
-        const absl::string_view identifier_text = parser->GetInputText(@1);
-        size_t image_len = identifier_text.size();
-        if ('F' == identifier_text.data()[image_len-1] || 'f' == identifier_text.data()[image_len-1]) {
-          literal->set_image(std::string(identifier_text.substr(0, image_len - 1)));
-          literal->set_single_precision(true);
-        } else {
-          literal->set_image(std::string(identifier_text));
-        }
+        literal->set_image(std::string(parser->GetInputText(@1)));
         $$ = literal;
       }
     ;

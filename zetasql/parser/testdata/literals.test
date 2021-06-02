@@ -1,9 +1,9 @@
-select NULL, TRUE, "x", b"y", 1, 1.0, 1.0F
+select NULL, TRUE, "x", b"y", 1, 1.0, 1.0f, 1l, 2.1F, 12L
 --
-QueryStatement [0-42]
-  Query [0-42]
-    Select [0-42]
-      SelectList [7-42]
+QueryStatement [0-57]
+  Query [0-57]
+    Select [0-57]
+      SelectList [7-57]
         SelectColumn [7-11]
           NullLiteral(NULL) [7-11]
         SelectColumn [13-17]
@@ -17,7 +17,13 @@ QueryStatement [0-42]
         SelectColumn [33-36]
           FloatLiteral(1.0) [33-36]
         SelectColumn [38-42]
-          FloatLiteral(1.0) [38-42]
+          FloatLiteral(1.0f) [38-42]
+        SelectColumn [44-46]
+          IntLiteral(1l) [44-46]
+        SelectColumn [48-52]
+          FloatLiteral(2.1F) [48-52]
+        SelectColumn [54-57]
+          IntLiteral(12L) [54-57]
 --
 SELECT
   NULL,
@@ -26,7 +32,10 @@ SELECT
   b"y",
   1,
   1.0,
-  1.0F
+  1.0f,
+  1l,
+  2.1F,
+  12L
 ==
 
 select 1s, 1m, 1h, 1d;

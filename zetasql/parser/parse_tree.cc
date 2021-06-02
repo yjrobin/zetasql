@@ -1026,7 +1026,12 @@ bool ASTIntLiteral::is_hex() const {
   }
   return false;
 }
-
+bool ASTIntLiteral::is_long() const {
+  if (absl::EndsWith(image(), "l") || absl::EndsWith(image(), "L")) {
+    return true;
+  }
+  return false;
+}
 std::string ASTDateOrTimeLiteral::SingleNodeDebugString() const {
   return absl::StrCat("DateOrTimeLiteral(", TypeKind_Name(type_kind_), ")");
 }

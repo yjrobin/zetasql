@@ -60,6 +60,17 @@ bool IsHex(absl::string_view str) {
   }
   return str.size() >= 2 && str[0] == '0' && (str[1] == 'x' || str[1] == 'X');
 }
+// Returns true if the 'str' is in long integer format, which assumes 
+// end with 'L'.
+bool IsLong(absl::string_view str) {
+  return str.size() >= 2 && (str[str.size()-1] == 'l' || str[str.size()-1] == 'L');
+}
+
+// Returns true if the 'str' is in float32 format, which assumes 
+// end with 'F'.
+bool IsFloat32(absl::string_view str) {
+  return str.size() >= 2 && (str[str.size()-1] == 'f' || str[str.size()-1] == 'F');
+}
 
 constexpr absl::string_view kTrueStringValue = "true";
 constexpr absl::string_view kFalseStringValue = "false";
@@ -157,6 +168,12 @@ bool StringToNumeric(absl::string_view value, int32_t* out,
     if (ABSL_PREDICT_TRUE(
             zetasql_base::safe_strto32_base(value, out, 16 /* base */)))
       return true;
+  } else if (ABSL_PREDICT_FALSE(IsLong(value))) {
+    if (ABSL_PREDICT_TRUE(
+            absl::SimpleAtoi(value.substr(0, value.size()-1), out))) {
+      return true;
+    }
+    
   } else {
     if (ABSL_PREDICT_TRUE(absl::SimpleAtoi(value, out))) return true;
   }
@@ -171,6 +188,12 @@ bool StringToNumeric(absl::string_view value, int64_t* out,
     if (ABSL_PREDICT_TRUE(
             zetasql_base::safe_strto64_base(value, out, 16 /* base */)))
       return true;
+  } else if (ABSL_PREDICT_FALSE(IsLong(value))) {
+    if (ABSL_PREDICT_TRUE(
+            absl::SimpleAtoi(value.substr(0, value.size()-1), out))) {
+      return true;
+    }
+    
   } else {
     if (ABSL_PREDICT_TRUE(absl::SimpleAtoi(value, out))) return true;
   }
@@ -185,6 +208,12 @@ bool StringToNumeric(absl::string_view value, uint32_t* out,
     if (ABSL_PREDICT_TRUE(
             zetasql_base::safe_strtou32_base(value, out, 16 /* base */)))
       return true;
+  } else if (ABSL_PREDICT_FALSE(IsLong(value))) {
+    if (ABSL_PREDICT_TRUE(
+            absl::SimpleAtoi(value.substr(0, value.size()-1), out))) {
+      return true;
+    }
+    
   } else {
     if (ABSL_PREDICT_TRUE(absl::SimpleAtoi(value, out))) return true;
   }
@@ -199,6 +228,12 @@ bool StringToNumeric(absl::string_view value, uint64_t* out,
     if (ABSL_PREDICT_TRUE(
             zetasql_base::safe_strtou64_base(value, out, 16 /* base */)))
       return true;
+  } else if (ABSL_PREDICT_FALSE(IsLong(value))) {
+    if (ABSL_PREDICT_TRUE(
+            absl::SimpleAtoi(value.substr(0, value.size()-1), out))) {
+      return true;
+    }
+    
   } else {
     if (ABSL_PREDICT_TRUE(absl::SimpleAtoi(value, out))) return true;
   }
@@ -207,14 +242,30 @@ bool StringToNumeric(absl::string_view value, uint64_t* out,
 
 template <>
 bool StringToNumeric(absl::string_view value, float* out, absl::Status* error) {
-  if (ABSL_PREDICT_TRUE(absl::SimpleAtof(value, out))) return true;
+  if (ABSL_PREDICT_FALSE(IsFloat32(value))) {
+    if (ABSL_PREDICT_TRUE(
+        absl::SimpleAtof(value.substr(0, value.size()-1), out))) {
+      return true;
+    }
+        
+  } else {
+    if (ABSL_PREDICT_TRUE(absl::SimpleAtof(value, out))) return true;
+  }
   return internal::UpdateError(error, FormatError("Bad float value: ", value));
 }
 
 template <>
 bool StringToNumeric(absl::string_view value, double* out,
                      absl::Status* error) {
-  if (ABSL_PREDICT_TRUE(absl::SimpleAtod(value, out))) return true;
+  if (ABSL_PREDICT_FALSE(IsFloat32(value))) {
+    if (ABSL_PREDICT_TRUE(
+        absl::SimpleAtod(value.substr(0, value.size()-1), out))) {
+      return true;
+    }
+        
+  } else {
+    if (ABSL_PREDICT_TRUE(absl::SimpleAtod(value, out))) return true;
+  }
   return internal::UpdateError(error, FormatError("Bad double value: ", value));
 }
 

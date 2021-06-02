@@ -860,6 +860,9 @@ absl::Status Resolver::ResolveLiteralExpr(
         if (literal->is_hex()) {
           return MakeSqlErrorAt(literal)
                  << "Invalid hex integer literal: " << literal->image();
+        } else if (literal->is_long()) {
+          return MakeSqlErrorAt(literal)
+                 << "Invalid long integer literal: " << literal->image();
         } else {
           return MakeSqlErrorAt(literal)
                  << "Invalid integer literal: " << literal->image();
@@ -875,6 +878,9 @@ absl::Status Resolver::ResolveLiteralExpr(
         if (literal->is_hex()) {
           return MakeSqlErrorAt(literal)
                  << "Invalid hex integer literal: " << literal->image();
+        } else if (literal->is_long()) {
+          return MakeSqlErrorAt(literal)
+                 << "Invalid long integer literal: " << literal->image();
         } else {
           return MakeSqlErrorAt(literal)
                  << "Invalid integer literal: " << literal->image();
@@ -2626,6 +2632,18 @@ absl::Status Resolver::ResolveUnaryExpr(
         } else {
           return MakeSqlErrorAt(unary_expr)
                  << "Invalid hex integer literal: -" << literal->image();
+        }
+      }
+      if (literal->is_long()) {
+        if (functions::StringToNumeric(absl::StrCat("-", 
+          literal->image().substr(0, literal->image().size()-1)),
+                                     &int64_value, nullptr)) {
+          *resolved_expr_out =
+              MakeResolvedLiteral(unary_expr, Value::Int64(int64_value));
+          return absl::OkStatus();
+        } else {
+          return MakeSqlErrorAt(unary_expr)
+                << "Invalid long integer literal: -" << literal->image();
         }
       }
       if (functions::StringToNumeric(absl::StrCat("-", literal->image()),
