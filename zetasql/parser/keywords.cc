@@ -191,6 +191,7 @@ constexpr KeywordInfoPOD kAllKeywords[] = {
     {"maxsize", KW_MAXSIZE},
     {"message", KW_MESSAGE},
     {"min", KW_MIN},
+    {"mod", KW_MOD, KeywordInfo::kReserved},
     {"model", KW_MODEL},
     {"module", KW_MODULE},
     {"merge", KW_MERGE, KeywordInfo::kReserved},

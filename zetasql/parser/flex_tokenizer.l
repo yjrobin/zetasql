@@ -515,6 +515,7 @@ maxsize { return BisonParserImpl::token::KW_MAXSIZE; }
 merge { return BisonParserImpl::token::KW_MERGE; }
 message { return BisonParserImpl::token::KW_MESSAGE; }
 min { return BisonParserImpl::token::KW_MIN; }
+mod { return BisonParserImpl::token::KW_MOD; }
 model { return BisonParserImpl::token::KW_MODEL; }
 module { return BisonParserImpl::token::KW_MODULE; }
 natural { return BisonParserImpl::token::KW_NATURAL; }

@@ -2023,7 +2023,7 @@ CreateTableStatement [0-117]
   ClusterBy [96-117]
     FunctionCall [107-117]
       PathExpression [107-110]
-        Identifier(mod) [107-110]
+        Identifier(`mod`) [107-110]
       PathExpression [111-113]
         Identifier(c1) [111-113]
       IntLiteral(2) [115-116]
@@ -2033,7 +2033,7 @@ CREATE TABLE t1
   c1 int32,
   c2 int64,
   c3 string
-) PARTITION BY c1, c2 + CAST(c3 AS int64) CLUSTER BY mod(c1, 2)
+) PARTITION BY c1, c2 + CAST(c3 AS int64) CLUSTER BY `mod`(c1, 2)
 
 ==
 
@@ -2081,7 +2081,7 @@ CreateTableStatement [0-136]
   ClusterBy [96-117]
     FunctionCall [107-117]
       PathExpression [107-110]
-        Identifier(mod) [107-110]
+        Identifier(`mod`) [107-110]
       PathExpression [111-113]
         Identifier(c1) [111-113]
       IntLiteral(2) [115-116]
@@ -2095,7 +2095,7 @@ CREATE TABLE t1
   c1 int32,
   c2 int64,
   c3 string
-) PARTITION BY c1, c2 + CAST(c3 AS int64) CLUSTER BY mod(c1, 2) OPTIONS(foo = true)
+) PARTITION BY c1, c2 + CAST(c3 AS int64) CLUSTER BY `mod`(c1, 2) OPTIONS(foo = true)
 
 ==
 

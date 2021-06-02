@@ -151,7 +151,7 @@ CreateMaterializedViewStatement [0-109]
   ClusterBy [68-89]
     FunctionCall [79-89]
       PathExpression [79-82]
-        Identifier(mod) [79-82]
+        Identifier(`mod`) [79-82]
       PathExpression [83-85]
         Identifier(c1) [83-85]
       IntLiteral(2) [87-88]
@@ -165,7 +165,7 @@ CreateMaterializedViewStatement [0-109]
           PathExpression [107-109]
             Identifier(t2) [107-109]
 --
-CREATE MATERIALIZED VIEW mv PARTITION BY c1, c2 + CAST(c3 AS int64) CLUSTER BY mod(c1, 2) AS
+CREATE MATERIALIZED VIEW mv PARTITION BY c1, c2 + CAST(c3 AS int64) CLUSTER BY `mod`(c1, 2) AS
 SELECT
   *
 FROM

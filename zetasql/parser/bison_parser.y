@@ -561,7 +561,7 @@ class DashedIdentifierTmpNode final : public zetasql::ASTNode {
 %left "<<" ">>"
 %left "+" "-"
 %left "||"
-%left "*" "/" "DIV" "%"
+%left "*" "/" "DIV" "%" "MOD"
 %left UNARY_PRECEDENCE  // For all unary operators
 %precedence DOUBLE_AT_PRECEDENCE // Needs to appear before "."
 %left PRIMARY_PRECEDENCE "(" ")" "[" "]" "." // For ., .(...), [], etc.
@@ -712,6 +712,7 @@ using zetasql::ASTDropStatement;
 %token KW_LIMIT "LIMIT"
 %token KW_LOOKUP "LOOKUP"
 %token KW_MERGE "MERGE"
+%token KW_MOD "MOD"
 %token KW_NATURAL "NATURAL"
 %token KW_NEW "NEW"
 %token KW_NO "NO"
@@ -5229,6 +5230,7 @@ multiplicative_operator:
     | "/" { $$ = zetasql::ASTBinaryExpression::DIVIDE; }
     | "DIV" { $$ = zetasql::ASTBinaryExpression::DIVIDE; }
     | "%" { $$ = zetasql::ASTBinaryExpression::MOD; }
+    | "MOD" { $$ = zetasql::ASTBinaryExpression::MOD; }
     ;
 
 // Returns ShiftOperator to indicate the operator type.
@@ -6355,6 +6357,10 @@ function_name_from_keyword:
       {
         $$ = parser->MakeIdentifier(@1, parser->GetInputText(@1));
       }
+    | "MOD"
+      {
+        $$ = parser->MakeIdentifier(@1, parser->GetInputText(@1));
+      }
     ;
 
 // These rules have "expression" as their first part rather than
@@ -7110,6 +7116,7 @@ reserved_keyword_rule:
     | "LIMIT"
     | "LOOKUP"
     | "MERGE"
+    | "MOD"
     | "NATURAL"
     | "NEW"
     | "NOT"
