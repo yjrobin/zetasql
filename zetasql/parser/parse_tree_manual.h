@@ -1838,6 +1838,7 @@ class ASTBinaryExpression final : public ASTExpression {
     MINUS,        // "-"
     MULTIPLY,     // "*"
     DIVIDE,       // "/"
+    MOD,          // "%"
     CONCAT_OP,    // "||"
     DISTINCT,     // "IS DISTINCT FROM"
   };

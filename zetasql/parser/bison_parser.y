@@ -5228,6 +5228,7 @@ multiplicative_operator:
     "*" { $$ = zetasql::ASTBinaryExpression::MULTIPLY; }
     | "/" { $$ = zetasql::ASTBinaryExpression::DIVIDE; }
     | "DIV" { $$ = zetasql::ASTBinaryExpression::DIVIDE; }
+    | "%" { $$ = zetasql::ASTBinaryExpression::MOD; }
     ;
 
 // Returns ShiftOperator to indicate the operator type.

@@ -744,6 +744,8 @@ std::string ASTBinaryExpression::GetSQLForOperator() const {
       return "*";
     case DIVIDE:
       return "/";
+    case MOD:
+      return "%";
     case CONCAT_OP:
       return "||";
     case DISTINCT:
