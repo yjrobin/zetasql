@@ -561,7 +561,7 @@ class DashedIdentifierTmpNode final : public zetasql::ASTNode {
 %left "<<" ">>"
 %left "+" "-"
 %left "||"
-%left "*" "/" "DIV" "%" 
+%left "*" "/" "DIV" "%"
 %left UNARY_PRECEDENCE  // For all unary operators
 %precedence DOUBLE_AT_PRECEDENCE // Needs to appear before "."
 %left PRIMARY_PRECEDENCE "(" ")" "[" "]" "." // For ., .(...), [], etc.
@@ -5225,8 +5225,8 @@ additive_operator:
     ;
 
 multiplicative_operator:
-    "*" { $$ = zetasql::ASTBinaryExpression::MULTIPLY; } %prec "*"
-    | "/" { $$ = zetasql::ASTBinaryExpression::DIVIDE; } %prec "/"
+    "*" { $$ = zetasql::ASTBinaryExpression::MULTIPLY; }
+    | "/" { $$ = zetasql::ASTBinaryExpression::DIVIDE; }
     | "DIV" { $$ = zetasql::ASTBinaryExpression::DIVIDE; }
     ;
 

@@ -359,7 +359,6 @@ and {
   }
   return BisonParserImpl::token::KW_AND;
 }
-"&&" { return BisonParserImpl::token::KW_AND; }
 anonymization { return BisonParserImpl::token::KW_ANONYMIZATION; }
 any { return BisonParserImpl::token::KW_ANY; }
 array { return BisonParserImpl::token::KW_ARRAY; }
@@ -419,6 +418,7 @@ descriptor { return BisonParserImpl::token::KW_DESCRIPTOR; }
 describe { return BisonParserImpl::token::KW_DESCRIBE; }
 deterministic { return BisonParserImpl::token::KW_DETERMINISTIC; }
 distinct { return BisonParserImpl::token::KW_DISTINCT; }
+div      { return BisonParserImpl::token::KW_DIVIDE; }
 do { return BisonParserImpl::token::KW_DO; }
 drop { return BisonParserImpl::token::KW_DROP; }
 else { return BisonParserImpl::token::KW_ELSE; }
@@ -872,13 +872,13 @@ zone { return BisonParserImpl::token::KW_ZONE; }
 }
 ">="                      { return BisonParserImpl::token::KW_GREATER_EQUALS; }
 "||"                      { return BisonParserImpl::token::KW_CONCAT_OP; }
+"&&"                      { return BisonParserImpl::token::KW_AND; }
 "|"                       { return '|'; }
 "^"                       { return '^'; }
 "&"                       { return '&'; }
 "+"                       { return '+'; }
 "-"                       { return '-'; }
 "/"                       { return '/'; }
-div                       { return BisonParserImpl::token::KW_DIVIDE; }
 "%"                       { return '%'; }
 "~"                       { return '~'; }
 "?"                       { return '?'; }

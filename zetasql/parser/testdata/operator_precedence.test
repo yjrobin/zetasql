@@ -108,6 +108,36 @@ SELECT
   (x + y) / z
 ==
 
+select x + y DIV z, (x + y) DIV z
+--
+QueryStatement [0-33]
+  Query [0-33]
+    Select [0-33]
+      SelectList [7-33]
+        SelectColumn [7-18]
+          BinaryExpression(+) [7-18]
+            PathExpression [7-8]
+              Identifier(x) [7-8]
+            BinaryExpression(/) [11-18]
+              PathExpression [11-12]
+                Identifier(y) [11-12]
+              PathExpression [17-18]
+                Identifier(z) [17-18]
+        SelectColumn [20-33]
+          BinaryExpression(/) [20-33]
+            BinaryExpression(+) [21-26]
+              PathExpression [21-22]
+                Identifier(x) [21-22]
+              PathExpression [25-26]
+                Identifier(y) [25-26]
+            PathExpression [32-33]
+              Identifier(z) [32-33]
+--
+SELECT
+  x + y / z,
+  (x + y) / z
+==
+
 select x / y + y * x / z
 --
 QueryStatement [0-24]
