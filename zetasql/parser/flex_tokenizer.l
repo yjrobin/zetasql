@@ -872,7 +872,6 @@ zone { return BisonParserImpl::token::KW_ZONE; }
 }
 ">="                      { return BisonParserImpl::token::KW_GREATER_EQUALS; }
 "||"                      { return BisonParserImpl::token::KW_CONCAT_OP; }
-"&&"                      { return BisonParserImpl::token::KW_AND; }
 "|"                       { return '|'; }
 "^"                       { return '^'; }
 "&"                       { return '&'; }
