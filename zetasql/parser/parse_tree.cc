@@ -970,7 +970,9 @@ std::string ASTWindowFrameExpr::BoundaryTypeToString(BoundaryType type) {
 }
 
 std::string ASTWindowFrameExpr::GetBoundaryTypeString() const {
-  return BoundaryTypeToString(boundary_type_);
+  return is_open_boundary_ ? 
+    "OPEN " + BoundaryTypeToString(boundary_type_) 
+    : BoundaryTypeToString(boundary_type_);
 }
 
 const ASTFunctionCall* ASTAnalyticFunctionCall::function() const {

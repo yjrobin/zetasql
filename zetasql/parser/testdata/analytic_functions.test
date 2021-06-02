@@ -748,6 +748,38 @@ FROM
   T
 ==
 
+# window with OPEN PREEDING and OPEN FOLLOWING 
+select f() over (rows_range between 5s open preceding and 1s open following maxsize 5)
+from T
+--
+QueryStatement [0-93]
+  Query [0-93]
+    Select [0-93]
+      SelectList [7-86]
+        SelectColumn [7-86]
+          AnalyticFunctionCall [7-86]
+            FunctionCall [7-10]
+              PathExpression [7-8]
+                Identifier(f) [7-8]
+            WindowSpecification [16-86]
+              WindowFrame(ROWS_RANGE) [17-85]
+                WindowFrameExpr(OPEN OFFSET PRECEDING) [36-53]
+                  IntervalLiteral(5s) [36-38]
+                WindowFrameExpr(OPEN OFFSET FOLLOWING) [58-75]
+                  IntervalLiteral(1s) [58-60]
+                MaxSize [76-85]
+                  IntLiteral(5) [84-85]
+      FromClause [87-93]
+        TablePathExpression [92-93]
+          PathExpression [92-93]
+            Identifier(T) [92-93]
+--
+SELECT
+  f() OVER (ROWS_RANGE BETWEEN 5s OPEN PRECEDING AND 1s OPEN FOLLOWING MAXSIZE 5)
+FROM
+  T
+==
+
 # window with union single table
 select f() over (union T2 rows_range between 5s preceding and current row maxsize 5 exclude current_time instance_not_in_window)
 from T

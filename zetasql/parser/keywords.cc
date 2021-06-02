@@ -204,6 +204,7 @@ constexpr KeywordInfoPOD kAllKeywords[] = {
     {"offset", KW_OFFSET},
     {"on", KW_ON, KeywordInfo::kReserved},
     {"only", KW_ONLY},
+    {"open", KW_OPEN, KeywordInfo::kReserved},
     {"options", KW_OPTIONS},
     {"or", KW_OR, KeywordInfo::kReserved},
     {"order", KW_ORDER, KeywordInfo::kReserved},

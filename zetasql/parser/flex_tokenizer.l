@@ -540,6 +540,7 @@ of { return BisonParserImpl::token::KW_OF; }
 offset { return BisonParserImpl::token::KW_OFFSET; }
 on { return BisonParserImpl::token::KW_ON; }
 only { return BisonParserImpl::token::KW_ONLY; }
+open { return BisonParserImpl::token::KW_OPEN;}
 options { return BisonParserImpl::token::KW_OPTIONS; }
 or { return BisonParserImpl::token::KW_OR; }
 order { return BisonParserImpl::token::KW_ORDER; }

@@ -2733,6 +2733,8 @@ class ASTWindowFrameExpr final : public ASTNode {
   std::string GetBoundaryTypeString() const;
   static std::string BoundaryTypeToString(BoundaryType type);
 
+  void set_is_open_boundary(bool flag) { is_open_boundary_ = flag; }
+  const bool is_open_boundary() const { return is_open_boundary_; }
  private:
   void InitFields() final {
     FieldLoader fl(this);
@@ -2744,6 +2746,7 @@ class ASTWindowFrameExpr final : public ASTNode {
   // to current row. Cannot be NULL if boundary_type is OFFSET_PRECEDING
   // or OFFSET_FOLLOWING; otherwise, should be NULL.
   const ASTExpression* expression_ = nullptr;
+  bool is_open_boundary_ = false;
 };
 class ASTMaxSize final : public ASTNode {
   public:

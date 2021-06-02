@@ -2180,10 +2180,16 @@ void Unparser::visitASTWindowFrameExpr(
       break;
     case ASTWindowFrameExpr::OFFSET_PRECEDING:
       node->expression()->Accept(this, data);
+      if (node->is_open_boundary()) {
+        print("OPEN");
+      }
       print("PRECEDING");
       break;
     case ASTWindowFrameExpr::OFFSET_FOLLOWING:
       node->expression()->Accept(this, data);
+      if (node->is_open_boundary()) {
+        print("OPEN");
+      }
       print("FOLLOWING");
       break;
   }
