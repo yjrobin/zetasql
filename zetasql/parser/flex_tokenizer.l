@@ -540,6 +540,7 @@ of { return BisonParserImpl::token::KW_OF; }
 offset { return BisonParserImpl::token::KW_OFFSET; }
 on { return BisonParserImpl::token::KW_ON; }
 only { return BisonParserImpl::token::KW_ONLY; }
+open { return BisonParserImpl::token::KW_OPEN;}
 options { return BisonParserImpl::token::KW_OPTIONS; }
 or { return BisonParserImpl::token::KW_OR; }
 order { return BisonParserImpl::token::KW_ORDER; }
@@ -688,6 +689,10 @@ zone { return BisonParserImpl::token::KW_ZONE; }
   SetOverrideError(*yylloc, "Syntax error: Unclosed identifier literal");
   yyterminate();
 }
+ /* Long integer literals. */
+{decimal_digits}[L] {
+  return BisonParserImpl::token::INTEGER_LITERAL;
+}
  /* Time interval literals. For instance, 
     10d can be regarded as day interval literals which is equal to INTERVAL 10 DAY.
     10h can be regarded as hour interval literals which is equal to INTERVAL 10 HOUR.
@@ -711,6 +716,9 @@ zone { return BisonParserImpl::token::KW_ZONE; }
   SetOverrideError(
       *yylloc, "Syntax error: Missing whitespace between literal and alias");
   yyterminate();
+}
+{floating_point_literal}[F] {
+  return BisonParserImpl::token::FLOATING_POINT_LITERAL;
 }
 {floating_point_literal}/[A-Z_] {
   // If the floating point literal starts with a ".", and the preceding token

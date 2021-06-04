@@ -2733,6 +2733,8 @@ class ASTWindowFrameExpr final : public ASTNode {
   std::string GetBoundaryTypeString() const;
   static std::string BoundaryTypeToString(BoundaryType type);
 
+  void set_is_open_boundary(bool flag) { is_open_boundary_ = flag; }
+  const bool is_open_boundary() const { return is_open_boundary_; }
  private:
   void InitFields() final {
     FieldLoader fl(this);
@@ -2744,6 +2746,7 @@ class ASTWindowFrameExpr final : public ASTNode {
   // to current row. Cannot be NULL if boundary_type is OFFSET_PRECEDING
   // or OFFSET_FOLLOWING; otherwise, should be NULL.
   const ASTExpression* expression_ = nullptr;
+  bool is_open_boundary_ = false;
 };
 class ASTMaxSize final : public ASTNode {
   public:
@@ -3361,6 +3364,11 @@ class ASTFloatLiteral final : public ASTLeaf {
   void Accept(ParseTreeVisitor* visitor, void* data) const override;
   zetasql_base::StatusOr<VisitResult> Accept(
       NonRecursiveParseTreeVisitor* visitor) const override;
+  bool is_float32() const { 
+    size_t image_size = image().size();
+    return image_size >= 2 && 
+        (image()[image_size-1] == 'f' || image()[image_size-1] == 'F');
+  }
 };
 
 class ASTNullLiteral final : public ASTLeaf {
@@ -3808,7 +3816,7 @@ class ASTUnionTableReferenceList final : public ASTNode {
   zetasql_base::StatusOr<VisitResult> Accept(
       NonRecursiveParseTreeVisitor* visitor) const override;
 
-  const absl::Span<const ASTNode* const>& table_references() const {
+  const absl::Span<const ASTTableExpression* const>& table_references() const {
     return table_references_;
   }
 
@@ -3818,7 +3826,7 @@ class ASTUnionTableReferenceList final : public ASTNode {
     fl.AddRestAsRepeated(&table_references_);
   }
 
-  absl::Span<const ASTNode* const> table_references_;
+  absl::Span<const ASTTableExpression* const> table_references_;
 };
 
 // This represents a clause of form "MODEL <target>", where <target> is a model

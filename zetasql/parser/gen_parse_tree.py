@@ -428,6 +428,7 @@ def main(argv):
       extra_defs="""
 
   bool is_hex() const;
+  bool is_long() const;
       """,
       )
 

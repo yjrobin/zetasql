@@ -970,7 +970,9 @@ std::string ASTWindowFrameExpr::BoundaryTypeToString(BoundaryType type) {
 }
 
 std::string ASTWindowFrameExpr::GetBoundaryTypeString() const {
-  return BoundaryTypeToString(boundary_type_);
+  return is_open_boundary_ ? 
+    "OPEN " + BoundaryTypeToString(boundary_type_) 
+    : BoundaryTypeToString(boundary_type_);
 }
 
 const ASTFunctionCall* ASTAnalyticFunctionCall::function() const {
@@ -1026,7 +1028,12 @@ bool ASTIntLiteral::is_hex() const {
   }
   return false;
 }
-
+bool ASTIntLiteral::is_long() const {
+  if (absl::EndsWith(image(), "l") || absl::EndsWith(image(), "L")) {
+    return true;
+  }
+  return false;
+}
 std::string ASTDateOrTimeLiteral::SingleNodeDebugString() const {
   return absl::StrCat("DateOrTimeLiteral(", TypeKind_Name(type_kind_), ")");
 }

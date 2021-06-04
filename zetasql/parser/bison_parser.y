@@ -717,6 +717,7 @@ using zetasql::ASTDropStatement;
 %token KW_NULL "NULL"
 %token KW_NULLS "NULLS"
 %token KW_ON "ON"
+%token KW_OPEN "OPEN"
 %token KW_OR "OR"
 %token KW_ORDER "ORDER"
 %token KW_OUTER "OUTER"
@@ -6643,6 +6644,16 @@ window_frame_bound:
                 : zetasql::ASTWindowFrameExpr::OFFSET_FOLLOWING);
         $$ = frame;
       }
+    | expression "OPEN" preceding_or_following
+      {
+        auto* frame = MAKE_NODE(ASTWindowFrameExpr, @$, {$1});
+        frame->set_boundary_type(
+            ($3 == PrecedingOrFollowingKeyword::kPreceding)
+                ? zetasql::ASTWindowFrameExpr::OFFSET_PRECEDING
+                : zetasql::ASTWindowFrameExpr::OFFSET_FOLLOWING);
+        frame->set_is_open_boundary(true);
+        $$ = frame;
+      }
     ;
 
 frame_unit:
@@ -7100,6 +7111,7 @@ reserved_keyword_rule:
     | "NULL"
     | "NULLS"
     | "ON"
+    | "OPEN"
     | "OR"
     | "ORDER"
     | "OUTER"
@@ -8241,7 +8253,9 @@ execute_using_argument_list:
   ;
 
 union_table_reference:
-  maybe_dashed_path_expression
+  maybe_dashed_path_expression {
+    $$ = MAKE_NODE(ASTTablePathExpression, @$, {$1});
+  }
   | "(" query ")"
     {
       zetasql::ASTQuery* query = $2;
