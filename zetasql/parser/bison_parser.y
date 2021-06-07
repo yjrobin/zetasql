@@ -672,7 +672,7 @@ using zetasql::ASTDropStatement;
 %token KW_DEFINE "DEFINE"
 %token KW_DESC "DESC"
 %token KW_DISTINCT "DISTINCT"
-%token KW_DIVIDE "DIV"
+%token KW_IDIVIDE "DIV"
 %token KW_ELSE "ELSE"
 %token KW_END "END"
 %token KW_ENUM "ENUM"
@@ -5228,7 +5228,7 @@ additive_operator:
 multiplicative_operator:
     "*" { $$ = zetasql::ASTBinaryExpression::MULTIPLY; }
     | "/" { $$ = zetasql::ASTBinaryExpression::DIVIDE; }
-    | "DIV" { $$ = zetasql::ASTBinaryExpression::DIVIDE; }
+    | "DIV" { $$ = zetasql::ASTBinaryExpression::IDIVIDE; }
     | "%" { $$ = zetasql::ASTBinaryExpression::MOD; }
     | "MOD" { $$ = zetasql::ASTBinaryExpression::MOD; }
     ;

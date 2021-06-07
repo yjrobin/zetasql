@@ -418,7 +418,7 @@ descriptor { return BisonParserImpl::token::KW_DESCRIPTOR; }
 describe { return BisonParserImpl::token::KW_DESCRIBE; }
 deterministic { return BisonParserImpl::token::KW_DETERMINISTIC; }
 distinct { return BisonParserImpl::token::KW_DISTINCT; }
-div      { return BisonParserImpl::token::KW_DIVIDE; }
+div      { return BisonParserImpl::token::KW_IDIVIDE; }
 do { return BisonParserImpl::token::KW_DO; }
 drop { return BisonParserImpl::token::KW_DROP; }
 else { return BisonParserImpl::token::KW_ELSE; }
