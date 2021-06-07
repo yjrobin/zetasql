@@ -237,7 +237,7 @@ TEST(ParserTest, DontAddNewReservedKeywords) {
   // allows new queries to work that will not work on older code.
   // Before changing this, co-ordinate with all engines to make sure the change
   // is done safely.
-  EXPECT_EQ(101 /* CAUTION */, num_reserved);
+  EXPECT_EQ(102 /* CAUTION */, num_reserved);
 }
 
 }  // namespace
