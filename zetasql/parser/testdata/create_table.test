@@ -22,6 +22,93 @@ CREATE TABLE t1
 )
 ==
 
+# create table with distribution options (json style)
+create table t1 (a int32, b string)
+options (distribution = json r'''
+{
+    "partitionnum": 3,
+    "replicanum": 3,
+    "distribution": [
+        {
+            "leader": "leader1"
+            "followers": ['fo1']
+        },
+        {
+            "leader": "leader2"
+            "followers": []
+        },
+        {
+            "leader": "leader1"
+            "followers": ['fo1', 'fo2']
+        }
+    ]
+}
+''');
+--
+CreateTableStatement [0-409]
+  PathExpression [13-15]
+    Identifier(t1) [13-15]
+  TableElementList [16-35]
+    ColumnDefinition [17-24]
+      Identifier(a) [17-18]
+      SimpleColumnSchema [19-24]
+        PathExpression [19-24]
+          Identifier(int32) [19-24]
+    ColumnDefinition [26-34]
+      Identifier(b) [26-27]
+      SimpleColumnSchema [28-34]
+        PathExpression [28-34]
+          Identifier(string) [28-34]
+  OptionsList [44-409]
+    OptionsEntry [45-408]
+      Identifier(distribution) [45-57]
+      JSONLiteral(r'''
+{
+    "partitionnum": 3,
+    "replicanum": 3,
+    "distribution": [
+        {
+            "leader": "leader1"
+            "followers": ['fo1']
+        },
+        {
+            "leader": "leader2"
+            "followers": []
+        },
+        {
+            "leader": "leader1"
+            "followers": ['fo1', 'fo2']
+        }
+    ]
+}
+--
+CREATE TABLE t1
+(
+  a int32,
+  b string
+) OPTIONS(distribution = JSON r'''
+{
+    "partitionnum": 3,
+    "replicanum": 3,
+    "distribution": [
+        {
+            "leader": "leader1"
+            "followers": ['fo1']
+        },
+        {
+            "leader": "leader2"
+            "followers": []
+        },
+        {
+            "leader": "leader1"
+            "followers": ['fo1', 'fo2']
+        }
+    ]
+}
+'''
+)
+==
+
 create table t1 (a int32 options(option_a=1), b int64 options(option_b=2))
 options(table_option=3);
 --
