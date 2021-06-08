@@ -18,8 +18,8 @@
 
 set -eE
 
-export BAZEL_LINKOPTS: '-static-libstdc++:-lm'
-export BAZEL_LINKLIBS: '-l%:libstdc++.a'
+export BAZEL_LINKOPTS='-static-libstdc++:-lm'
+export BAZEL_LINKLIBS='-l%:libstdc++.a'
 
 TARGET='//zetasql/parser/...'
 BUILD_ARGV='--features=-supports_dynamic_linker'
