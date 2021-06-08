@@ -276,6 +276,8 @@ pound_comment         #[^\r\n]*(\r|\n|\r\n)?
 
 comment               ({cs_comment}|{dash_comment}|{pound_comment})
 
+not                   (not|"!")
+
 %%
  /* RULES SECTION
 
@@ -416,6 +418,7 @@ descriptor { return BisonParserImpl::token::KW_DESCRIPTOR; }
 describe { return BisonParserImpl::token::KW_DESCRIBE; }
 deterministic { return BisonParserImpl::token::KW_DETERMINISTIC; }
 distinct { return BisonParserImpl::token::KW_DISTINCT; }
+div      { return BisonParserImpl::token::KW_IDIVIDE; }
 do { return BisonParserImpl::token::KW_DO; }
 drop { return BisonParserImpl::token::KW_DROP; }
 else { return BisonParserImpl::token::KW_ELSE; }
@@ -512,12 +515,13 @@ maxsize { return BisonParserImpl::token::KW_MAXSIZE; }
 merge { return BisonParserImpl::token::KW_MERGE; }
 message { return BisonParserImpl::token::KW_MESSAGE; }
 min { return BisonParserImpl::token::KW_MIN; }
+mod { return BisonParserImpl::token::KW_MOD; }
 model { return BisonParserImpl::token::KW_MODEL; }
 module { return BisonParserImpl::token::KW_MODULE; }
 natural { return BisonParserImpl::token::KW_NATURAL; }
 new { return BisonParserImpl::token::KW_NEW; }
 no { return BisonParserImpl::token::KW_NO; }
-not { return BisonParserImpl::token::KW_NOT; }
+{not} { return BisonParserImpl::token::KW_NOT; }
  /* This returns a different token because returning KW_NOT would confuse the
     operator precedence parsing. Boolean NOT has a different precedence than
     NOT BETWEEN/IN/LIKE/DISTINCT. The final character at the end is intended to
@@ -528,6 +532,13 @@ not { return BisonParserImpl::token::KW_NOT; }
  */
 not{whitespace}(between|in|like|distinct)[^A-Z_0-9] {
   SET_RETURN_PREFIX_LENGTH(3);
+  if (mode_ == BisonParserMode::kTokenizer) {
+    return BisonParserImpl::token::KW_NOT;
+  }
+  return BisonParserImpl::token::KW_NOT_SPECIAL;
+}
+"!"{whitespace}(between|in|like|distinct)[^A-Z_0-9] {
+  SET_RETURN_PREFIX_LENGTH(1);
   if (mode_ == BisonParserMode::kTokenizer) {
     return BisonParserImpl::token::KW_NOT;
   }
@@ -868,6 +879,7 @@ zone { return BisonParserImpl::token::KW_ZONE; }
 "+"                       { return '+'; }
 "-"                       { return '-'; }
 "/"                       { return '/'; }
+"%"                       { return '%'; }
 "~"                       { return '~'; }
 "?"                       { return '?'; }
 "@"{opt_whitespace}"{"    {

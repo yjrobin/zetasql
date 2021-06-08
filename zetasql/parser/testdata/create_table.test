@@ -22,6 +22,141 @@ CREATE TABLE t1
 )
 ==
 
+# create table with distribution options (json style)
+create table t1 (a int32, b string)
+options (distribution = json r'''
+{
+    "partitionnum": 3,
+    "replicanum": 3,
+    "distribution": [
+        {
+            "leader": "leader1"
+            "followers": ['fo1']
+        },
+        {
+            "leader": "leader2"
+            "followers": []
+        },
+        {
+            "leader": "leader1"
+            "followers": ['fo1', 'fo2']
+        }
+    ]
+}
+''');
+--
+CreateTableStatement [0-409]
+  PathExpression [13-15]
+    Identifier(t1) [13-15]
+  TableElementList [16-35]
+    ColumnDefinition [17-24]
+      Identifier(a) [17-18]
+      SimpleColumnSchema [19-24]
+        PathExpression [19-24]
+          Identifier(int32) [19-24]
+    ColumnDefinition [26-34]
+      Identifier(b) [26-27]
+      SimpleColumnSchema [28-34]
+        PathExpression [28-34]
+          Identifier(string) [28-34]
+  OptionsList [44-409]
+    OptionsEntry [45-408]
+      Identifier(distribution) [45-57]
+      JSONLiteral(r'''
+{
+    "partitionnum": 3,
+    "replicanum": 3,
+    "distribution": [
+        {
+            "leader": "leader1"
+            "followers": ['fo1']
+        },
+        {
+            "leader": "leader2"
+            "followers": []
+        },
+        {
+            "leader": "leader1"
+            "followers": ['fo1', 'fo2']
+        }
+    ]
+}
+''') [60-408]
+--
+CREATE TABLE t1
+(
+  a int32,
+  b string
+) OPTIONS(distribution = JSON r'''
+{
+    "partitionnum": 3,
+    "replicanum": 3,
+    "distribution": [
+        {
+            "leader": "leader1"
+            "followers": ['fo1']
+        },
+        {
+            "leader": "leader2"
+            "followers": []
+        },
+        {
+            "leader": "leader1"
+            "followers": ['fo1', 'fo2']
+        }
+    ]
+}
+''')
+==
+
+
+create table t1 (a int32, b string) options ( partitionnum = 3, replicanum = 3, distribution = [ ('le1', [ 'fo1' ]), ('le2', []), ('le3', ['fo1', 'fo2']) ] );
+--
+CreateTableStatement [0-157]
+  PathExpression [13-15]
+    Identifier(t1) [13-15]
+  TableElementList [16-35]
+    ColumnDefinition [17-24]
+      Identifier(a) [17-18]
+      SimpleColumnSchema [19-24]
+        PathExpression [19-24]
+          Identifier(int32) [19-24]
+    ColumnDefinition [26-34]
+      Identifier(b) [26-27]
+      SimpleColumnSchema [28-34]
+        PathExpression [28-34]
+          Identifier(string) [28-34]
+  OptionsList [44-157]
+    OptionsEntry [46-62]
+      Identifier(partitionnum) [46-58]
+      IntLiteral(3) [61-62]
+    OptionsEntry [64-78]
+      Identifier(replicanum) [64-74]
+      IntLiteral(3) [77-78]
+    OptionsEntry [80-155]
+      Identifier(distribution) [80-92]
+      ArrayConstructor [95-155]
+        StructConstructorWithParens [97-115]
+          StringLiteral('le1') [98-103]
+          ArrayConstructor [105-114]
+            StringLiteral('fo1') [107-112]
+        StructConstructorWithParens [117-128]
+          StringLiteral('le2') [118-123]
+          ArrayConstructor [125-127]
+        StructConstructorWithParens [130-153]
+          StringLiteral('le3') [131-136]
+          ArrayConstructor [138-152]
+            StringLiteral('fo1') [139-144]
+            StringLiteral('fo2') [146-151]
+--
+CREATE TABLE t1
+(
+  a int32,
+  b string
+) OPTIONS(partitionnum = 3, replicanum = 3, distribution = ARRAY[('le1', ARRAY['fo1']), ('le2', ARRAY[]),
+  ('le3', ARRAY['fo1', 'fo2'])])
+==
+
 create table t1 (a int32 options(option_a=1), b int64 options(option_b=2))
 options(table_option=3);
 --
@@ -2023,7 +2158,7 @@ CreateTableStatement [0-117]
   ClusterBy [96-117]
     FunctionCall [107-117]
       PathExpression [107-110]
-        Identifier(mod) [107-110]
+        Identifier(`mod`) [107-110]
       PathExpression [111-113]
         Identifier(c1) [111-113]
       IntLiteral(2) [115-116]
@@ -2033,7 +2168,7 @@ CREATE TABLE t1
   c1 int32,
   c2 int64,
   c3 string
-) PARTITION BY c1, c2 + CAST(c3 AS int64) CLUSTER BY mod(c1, 2)
+) PARTITION BY c1, c2 + CAST(c3 AS int64) CLUSTER BY `mod`(c1, 2)
 
 ==
 
@@ -2081,7 +2216,7 @@ CreateTableStatement [0-136]
   ClusterBy [96-117]
     FunctionCall [107-117]
       PathExpression [107-110]
-        Identifier(mod) [107-110]
+        Identifier(`mod`) [107-110]
       PathExpression [111-113]
         Identifier(c1) [111-113]
       IntLiteral(2) [115-116]
@@ -2095,7 +2230,7 @@ CREATE TABLE t1
   c1 int32,
   c2 int64,
   c3 string
-) PARTITION BY c1, c2 + CAST(c3 AS int64) CLUSTER BY mod(c1, 2) OPTIONS(foo = true)
+) PARTITION BY c1, c2 + CAST(c3 AS int64) CLUSTER BY `mod`(c1, 2) OPTIONS(foo = true)
 
 ==
 
