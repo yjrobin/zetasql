@@ -116,7 +116,7 @@ jobs:
           source /opt/rh/rh-python38/enable
           bazel test ${{ env.build_argv }} --test_summary=detailed --test_output=errors ${{ env.target }}
 
-  
+
   linux-build:
     runs-on: ubuntu-latest
     container:
@@ -140,7 +140,7 @@ jobs:
           source /opt/rh/devtoolset-8/enable
           source /opt/rh/rh-python38/enable
           bazel build ${{ env.target }} ${{ env.build_argv }}
-      
+
       - name: Test
         run: |
           bazel test ${{ env.build_argv }} --test_summary=detailed ${{ env.target }}
@@ -148,18 +148,18 @@ jobs:
       - name: build zetasql parser dependencies
         if: ${{ github.event_name == 'push' }}
         run: |
-          bazel query 'deps(${{ env.target }})' |grep //zetasql|xargs bazel build ${{ env.build_argv }} 
+          bazel query 'deps(${{ env.target }})' |grep //zetasql|xargs bazel build ${{ env.build_argv }}
           bazel build "@com_googleapis_googleapis//:all" ${{ env.build_argv }}
           bazel build "@com_google_file_based_test_driver//file_based_test_driver:all" ${{ env.build_argv }}
           bazel build "@com_googlesource_code_re2//:re2" ${{ env.build_argv }}
-          
+
       - name: Determine Version
         if: ${{ github.event_name == 'push' }}
         run: |
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           VERSION=$(echo $VERSION | sed -e 's/^v//')
           echo "TAG=$VERSION" >> $GITHUB_ENV
-      
+
       - name: pack libzetasql
         if: ${{ github.event_name == 'push' }}
         run: |
@@ -211,14 +211,14 @@ jobs:
       - name: test
         run: |
           bazel test ${{ env.build_argv }} --test_summary=detailed ${{ env.target }}
-      
+
       - name: Determine Version
         if: ${{ github.event_name == 'push' }}
         run: |
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           VERSION=$(echo $VERSION | sed -e 's/^v//')
           echo "TAG=$VERSION" >> $GITHUB_ENV
-      
+
       - name: pack libzetasql
         if: ${{ github.event_name == 'push' }}
         run: |
@@ -232,7 +232,7 @@ jobs:
         with:
           path: libzetasql-*.tar.gz
           name: release-artifacts
-          
+
   release:
     runs-on: ubuntu-latest
     needs: ["linux-build", "macos-build"]
@@ -252,4 +252,4 @@ jobs:
             libzetasql-*.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  
+
