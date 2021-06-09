@@ -302,6 +302,7 @@ constexpr KeywordInfoPOD kAllKeywords[] = {
     {"with", KW_WITH, KeywordInfo::kReserved},
     {"within", KW_WITHIN, KeywordInfo::kReserved},
     {"write", KW_WRITE},
+    {"xor", KW_XOR, KeywordInfo::kReserved},
     {"zone", KW_ZONE},
 };
 

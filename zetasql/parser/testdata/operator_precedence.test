@@ -29,6 +29,26 @@ SELECT
   a AND b AND c OR d
 ==
 
+select a XOR b OR c
+--
+QueryStatement [0-19]
+  Query [0-19]
+    Select [0-19]
+      SelectList [7-19]
+        SelectColumn [7-19]
+          OrExpr [7-19]
+            BinaryExpression(XOR) [7-14]
+              PathExpression [7-8]
+                Identifier(a) [7-8]
+              PathExpression [13-14]
+                Identifier(b) [13-14]
+            PathExpression [18-19]
+              Identifier(c) [18-19]
+--
+SELECT
+  a XOR b OR c
+==
+
 select a AND b AND (c OR d)
 --
 QueryStatement [0-27]
@@ -293,6 +313,32 @@ SELECT
   (x + y) > z OR a < b
 ==
 
+select (x + y) == z OR a = b
+--
+QueryStatement [0-28]
+  Query [0-28]
+    Select [0-28]
+      SelectList [7-28]
+        SelectColumn [7-28]
+          OrExpr [7-28]
+            BinaryExpression(=) [7-19]
+              BinaryExpression(+) [8-13]
+                PathExpression [8-9]
+                  Identifier(x) [8-9]
+                PathExpression [12-13]
+                  Identifier(y) [12-13]
+              PathExpression [18-19]
+                Identifier(z) [18-19]
+            BinaryExpression(=) [23-28]
+              PathExpression [23-24]
+                Identifier(a) [23-24]
+              PathExpression [27-28]
+                Identifier(b) [27-28]
+--
+SELECT
+  (x + y) = z OR a = b
+==
+
 select NOT a OR f(x)
 --
 QueryStatement [0-20]
@@ -389,7 +435,7 @@ SELECT
 # operator precedence parsing setup. The JavaCC parser uses hierarchical
 # productions to implement operator precedence, and it is ambiguous there. The
 # Bison parser reproduces the JavaCC error behavior with a special case error.
-select a {{like|=|<|>|<>|!=|>=|<=|+|-|*|/|^|&}} not b;
+select a {{like|=|==|<|>|<>|!=|>=|<=|+|-|*|/|^|&}} not b;
 --
 ALTERNATION GROUP: like
 --
@@ -402,6 +448,12 @@ ALTERNATION GROUP: =
 ERROR: Syntax error: Unexpected keyword NOT [at 1:12]
 select a = not b;
            ^
+--
+ALTERNATION GROUP: ==
+--
+ERROR: Syntax error: Unexpected keyword NOT [at 1:13]
+select a == not b;
+            ^
 --
 ALTERNATION GROUP: <
 --
@@ -651,14 +703,15 @@ select a LIKE b = NOT b LIKE c;
 # all of these cases as unambiguous and therefore accepts some of them in the
 # grammar. These cases are caught using special case error handling in the
 # rules.
-# "=" "<>" ">" "<" ">=" "<=" "!=" "LIKE" "IN" "BETWEEN" "IS" "NOT for BETWEEN/IN/LIKE"
+# "=" "==" "<>" ">" "<" ">=" "<=" "!=" "LIKE" "IN" "BETWEEN" "IS" "NOT for BETWEEN/IN/LIKE"
 SELECT
     1
-    {{= 2|<> 2|!= 2|> 2|< 2|>= 2|LIKE 2|NOT LIKE 2|IN (1,2)|NOT IN (1,2)|IN (SELECT 1)|NOT IN (SELECT 1)|BETWEEN 2 AND 3|NOT BETWEEN 2 AND 3|IS TRUE|IS NOT TRUE|IS NULL|IS NOT NULL}}
-    {{= 2|<> 2|!= 2|> 2|< 2|>= 2|LIKE 2|NOT LIKE 2|IN (1,2)|NOT IN (1,2)|IN (SELECT 1)|NOT IN (SELECT 1)|BETWEEN 2 AND 3|NOT BETWEEN 2 AND 3|IS TRUE|IS NOT TRUE|IS NULL|IS NOT NULL}}
+    {{= 2|== 2|<> 2|!= 2|> 2|< 2|>= 2|LIKE 2|NOT LIKE 2|IN (1,2)|NOT IN (1,2)|IN (SELECT 1)|NOT IN (SELECT 1)|BETWEEN 2 AND 3|NOT BETWEEN 2 AND 3|IS TRUE|IS NOT TRUE|IS NULL|IS NOT NULL}}
+    {{= 2|== 2|<> 2|!= 2|> 2|< 2|>= 2|LIKE 2|NOT LIKE 2|IN (1,2)|NOT IN (1,2)|IN (SELECT 1)|NOT IN (SELECT 1)|BETWEEN 2 AND 3|NOT BETWEEN 2 AND 3|IS TRUE|IS NOT TRUE|IS NULL|IS NOT NULL}}
 --
 ALTERNATION GROUPS:
     = 2,= 2
+    == 2,= 2
     <> 2,= 2
     != 2,= 2
     > 2,= 2
@@ -674,7 +727,25 @@ ERROR: Syntax error: Unexpected "=" [at 4:5]
     ^
 --
 ALTERNATION GROUPS:
+    = 2,== 2
+    == 2,== 2
+    <> 2,== 2
+    != 2,== 2
+    > 2,== 2
+    < 2,== 2
+    >= 2,== 2
+    LIKE 2,== 2
+    NOT LIKE 2,== 2
+    BETWEEN 2 AND 3,== 2
+    NOT BETWEEN 2 AND 3,== 2
+--
+ERROR: Syntax error: Unexpected "==" [at 4:5]
+    == 2
+    ^
+--
+ALTERNATION GROUPS:
     = 2,<> 2
+    == 2,<> 2
     <> 2,<> 2
     != 2,<> 2
     > 2,<> 2
@@ -691,6 +762,7 @@ ERROR: Syntax error: Unexpected "<>" [at 4:5]
 --
 ALTERNATION GROUPS:
     = 2,!= 2
+    == 2,!= 2
     <> 2,!= 2
     != 2,!= 2
     > 2,!= 2
@@ -707,6 +779,7 @@ ERROR: Syntax error: Unexpected "!=" [at 4:5]
 --
 ALTERNATION GROUPS:
     = 2,> 2
+    == 2,> 2
     <> 2,> 2
     != 2,> 2
     > 2,> 2
@@ -723,6 +796,7 @@ ERROR: Syntax error: Unexpected ">" [at 4:5]
 --
 ALTERNATION GROUPS:
     = 2,< 2
+    == 2,< 2
     <> 2,< 2
     != 2,< 2
     > 2,< 2
@@ -739,6 +813,7 @@ ERROR: Syntax error: Unexpected "<" [at 4:5]
 --
 ALTERNATION GROUPS:
     = 2,>= 2
+    == 2,>= 2
     <> 2,>= 2
     != 2,>= 2
     > 2,>= 2
@@ -755,6 +830,7 @@ ERROR: Syntax error: Unexpected ">=" [at 4:5]
 --
 ALTERNATION GROUPS:
     = 2,LIKE 2
+    == 2,LIKE 2
     <> 2,LIKE 2
     != 2,LIKE 2
     > 2,LIKE 2
@@ -771,6 +847,7 @@ ERROR: Syntax error: Unexpected keyword LIKE [at 4:5]
 --
 ALTERNATION GROUPS:
     = 2,NOT LIKE 2
+    == 2,NOT LIKE 2
     <> 2,NOT LIKE 2
     != 2,NOT LIKE 2
     > 2,NOT LIKE 2
@@ -787,6 +864,7 @@ ERROR: Syntax error: Unexpected keyword NOT [at 4:5]
 --
 ALTERNATION GROUPS:
     = 2,IN (1,2)
+    == 2,IN (1,2)
     <> 2,IN (1,2)
     != 2,IN (1,2)
     > 2,IN (1,2)
@@ -803,6 +881,7 @@ ERROR: Syntax error: Unexpected keyword IN [at 4:5]
 --
 ALTERNATION GROUPS:
     = 2,NOT IN (1,2)
+    == 2,NOT IN (1,2)
     <> 2,NOT IN (1,2)
     != 2,NOT IN (1,2)
     > 2,NOT IN (1,2)
@@ -819,6 +898,7 @@ ERROR: Syntax error: Unexpected keyword NOT [at 4:5]
 --
 ALTERNATION GROUPS:
     = 2,IN (SELECT 1)
+    == 2,IN (SELECT 1)
     <> 2,IN (SELECT 1)
     != 2,IN (SELECT 1)
     > 2,IN (SELECT 1)
@@ -835,6 +915,7 @@ ERROR: Syntax error: Unexpected keyword IN [at 4:5]
 --
 ALTERNATION GROUPS:
     = 2,NOT IN (SELECT 1)
+    == 2,NOT IN (SELECT 1)
     <> 2,NOT IN (SELECT 1)
     != 2,NOT IN (SELECT 1)
     > 2,NOT IN (SELECT 1)
@@ -851,6 +932,7 @@ ERROR: Syntax error: Unexpected keyword NOT [at 4:5]
 --
 ALTERNATION GROUPS:
     = 2,BETWEEN 2 AND 3
+    == 2,BETWEEN 2 AND 3
     <> 2,BETWEEN 2 AND 3
     != 2,BETWEEN 2 AND 3
     > 2,BETWEEN 2 AND 3
@@ -867,6 +949,7 @@ ERROR: Syntax error: Unexpected keyword BETWEEN [at 4:5]
 --
 ALTERNATION GROUPS:
     = 2,NOT BETWEEN 2 AND 3
+    == 2,NOT BETWEEN 2 AND 3
     <> 2,NOT BETWEEN 2 AND 3
     != 2,NOT BETWEEN 2 AND 3
     > 2,NOT BETWEEN 2 AND 3
@@ -883,6 +966,7 @@ ERROR: Syntax error: Unexpected keyword NOT [at 4:5]
 --
 ALTERNATION GROUPS:
     = 2,IS TRUE
+    == 2,IS TRUE
     <> 2,IS TRUE
     != 2,IS TRUE
     > 2,IS TRUE
@@ -899,6 +983,7 @@ ERROR: Syntax error: Unexpected keyword IS [at 4:5]
 --
 ALTERNATION GROUPS:
     = 2,IS NOT TRUE
+    == 2,IS NOT TRUE
     <> 2,IS NOT TRUE
     != 2,IS NOT TRUE
     > 2,IS NOT TRUE
@@ -915,6 +1000,7 @@ ERROR: Syntax error: Unexpected keyword IS [at 4:5]
 --
 ALTERNATION GROUPS:
     = 2,IS NULL
+    == 2,IS NULL
     <> 2,IS NULL
     != 2,IS NULL
     > 2,IS NULL
@@ -931,6 +1017,7 @@ ERROR: Syntax error: Unexpected keyword IS [at 4:5]
 --
 ALTERNATION GROUPS:
     = 2,IS NOT NULL
+    == 2,IS NOT NULL
     <> 2,IS NOT NULL
     != 2,IS NOT NULL
     > 2,IS NOT NULL
@@ -957,6 +1044,20 @@ ALTERNATION GROUPS:
 --
 ERROR: Syntax error: Expression to the left of comparison must be parenthesized [at 4:5]
     = 2
+    ^
+--
+ALTERNATION GROUPS:
+    IN (1,2),== 2
+    NOT IN (1,2),== 2
+    IN (SELECT 1),== 2
+    NOT IN (SELECT 1),== 2
+    IS TRUE,== 2
+    IS NOT TRUE,== 2
+    IS NULL,== 2
+    IS NOT NULL,== 2
+--
+ERROR: Syntax error: Expression to the left of comparison must be parenthesized [at 4:5]
+    == 2
     ^
 --
 ALTERNATION GROUPS:

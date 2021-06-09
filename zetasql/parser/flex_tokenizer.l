@@ -647,6 +647,7 @@ window { return BisonParserImpl::token::KW_WINDOW; }
 with { return BisonParserImpl::token::KW_WITH; }
 within { return BisonParserImpl::token::KW_WITHIN; }
 write { return BisonParserImpl::token::KW_WRITE; }
+xor { return BisonParserImpl::token::KW_XOR; }
 zone { return BisonParserImpl::token::KW_ZONE; }
  /* END_KEYWORDS -- Do not remove! */
 
@@ -832,6 +833,9 @@ zone { return BisonParserImpl::token::KW_ZONE; }
 "="                       { return '='; }
 "!="                      {
   return BisonParserImpl::token::KW_NOT_EQUALS_C_STYLE;
+}
+"=="                      {
+  return BisonParserImpl::token::KW_EQUALS_C_STYLE;
 }
 
 "<="                      { return BisonParserImpl::token::KW_LESS_EQUALS; }

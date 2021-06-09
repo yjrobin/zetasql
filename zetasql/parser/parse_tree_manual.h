@@ -1841,6 +1841,7 @@ class ASTBinaryExpression final : public ASTExpression {
     IDIVIDE,      // "div", integer division
     MOD,          // "%"
     CONCAT_OP,    // "||"
+    XOR,          // "XOR"
     DISTINCT,     // "IS DISTINCT FROM"
   };
 

@@ -750,6 +750,8 @@ std::string ASTBinaryExpression::GetSQLForOperator() const {
       return "%";
     case CONCAT_OP:
       return "||";
+    case XOR:
+      return "XOR";
     case DISTINCT:
       return is_not_ ? "IS NOT DISTINCT FROM" : "IS DISTINCT FROM";
   }

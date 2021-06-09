@@ -507,6 +507,7 @@ class DashedIdentifierTmpNode final : public zetasql::ASTNode {
 %token '=' "="
 %token KW_NOT_EQUALS_C_STYLE "!="
 %token KW_NOT_EQUALS_SQL_STYLE "<>"
+%token KW_EQUALS_C_STYLE "=="
 %token '<' "<"
 %token KW_LESS_EQUALS "<="
 %token '>' ">"
@@ -553,8 +554,9 @@ class DashedIdentifierTmpNode final : public zetasql::ASTNode {
 %left ".*"
 %left "OR"
 %left "AND"
+%left "XOR"
 %left UNARY_NOT_PRECEDENCE
-%nonassoc "=" "<>" ">" "<" ">=" "<=" "!=" "LIKE" "IN" "DISTINCT" "BETWEEN" "IS" "NOT_SPECIAL"
+%nonassoc "=" "==" "<>" ">" "<" ">=" "<=" "!=" "LIKE" "IN" "DISTINCT" "BETWEEN" "IS" "NOT_SPECIAL"
 %left "|"
 %left "^"
 %left "&"
@@ -750,6 +752,7 @@ using zetasql::ASTDropStatement;
 %token KW_WINDOW "WINDOW"
 %token KW_WITH "WITH"
 %token KW_UNNEST "UNNEST"
+%token KW_XOR "XOR"
 
 // These keywords may not be used in the grammar currently but are reserved
 // for future use.
@@ -5213,6 +5216,7 @@ unnest_expression_with_opt_alias_and_offset:
 // This rule returns the JavaCC operator id for the operator.
 comparative_operator:
     "=" { $$ = zetasql::ASTBinaryExpression::EQ; }
+    | "==" { $$ = zetasql::ASTBinaryExpression::EQ;}
     | "!=" { $$ = zetasql::ASTBinaryExpression::NE; }
     | "<>" { $$ = zetasql::ASTBinaryExpression::NE2; }
     | "<" { $$ = zetasql::ASTBinaryExpression::LT; }
@@ -5392,6 +5396,21 @@ expression:
         } else {
           $$ = MAKE_NODE(ASTDotIdentifier, @2, @3, {$1, $3});
         }
+      }
+    | expression "XOR" expression %prec "XOR"
+      {
+        // NOT has lower precedence but can be parsed unparenthesized in the
+        // rhs because it is not ambiguous. This is not allowed. Other
+        // expressions with lower precedence wouldn't be parsed as children, so
+        // we don't have to check for those.
+        if (IsUnparenthesizedNotExpression($3)) {
+          YYERROR_UNEXPECTED_AND_ABORT_AT(@3);
+        }
+        auto* binary_expression =
+            MAKE_NODE(ASTBinaryExpression, @1, @3, {$1, $3});
+        binary_expression->set_op(
+            zetasql::ASTBinaryExpression::XOR);
+        $$ = binary_expression;
       }
     | expression "OR" expression %prec "OR"
       {
@@ -7166,6 +7185,7 @@ reserved_keyword_rule:
     | "SOME"
     | "TREAT"
     | "WITHIN"
+    | "XOR"
     // END_RESERVED_KEYWORD_RULE -- Do not remove this!
     ;
 

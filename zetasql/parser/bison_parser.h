@@ -252,6 +252,12 @@ class BisonParser {
     *ast_nodes = std::move(*allocated_ast_nodes_);
   }
 
+  void InitAllocatedASTNodes() {
+    for (const auto& ast_node : *allocated_ast_nodes_) {
+      ast_node->InitFields();
+    }
+  }
+
  private:
   // Identifiers and literal values are allocated from this arena. Not owned.
   // Only valid during Parse().
