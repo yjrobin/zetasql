@@ -148,7 +148,7 @@ jobs:
       - name: build zetasql parser dependencies
         if: ${{ github.event_name == 'push' }}
         run: |
-          bazel query 'deps(${{ env.target }})' |grep //zetasql|xargs bazel build ${{ env.build_argv }}
+          bazel query 'deps(${{ env.target }})' |grep //zetasql | grep -v "test" | xargs bazel build ${{ env.build_argv }}
           bazel build "@com_googleapis_googleapis//:all" ${{ env.build_argv }}
           bazel query "@com_google_file_based_test_driver//..." |xargs bazel build ${{ env.build_argv }}
           bazel build "@com_googlesource_code_re2//:re2" ${{ env.build_argv }}
