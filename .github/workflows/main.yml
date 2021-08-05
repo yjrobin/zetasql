@@ -6,7 +6,7 @@ name: Build
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ master, feat/hyrbidse-zetasql]
+    branches: [ master, feat/hybridse-zetasql]
     tags:
       - v*
   pull_request:
@@ -20,107 +20,10 @@ env:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  debian-build:
-    runs-on: ubuntu-latest
-    container: 'debian:buster'
-    timeout-minutes: 120
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-
-      - name: setup java
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'adopt' # See 'Supported distributions' for available options
-          java-version: '11'
-
-      - name: install deps (debian)
-        run: |
-          apt-get update
-          DEBIAN_FRONTEND=noninteractive apt-get install -y -q curl build-essential unzip python3
-          update-alternatives --install /usr/bin/python python /usr/bin/python3 100
-
-      # Runs a single command using the runners shell
-      - name: Install Bazelisk
-        run: |
-          curl --create-dirs -SLo /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.8.0/bazelisk-linux-amd64
-          chmod +x /usr/local/bin/bazel
-
-      - name: print toolchain info
-        run: |
-          ldd --version
-          gcc -v
-          g++ -v
-          python -V
-          java -version
-
-      - name: Build
-        run: |
-          bazel build ${{ env.build_argv }} ${{ env.target }}
-
-      - name: Test
-        run: |
-          bazel test ${{ env.build_argv }} --test_summary=detailed ${{ env.target }}
-
-
-  centos7-build:
-    strategy:
-      fail-fast: false
-      matrix:
-        toolchain: ['devtoolset-8', 'devtoolset-9']
-        container: ['centos:7']
-
-    runs-on: ubuntu-latest
-    container: ${{ matrix.container }}
-    timeout-minutes: 120
-    env:
-      BAZEL_LINKOPTS: '-static-libstdc++:-lm'
-      BAZEL_LINKLIBS: '-l%:libstdc++.a'
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: install deps (centos)
-        run: |
-          yum install -y java-11-openjdk-devel curl unzip
-          yum install -y centos-release-scl
-          yum install -y ${{ matrix.toolchain }} rh-python38
-
-      - name: Install Bazelisk
-        run: |
-          curl --create-dirs -SLo /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.7.5/bazelisk-linux-amd64
-          chmod +x /usr/local/bin/bazel
-
-      - name: print toolchain info
-        run: |
-          source /opt/rh/${{ matrix.toolchain }}/enable
-          source /opt/rh/rh-python38/enable
-          ldd --version
-          gcc -v
-          g++ -v
-          python -V
-          java -version
-
-      # Runs a set of commands using the runners shell
-      - name: Build
-        run: |
-          source /opt/rh/${{ matrix.toolchain }}/enable
-          source /opt/rh/rh-python38/enable
-          bazel build ${{ env.build_argv }} ${{ env.target }}
-
-      - name: Test
-        run: |
-          source /opt/rh/${{ matrix.toolchain }}/enable
-          source /opt/rh/rh-python38/enable
-          bazel test ${{ env.build_argv }} --test_summary=detailed --test_output=errors ${{ env.target }}
-
-
   linux-build:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/aceforeverd/hybridsql-base:0.0.8
+      image: ghcr.io/aceforeverd/hybridsql-base:0.4.0
     env:
       BAZEL_LINKOPTS: '-static-libstdc++:-lm'
       BAZEL_LINKLIBS: '-l%:libstdc++.a'
@@ -139,20 +42,7 @@ jobs:
         run: |
           source /opt/rh/devtoolset-8/enable
           source /opt/rh/rh-python38/enable
-          bazel build ${{ env.target }} ${{ env.build_argv }}
-
-      - name: Test
-        run: |
-          bazel test ${{ env.build_argv }} --test_summary=detailed ${{ env.target }}
-
-      - name: build zetasql parser dependencies
-        if: ${{ github.event_name == 'push' }}
-        run: |
-          bazel clean
-          bazel query 'deps(//zetasql/parser:parser)' |grep //zetasql | xargs bazel build ${{ env.build_argv }}
-          bazel build "@com_googleapis_googleapis//:all" ${{ env.build_argv }}
-          bazel query "@com_google_file_based_test_driver//..." |xargs bazel build ${{ env.build_argv }}
-          bazel build "@com_googlesource_code_re2//:re2" ${{ env.build_argv }}
+          ./build_zetasql_parser.sh
 
       - name: Determine Version
         if: ${{ github.event_name == 'push' }}
@@ -195,23 +85,10 @@ jobs:
         run: |
           brew install coreutils
           brew install binutils
-      - name: print toolchain info
-        run: |
-          gcc -v
-          g++ -v
-          python -V
-          java -version
 
       - name: build
         run: |
-          bazel build ${{ env.build_argv }} ${{ env.target }}
-          bazel build "@com_googleapis_googleapis//:all" ${{ env.build_argv }}
-          bazel build "@com_google_file_based_test_driver//file_based_test_driver:all" ${{ env.build_argv }}
-          bazel build "@com_googlesource_code_re2//:re2" ${{ env.build_argv }}
-
-      - name: test
-        run: |
-          bazel test ${{ env.build_argv }} --test_summary=detailed ${{ env.target }}
+          ./build_zetasql_parser.sh
 
       - name: Determine Version
         if: ${{ github.event_name == 'push' }}
