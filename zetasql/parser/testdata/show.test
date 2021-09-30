@@ -180,6 +180,24 @@ ShowStatement [0-29]
 SHOW `CREATE PROCEDURE` FROM db.name
 ==
 
+SHOW DEPLOYMENTS;
+--
+ShowStatement [0-16]
+  Identifier(DEPLOYMENTS) [5-16]
+--
+SHOW DEPLOYMENTS
+==
+
+SHOW DEPLOYMENT deploy_service_1;
+--
+ShowStatement [0-32]
+  Identifier(`DEPLOYMENT`) [5-15]
+  PathExpression [16-32]
+    Identifier(deploy_service_1) [16-32]
+--
+SHOW `DEPLOYMENT` FROM deploy_service_1
+==
+
 SHOW `MATERIALIZED VIEWS`;
 --
 ShowStatement [0-25]
