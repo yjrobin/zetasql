@@ -163,21 +163,23 @@ SHOW CREATE PROCEDURE name;
 --
 ShowStatement [0-26]
   Identifier(`CREATE PROCEDURE`) [5-21]
-  PathExpression [22-26]
-    Identifier(name) [22-26]
+  ShowTargetExpression [22-26]
+    PathExpression [22-26]
+      Identifier(name) [22-26]
 --
-SHOW `CREATE PROCEDURE` FROM name
+SHOW CREATE PROCEDURE name
 ==
 
 SHOW CREATE PROCEDURE db.name;
 --
 ShowStatement [0-29]
   Identifier(`CREATE PROCEDURE`) [5-21]
-  PathExpression [22-29]
-    Identifier(db) [22-24]
-    Identifier(name) [25-29]
+  ShowTargetExpression [22-29]
+    PathExpression [22-29]
+      Identifier(db) [22-24]
+      Identifier(name) [25-29]
 --
-SHOW `CREATE PROCEDURE` FROM db.name
+SHOW CREATE PROCEDURE db.name
 ==
 
 SHOW DEPLOYMENTS;
@@ -191,11 +193,12 @@ SHOW DEPLOYMENTS
 SHOW DEPLOYMENT deploy_service_1;
 --
 ShowStatement [0-32]
-  Identifier(`DEPLOYMENT`) [5-15]
-  PathExpression [16-32]
-    Identifier(deploy_service_1) [16-32]
+  Identifier(DEPLOYMENT) [5-15]
+  ShowTargetExpression [16-32]
+    PathExpression [16-32]
+      Identifier(deploy_service_1) [16-32]
 --
-SHOW `DEPLOYMENT` FROM deploy_service_1
+SHOW DEPLOYMENT deploy_service_1
 ==
 
 SHOW `MATERIALIZED VIEWS`;

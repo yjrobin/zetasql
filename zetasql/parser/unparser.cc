@@ -849,7 +849,17 @@ void Unparser::visitASTDescriptor(const ASTDescriptor* node, void* data) {
 
 void Unparser::visitASTShowStatement(const ASTShowStatement* node, void* data) {
   print("SHOW");
-  node->identifier()->Accept(this, data);
+  if (node->identifier()->GetAsStringView() == "CREATE PROCEDURE") {
+    // HACK: this is a hack to pass the unparser test for show statement with target name,
+    // e.g in 'show create procedure p1', unparse sql is 'SHOW `CREATE PROCEDURE` p1',
+    // which will fail to compile
+    print("CREATE PROCEDURE");
+  } else {
+    node->identifier()->Accept(this, data);
+  }
+  if (node->optional_target_name() != nullptr) {
+    node->optional_target_name()->Accept(this, data);
+  }
   if (node->optional_name() != nullptr) {
     print("FROM");
     node->optional_name()->Accept(this, data);
@@ -858,6 +868,10 @@ void Unparser::visitASTShowStatement(const ASTShowStatement* node, void* data) {
     print("LIKE");
     node->optional_like_string()->Accept(this, data);
   }
+}
+
+void Unparser::visitASTShowTargetExpression(const ASTShowTargetExpression* node, void* data) {
+  node->target()->Accept(this, data);
 }
 
 void Unparser::visitASTBeginStatement(

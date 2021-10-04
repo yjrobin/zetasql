@@ -672,7 +672,6 @@ using zetasql::ASTDropStatement;
 %token KW_CURRENT "CURRENT"
 %token KW_DEFAULT "DEFAULT"
 %token KW_DEFINE "DEFINE"
-%token KW_DEPLOYMENT "DEPLOYMENT"
 %token KW_DESC "DESC"
 %token KW_DISTINCT "DISTINCT"
 %token KW_IDIVIDE "DIV"
@@ -818,6 +817,7 @@ using zetasql::ASTDropStatement;
 %token KW_DECLARE "DECLARE"
 %token KW_DEFINER "DEFINER"
 %token KW_DELETE "DELETE"
+%token KW_DEPLOYMENT "DEPLOYMENT"
 %token KW_DESCRIBE "DESCRIBE"
 %token KW_DESCRIPTOR "DESCRIPTOR"
 %token KW_DETERMINISTIC "DETERMINISTIC"
@@ -1262,6 +1262,7 @@ using zetasql::ASTDropStatement;
 %type <node> select_list
 %type <node> select_list_prefix
 %type <node> show_statement
+%type <expression> show_target_expression
 %type <identifier> show_target
 %type <identifier> show_with_name_target
 %type <node> simple_column_schema_inner
@@ -3500,7 +3501,7 @@ show_statement:
       {
         $$ = MAKE_NODE(ASTShowStatement, @$, {$2, $3, $4});
       }
-    | "SHOW" show_with_name_target path_expression
+    | "SHOW" show_with_name_target show_target_expression
       {
         $$ = MAKE_NODE(ASTShowStatement, @$, {$2, $3});
       }
@@ -3527,11 +3528,16 @@ show_with_name_target:
       $$ = parser->MakeIdentifier(@$, "CREATE PROCEDURE");
     }
   | "DEPLOYMENT"
-    // in order to avoid shift/reduce conflict with `show_target`,
-    // "DEPLOYMENT" is marked as reserved keyword
     {
       $$ = parser->MakeIdentifier(@$, "DEPLOYMENT");
     }
+  ;
+
+show_target_expression:
+  path_expression
+  {
+    $$ = MAKE_NODE(ASTShowTargetExpression, @$, {$1});
+  }
   ;
 
 opt_like_string_literal:
@@ -7135,7 +7141,6 @@ reserved_keyword_rule:
     | "CURRENT"
     | "DEFAULT"
     | "DEFINE"
-    | "DEPLOYMENT"
     | "DESC"
     | "DISTINCT"
     | "DIV"
@@ -7268,6 +7273,7 @@ keyword_as_identifier:
     | "DECLARE"
     | "DEFINER"
     | "DELETE"
+    | "DEPLOYMENT"
     | "DESCRIBE"
     | "DETERMINISTIC"
     | "DO"

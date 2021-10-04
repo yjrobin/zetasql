@@ -349,6 +349,7 @@ static absl::flat_hash_map<ASTNodeKind, std::string> CreateNodeNamesMap() {
   map[AST_WITH_CONNECTION_CLAUSE] = "WithConnectionClause";
   map[AST_WITH_GROUP_ROWS] = "WithGroupRows";
   map[AST_WITH_OFFSET] = "WithOffset";
+  map[AST_SHOW_TARGET_EXPRESSION] = "ShowTargetExpression";
   map[AST_WITH_WEIGHT] = "WithWeight";
   map[AST_WITH_PARTITION_COLUMNS_CLAUSE] = "WithPartitionColumnsClause";
   for (int kind = kFirstASTNodeKind; kind <= kLastASTNodeKind;

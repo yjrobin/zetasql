@@ -183,6 +183,27 @@ class ASTDescriptorColumnList final : public ASTNode {
   absl::Span<const ASTDescriptorColumn* const> descriptor_column_list_;
 };
 
+class ASTShowTargetExpression final : public ASTExpression {
+ public:
+  static constexpr ASTNodeKind kConcreteNodeKind = AST_SHOW_TARGET_EXPRESSION;
+
+  ASTShowTargetExpression() : ASTExpression(kConcreteNodeKind) {}
+  void Accept(ParseTreeVisitor* visitor, void* data) const override;
+  zetasql_base::StatusOr<VisitResult> Accept(
+      NonRecursiveParseTreeVisitor* visitor) const override;
+
+  const ASTPathExpression* target() const { return target_; }
+
+  bool IsAllowedInComparison() const override { return parenthesized(); }
+
+ private:
+  void InitFields() final {
+    FieldLoader fl(this);
+    fl.AddRequired(&target_);
+  }
+  const ASTPathExpression* target_ = nullptr;
+};
+
 // Represents a SHOW statement.
 class ASTShowStatement final : public ASTStatement {
  public:
@@ -198,14 +219,20 @@ class ASTShowStatement final : public ASTStatement {
     return optional_like_string_;
   }
 
+  const ASTShowTargetExpression* optional_target_name() const {
+    return optional_target_name_;
+  }
+
  private:
   void InitFields() final {
     FieldLoader fl(this);
     fl.AddRequired(&identifier_);
+    fl.AddOptional(&optional_target_name_, AST_SHOW_TARGET_EXPRESSION);
     fl.AddOptional(&optional_name_, AST_PATH_EXPRESSION);
     fl.AddOptional(&optional_like_string_, AST_STRING_LITERAL);
   }
   const ASTIdentifier* identifier_ = nullptr;
+  const ASTShowTargetExpression* optional_target_name_ = nullptr;
   const ASTPathExpression* optional_name_ = nullptr;
   const ASTStringLiteral* optional_like_string_ = nullptr;
 };
