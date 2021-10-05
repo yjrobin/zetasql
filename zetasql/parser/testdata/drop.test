@@ -91,6 +91,15 @@ DropStatement TABLE [0-18]
 DROP TABLE bar.baz
 ==
 
+drop deployment foo;
+--
+DropStatement DEPLOYMENT [0-19]
+  PathExpression [16-19]
+    Identifier(foo) [16-19]
+--
+DROP DEPLOYMENT foo
+==
+
 drop foo.bar baz;
 --
 ERROR: foo is not a supported object type [at 1:6]

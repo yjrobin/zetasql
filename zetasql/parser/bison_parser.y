@@ -1758,6 +1758,8 @@ schema_object_kind:
       { $$ = zetasql::SchemaObjectKind::kSchema; }
     | "VIEW"
       { $$ = zetasql::SchemaObjectKind::kView; }
+    | "DEPLOYMENT"
+      { $$ = zetasql::SchemaObjectKind::kDeployment; }
     ;
 
 alter_statement:
