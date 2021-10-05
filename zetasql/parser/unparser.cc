@@ -874,6 +874,15 @@ void Unparser::visitASTShowTargetExpression(const ASTShowTargetExpression* node,
   node->target()->Accept(this, data);
 }
 
+void Unparser::visitASTDeployStatement(const ASTDeployStatement *node, void *data) {
+    print("DEPLOY");
+    node->name()->Accept(this, data);
+    if (node->is_if_exists()) {
+        print("IF EXISTS");
+    }
+    node->stmt()->Accept(this, data);
+}
+
 void Unparser::visitASTBeginStatement(
     const ASTBeginStatement* node, void* data) {
   print("BEGIN TRANSACTION");

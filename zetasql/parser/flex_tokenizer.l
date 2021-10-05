@@ -413,6 +413,7 @@ default { return BisonParserImpl::token::KW_DEFAULT; }
 define { return BisonParserImpl::token::KW_DEFINE; }
 definer { return BisonParserImpl::token::KW_DEFINER; }
 delete { return BisonParserImpl::token::KW_DELETE; }
+deploy { return BisonParserImpl::token::KW_DEPLOY; }
 deployment { return BisonParserImpl::token::KW_DEPLOYMENT; }
 desc { return BisonParserImpl::token::KW_DESC; }
 descriptor { return BisonParserImpl::token::KW_DESCRIPTOR; }

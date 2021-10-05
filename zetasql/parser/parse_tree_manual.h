@@ -642,6 +642,32 @@ class ASTDropMaterializedViewStatement final : public ASTDdlStatement {
   bool is_if_exists_ = false;
 };
 
+class ASTDeployStatement final : public ASTStatement {
+ public:
+  static constexpr ASTNodeKind kConcreteNodeKind = AST_DEPLOY_STATEMENT;
+
+  ASTDeployStatement() : ASTStatement(kConcreteNodeKind) {}
+  void Accept(ParseTreeVisitor* visitor, void* data) const override;
+  zetasql_base::StatusOr<VisitResult> Accept(
+      NonRecursiveParseTreeVisitor* visitor) const override;
+
+  const ASTIdentifier* name() const { return name_; }
+  const ASTStatement* stmt() const { return stmt_; }
+
+  bool is_if_exists() const { return is_if_exists_; }
+  void set_is_if_exists(bool value) { is_if_exists_ = value; }
+
+ private:
+  void InitFields() final {
+    FieldLoader fl(this);
+    fl.AddRequired(&name_);
+    fl.AddRequired(&stmt_);
+  }
+  const ASTIdentifier* name_ = nullptr;
+  const ASTStatement* stmt_ = nullptr;
+  bool is_if_exists_ = false;
+};
+
 // Represents a RENAME statement.
 class ASTRenameStatement final : public ASTStatement {
  public:

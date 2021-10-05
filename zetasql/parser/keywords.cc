@@ -106,6 +106,7 @@ constexpr KeywordInfoPOD kAllKeywords[] = {
     {"define", KW_DEFINE, KeywordInfo::kReserved},
     {"definer", KW_DEFINER},
     {"delete", KW_DELETE},
+    {"deploy", KW_DEPLOY},
     {"deployment", KW_DEPLOYMENT},
     {"desc", KW_DESC, KeywordInfo::kReserved},
     {"describe", KW_DESCRIBE},

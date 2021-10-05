@@ -817,6 +817,7 @@ using zetasql::ASTDropStatement;
 %token KW_DECLARE "DECLARE"
 %token KW_DEFINER "DEFINER"
 %token KW_DELETE "DELETE"
+%token KW_DEPLOY "DEPLOY"
 %token KW_DEPLOYMENT "DEPLOYMENT"
 %token KW_DESCRIBE "DESCRIBE"
 %token KW_DESCRIPTOR "DESCRIPTOR"
@@ -998,6 +999,7 @@ using zetasql::ASTDropStatement;
 %type <expression> date_or_time_literal
 %type <node> define_table_statement
 %type <node> delete_statement
+%type <node> deploy_statement
 %type <node> describe_info
 %type <node> describe_statement
 %type <node> dml_statement
@@ -1579,6 +1581,7 @@ sql_statement_body:
     | import_statement
     | module_statement
     | use_statement
+    | deploy_statement
     ;
 
 query_statement:
@@ -7275,6 +7278,7 @@ keyword_as_identifier:
     | "DECLARE"
     | "DEFINER"
     | "DELETE"
+    | "DEPLOY"
     | "DEPLOYMENT"
     | "DESCRIBE"
     | "DETERMINISTIC"
@@ -8165,6 +8169,15 @@ on_path_expression:
       }
     ;
 
+deploy_statement:
+    "DEPLOY" identifier opt_if_exists unterminated_sql_statement
+    {
+      auto deploy_stmt = MAKE_NODE(ASTDeployStatement, @$, {$2, $4});
+      deploy_stmt->set_is_if_exists($3);
+      $$ = deploy_stmt;
+    }
+    ;
+
 opt_drop_mode:
     "RESTRICT" { $$ = zetasql::ASTDropStatement::DropMode::RESTRICT; }
     | "CASCADE" { $$ = zetasql::ASTDropStatement::DropMode::CASCADE; }
@@ -8700,6 +8713,7 @@ next_statement_kind_without_hint:
     | describe_keyword
       { $$ = zetasql::ASTDescribeStatement::kConcreteNodeKind; }
     | "SHOW" { $$ = zetasql::ASTShowStatement::kConcreteNodeKind; }
+    | "DEPLOY" { $$ = zetasql::ASTDeployStatement::kConcreteNodeKind; }
     | "DROP" "ALL" "ROW" opt_access "POLICIES"
       {
         $$ = zetasql::ASTDropAllRowAccessPoliciesStatement::kConcreteNodeKind;
