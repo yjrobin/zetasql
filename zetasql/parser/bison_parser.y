@@ -71,6 +71,7 @@ enum class TableOrTableFunctionKeywords {
 enum class ImportType {
   kModule,
   kProto,
+  kTable,
 };
 
 // This node is used for temporarily aggregating together components of dashed
@@ -3373,6 +3374,9 @@ import_statement:
           case ImportType::kProto:
             import->set_import_kind(zetasql::ASTImportStatement::PROTO);
             break;
+          case ImportType::kTable:
+            import->set_import_kind(zetasql::ASTImportStatement::TABLE);
+            break;
         }
         $$ = import;
       }
@@ -5292,6 +5296,7 @@ shift_operator:
 import_type:
     "MODULE" { $$ = ImportType::kModule; }
     | "PROTO" { $$ = ImportType::kProto; }
+    | "TABLE" { $$ = ImportType::kTable; }
     ;
 
 // Returns NotKeywordPresence to indicate whether NOT was present.
