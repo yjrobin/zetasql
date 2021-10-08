@@ -1053,8 +1053,6 @@ void Unparser::visitASTImportStatement(const ASTImportStatement* node,
     print("MODULE");
   } else if (node->import_kind() == ASTImportStatement::PROTO) {
     print("PROTO");
-  } else if (node->import_kind() == ASTImportStatement::TABLE) {
-    print("TABLE");
   } else {
     print("<invalid import type>");
   }

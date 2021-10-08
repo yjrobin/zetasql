@@ -705,7 +705,7 @@ class ASTImportStatement final : public ASTStatement {
   zetasql_base::StatusOr<VisitResult> Accept(
       NonRecursiveParseTreeVisitor* visitor) const override;
 
-  enum ImportKind { MODULE, PROTO, TABLE };
+  enum ImportKind { MODULE, PROTO };
   void set_import_kind(ImportKind import_kind) { import_kind_ = import_kind; }
   const ImportKind import_kind() const { return import_kind_; }
 

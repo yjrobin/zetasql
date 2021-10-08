@@ -58,23 +58,6 @@ ImportStatement [0-34]
 IMPORT MODULE foo.bar AS `bar.baz`
 ==
 
-import table 'file://raw_data.csv';
---
-ImportStatement [0-34]
-  StringLiteral('file://raw_data.csv') [13-34]
---
-IMPORT TABLE 'file://raw_data.csv'
-==
-
-import table raw_data;
---
-ImportStatement [0-21]
-  PathExpression [13-21]
-    Identifier(raw_data) [13-21]
---
-IMPORT TABLE raw_data
-==
-
 # aliases require 'as'
 import module foo bar;
 --
@@ -251,23 +234,23 @@ IMPORT MODULE module.`all`
 # Import reserved keyword.
 import select foo;
 --
-ERROR: Syntax error: Expected keyword MODULE or keyword PROTO or keyword TABLE but got keyword SELECT [at 1:8]
+ERROR: Syntax error: Expected keyword MODULE or keyword PROTO but got keyword SELECT [at 1:8]
 import select foo;
        ^
 ==
 
 # Import non-reserved keyword.
-import database foo;
+import table foo;
 --
-ERROR: Syntax error: Expected keyword MODULE or keyword PROTO or keyword TABLE but got keyword DATABASE [at 1:8]
-import database foo;
+ERROR: Syntax error: Expected keyword MODULE or keyword PROTO but got keyword TABLE [at 1:8]
+import table foo;
        ^
 ==
 
 # Import identifier
 import non_keyword foo;
 --
-ERROR: Syntax error: Expected keyword MODULE or keyword PROTO or keyword TABLE but got identifier "non_keyword" [at 1:8]
+ERROR: Syntax error: Expected keyword MODULE or keyword PROTO but got identifier "non_keyword" [at 1:8]
 import non_keyword foo;
        ^
 ==
@@ -275,7 +258,7 @@ import non_keyword foo;
 # import path expression
 import a.b foo;
 --
-ERROR: Syntax error: Expected keyword MODULE or keyword PROTO or keyword TABLE but got identifier "a" [at 1:8]
+ERROR: Syntax error: Expected keyword MODULE or keyword PROTO but got identifier "a" [at 1:8]
 import a.b foo;
        ^
 ==
@@ -291,7 +274,7 @@ import module.b foo;
 # import path expression
 import a.module foo;
 --
-ERROR: Syntax error: Expected keyword MODULE or keyword PROTO or keyword TABLE but got identifier "a" [at 1:8]
+ERROR: Syntax error: Expected keyword MODULE or keyword PROTO but got identifier "a" [at 1:8]
 import a.module foo;
        ^
 ==
@@ -299,7 +282,7 @@ import a.module foo;
 # Import literal
 import 123 foo;
 --
-ERROR: Syntax error: Expected keyword MODULE or keyword PROTO or keyword TABLE but got integer literal "123" [at 1:8]
+ERROR: Syntax error: Expected keyword MODULE or keyword PROTO but got integer literal "123" [at 1:8]
 import 123 foo;
        ^
 ==
@@ -307,7 +290,7 @@ import 123 foo;
 # Import literal
 import '123' foo;
 --
-ERROR: Syntax error: Expected keyword MODULE or keyword PROTO or keyword TABLE but got string literal '123' [at 1:8]
+ERROR: Syntax error: Expected keyword MODULE or keyword PROTO but got string literal '123' [at 1:8]
 import '123' foo;
        ^
 ==
@@ -394,14 +377,14 @@ IMPORT MODULE foo AS INT64
 # Non-supported clause.
 import or replace module foo;
 --
-ERROR: Syntax error: Expected keyword MODULE or keyword PROTO or keyword TABLE but got keyword OR [at 1:8]
+ERROR: Syntax error: Expected keyword MODULE or keyword PROTO but got keyword OR [at 1:8]
 import or replace module foo;
        ^
 ==
 
 import if not exists module foo;
 --
-ERROR: Syntax error: Expected keyword MODULE or keyword PROTO or keyword TABLE but got keyword IF [at 1:8]
+ERROR: Syntax error: Expected keyword MODULE or keyword PROTO but got keyword IF [at 1:8]
 import if not exists module foo;
        ^
 ==
