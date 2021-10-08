@@ -845,6 +845,7 @@ using zetasql::ASTDropStatement;
 %token KW_IMMUTABLE "IMMUTABLE"
 %token KW_IMPORT "IMPORT"
 %token KW_INCLUDE "INCLUDE"
+%token KW_INFILE "INFILE"
 %token KW_INOUT "INOUT"
 %token KW_INSERT "INSERT"
 %token KW_INVOKER "INVOKER"
@@ -855,6 +856,7 @@ using zetasql::ASTDropStatement;
 %token KW_LANGUAGE "LANGUAGE"
 %token KW_LEAVE "LEAVE"
 %token KW_LEVEL "LEVEL"
+%token KW_LOAD "LOAD"
 %token KW_LOOP "LOOP"
 %token KW_MATCH "MATCH"
 %token KW_MATCHED "MATCHED"
@@ -1075,6 +1077,8 @@ using zetasql::ASTDropStatement;
 %type <node> repeat_statement
 %type <node> for_in_statement
 %type <node> import_statement
+%type <node> load_statement
+%type <node> load_data_statement
 %type <node> variable_declaration
 %type <node> opt_default_expression
 %type <node> identifier_list
@@ -1582,6 +1586,7 @@ sql_statement_body:
     | module_statement
     | use_statement
     | deploy_statement
+    | load_statement
     ;
 
 query_statement:
@@ -3376,6 +3381,20 @@ import_statement:
         }
         $$ = import;
       }
+    ;
+
+load_statement:
+    load_data_statement
+    {
+      $$ = $1;
+    }
+    ;
+
+load_data_statement:
+    "LOAD" "DATA" "INFILE" string_literal "INTO" "TABLE" path_expression opt_options_list
+    {
+      $$ = MAKE_NODE(ASTLoadDataStatement, @$, {$4, $7, $8});
+    }
     ;
 
 module_statement:
@@ -7307,6 +7326,7 @@ keyword_as_identifier:
     | "IMMUTABLE"
     | "IMPORT"
     | "INCLUDE"
+    | "INFILE"
     | "INSERT"
     | "INOUT"
     | "INVOKER"
@@ -7317,6 +7337,7 @@ keyword_as_identifier:
     | "LANGUAGE"
     | "LEAVE"
     | "LEVEL"
+    | "LOAD"
     | "LOOP"
     | "MATCH"
     | "MATCHED"
@@ -8842,6 +8863,8 @@ next_statement_kind_without_hint:
       { $$ = zetasql::ASTReturnStatement::kConcreteNodeKind; }
     | "IMPORT"
       { $$ = zetasql::ASTImportStatement::kConcreteNodeKind; }
+    | "LOAD" "DATA"
+      { $$ = zetasql::ASTLoadDataStatement::kConcreteNodeKind; }
     | "MODULE"
       { $$ = zetasql::ASTModuleStatement::kConcreteNodeKind; }
     | "ANALYZE"

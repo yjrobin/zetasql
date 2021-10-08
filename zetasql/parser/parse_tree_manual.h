@@ -737,6 +737,38 @@ class ASTImportStatement final : public ASTStatement {
   const ASTOptionsList* options_list_ = nullptr;  // May be NULL.
 };
 
+// super class of all load statements
+class ASTLoadStatement : public ASTStatement {
+ public:
+  explicit ASTLoadStatement(ASTNodeKind kind) : ASTStatement(kind) {}
+};
+
+// LOAD DATA INFILE 'filename' INTO TABLE 'table name' OPTIONS (...)
+class ASTLoadDataStatement final : public ASTLoadStatement {
+ public:
+  static constexpr ASTNodeKind kConcreteNodeKind = AST_LOAD_DATA_STATEMENT;
+  explicit ASTLoadDataStatement() : ASTLoadStatement(kConcreteNodeKind) {}
+  void Accept(ParseTreeVisitor* visitor, void* data) const override;
+  zetasql_base::StatusOr<VisitResult> Accept(
+      NonRecursiveParseTreeVisitor* visitor) const override;
+
+  const ASTStringLiteral* in_file() const { return in_file_; }
+  const ASTPathExpression* table_name() const { return table_name_; }
+  const ASTOptionsList* options_list() const { return options_list_; }
+
+ private:
+  void InitFields() final {
+    FieldLoader fl(this);
+    fl.AddRequired(&in_file_);
+    fl.AddRequired(&table_name_);
+    fl.AddOptional(&options_list_, AST_OPTIONS_LIST);
+  }
+
+  const ASTStringLiteral* in_file_ = nullptr;
+  const ASTPathExpression* table_name_ = nullptr;
+  const ASTOptionsList* options_list_ = nullptr;
+};
+
 class ASTUseStatement final : public ASTStatement {
  public:
   static constexpr ASTNodeKind kConcreteNodeKind = AST_USE_STATEMENT;

@@ -1075,6 +1075,17 @@ void Unparser::visitASTImportStatement(const ASTImportStatement* node,
   }
 }
 
+void Unparser::visitASTLoadDataStatement(const ASTLoadDataStatement* node, void* data) {
+  print("LOAD DATA INFILE");
+  node->in_file()->Accept(this, data);
+  print("INTO TABLE");
+  node->table_name()->Accept(this, data);
+  if (node->options_list() != nullptr) {
+    print("OPTIONS");
+    node->options_list()->Accept(this, data);
+  }
+}
+
 void Unparser::visitASTModuleStatement(const ASTModuleStatement* node,
                                        void* data) {
   print("MODULE");
