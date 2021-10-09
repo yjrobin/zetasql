@@ -752,7 +752,7 @@ class ASTLoadDataStatement final : public ASTLoadStatement {
   zetasql_base::StatusOr<VisitResult> Accept(
       NonRecursiveParseTreeVisitor* visitor) const override;
 
-  const ASTStringLiteral* in_file() const { return in_file_; }
+  const ASTExpression* in_file() const { return in_file_; }
   const ASTPathExpression* table_name() const { return table_name_; }
   const ASTOptionsList* options_list() const { return options_list_; }
 
@@ -764,7 +764,7 @@ class ASTLoadDataStatement final : public ASTLoadStatement {
     fl.AddOptional(&options_list_, AST_OPTIONS_LIST);
   }
 
-  const ASTStringLiteral* in_file_ = nullptr;
+  const ASTExpression* in_file_ = nullptr;
   const ASTPathExpression* table_name_ = nullptr;
   const ASTOptionsList* options_list_ = nullptr;
 };

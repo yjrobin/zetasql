@@ -22,3 +22,26 @@ LoadDataStatement [0-42]
 --
 LOAD DATA INFILE 'data' INTO TABLE db1.foo
 ==
+
+LOAD DATA INFILE @data_file INTO TABLE db1.foo;
+--
+LoadDataStatement [0-46]
+  ParameterExpr [17-27]
+    Identifier(data_file) [18-27]
+  PathExpression [39-46]
+    Identifier(db1) [39-42]
+    Identifier(foo) [43-46]
+--
+LOAD DATA INFILE @data_file INTO TABLE db1.foo
+==
+
+LOAD DATA INFILE ? INTO TABLE db1.foo;
+--
+LoadDataStatement [0-37]
+  ParameterExpr(1) [17-18]
+  PathExpression [30-37]
+    Identifier(db1) [30-33]
+    Identifier(foo) [34-37]
+--
+LOAD DATA INFILE ? INTO TABLE db1.foo
+==

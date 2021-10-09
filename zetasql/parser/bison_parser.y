@@ -3391,7 +3391,7 @@ load_statement:
     ;
 
 load_data_statement:
-    "LOAD" "DATA" "INFILE" string_literal "INTO" "TABLE" path_expression opt_options_list
+    "LOAD" "DATA" "INFILE" string_literal_or_parameter "INTO" "TABLE" path_expression opt_options_list
     {
       $$ = MAKE_NODE(ASTLoadDataStatement, @$, {$4, $7, $8});
     }
