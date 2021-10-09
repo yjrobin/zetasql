@@ -876,10 +876,10 @@ void Unparser::visitASTShowTargetExpression(const ASTShowTargetExpression* node,
 
 void Unparser::visitASTDeployStatement(const ASTDeployStatement *node, void *data) {
     print("DEPLOY");
-    node->name()->Accept(this, data);
-    if (node->is_if_exists()) {
-        print("IF EXISTS");
+    if (node->is_if_not_exists()) {
+        print("IF NOT EXISTS");
     }
+    node->name()->Accept(this, data);
     node->stmt()->Accept(this, data);
 }
 
@@ -1254,7 +1254,7 @@ void Unparser::visitASTUnionTableReferenceList(const ASTUnionTableReferenceList*
   print("UNION");
   UnparseVectorWithSeparator(node->table_references(), data, ", ");
 }
-  
+
 void Unparser::visitASTUnnestExpression(const ASTUnnestExpression* node,
                                         void* data) {
   print("UNNEST(");
@@ -1527,7 +1527,8 @@ void Unparser::visitASTNewConstructor(const ASTNewConstructor* node,
   }
   print(")");
 }
-void Unparser::visitASTIndexDefinition(const ASTIndexDefinition* node, 
+
+void Unparser::visitASTIndexDefinition(const ASTIndexDefinition* node,
                                 void* data) {
   print("INDEX");
   if (node->name() != nullptr) {

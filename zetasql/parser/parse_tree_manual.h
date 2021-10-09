@@ -654,8 +654,8 @@ class ASTDeployStatement final : public ASTStatement {
   const ASTIdentifier* name() const { return name_; }
   const ASTStatement* stmt() const { return stmt_; }
 
-  bool is_if_exists() const { return is_if_exists_; }
-  void set_is_if_exists(bool value) { is_if_exists_ = value; }
+  bool is_if_not_exists() const { return is_if_not_exists_; }
+  void set_is_if_not_exists(bool value) { is_if_not_exists_ = value; }
 
  private:
   void InitFields() final {
@@ -665,7 +665,7 @@ class ASTDeployStatement final : public ASTStatement {
   }
   const ASTIdentifier* name_ = nullptr;
   const ASTStatement* stmt_ = nullptr;
-  bool is_if_exists_ = false;
+  bool is_if_not_exists_ = false;
 };
 
 // Represents a RENAME statement.
@@ -752,7 +752,7 @@ class ASTLoadDataStatement final : public ASTLoadStatement {
   zetasql_base::StatusOr<VisitResult> Accept(
       NonRecursiveParseTreeVisitor* visitor) const override;
 
-  const ASTExpression* in_file() const { return in_file_; }
+  const ASTStringLiteral* in_file() const { return in_file_; }
   const ASTPathExpression* table_name() const { return table_name_; }
   const ASTOptionsList* options_list() const { return options_list_; }
 
@@ -764,7 +764,7 @@ class ASTLoadDataStatement final : public ASTLoadStatement {
     fl.AddOptional(&options_list_, AST_OPTIONS_LIST);
   }
 
-  const ASTExpression* in_file_ = nullptr;
+  const ASTStringLiteral* in_file_ = nullptr;
   const ASTPathExpression* table_name_ = nullptr;
   const ASTOptionsList* options_list_ = nullptr;
 };

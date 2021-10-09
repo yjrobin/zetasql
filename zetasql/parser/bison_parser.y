@@ -3391,7 +3391,7 @@ load_statement:
     ;
 
 load_data_statement:
-    "LOAD" "DATA" "INFILE" string_literal_or_parameter "INTO" "TABLE" path_expression opt_options_list
+    "LOAD" "DATA" "INFILE" string_literal "INTO" "TABLE" path_expression opt_options_list
     {
       $$ = MAKE_NODE(ASTLoadDataStatement, @$, {$4, $7, $8});
     }
@@ -8191,10 +8191,10 @@ on_path_expression:
     ;
 
 deploy_statement:
-    "DEPLOY" identifier opt_if_exists unterminated_sql_statement
+    "DEPLOY" opt_if_not_exists identifier unterminated_sql_statement
     {
-      auto deploy_stmt = MAKE_NODE(ASTDeployStatement, @$, {$2, $4});
-      deploy_stmt->set_is_if_exists($3);
+      auto deploy_stmt = MAKE_NODE(ASTDeployStatement, @$, {$3, $4});
+      deploy_stmt->set_is_if_not_exists($2);
       $$ = deploy_stmt;
     }
     ;
