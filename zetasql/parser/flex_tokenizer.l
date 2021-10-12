@@ -413,6 +413,8 @@ default { return BisonParserImpl::token::KW_DEFAULT; }
 define { return BisonParserImpl::token::KW_DEFINE; }
 definer { return BisonParserImpl::token::KW_DEFINER; }
 delete { return BisonParserImpl::token::KW_DELETE; }
+deploy { return BisonParserImpl::token::KW_DEPLOY; }
+deployment { return BisonParserImpl::token::KW_DEPLOYMENT; }
 desc { return BisonParserImpl::token::KW_DESC; }
 descriptor { return BisonParserImpl::token::KW_DESCRIPTOR; }
 describe { return BisonParserImpl::token::KW_DESCRIBE; }
@@ -484,6 +486,7 @@ in { return BisonParserImpl::token::KW_IN; }
 include { return BisonParserImpl::token::KW_INCLUDE; }
 inout { return BisonParserImpl::token::KW_INOUT; }
 index { return BisonParserImpl::token::KW_INDEX; }
+infile { return BisonParserImpl::token::KW_INFILE; };
 inner { return BisonParserImpl::token::KW_INNER; }
 instance_not_in_window { return BisonParserImpl::token::KW_INSTANCE_NOT_IN_WINDOW; }
 insert { return BisonParserImpl::token::KW_INSERT; }
@@ -505,6 +508,7 @@ left { return BisonParserImpl::token::KW_LEFT; }
 level { return BisonParserImpl::token::KW_LEVEL; }
 like { return BisonParserImpl::token::KW_LIKE; }
 limit { return BisonParserImpl::token::KW_LIMIT; }
+load { return BisonParserImpl::token::KW_LOAD; }
 lookup { return BisonParserImpl::token::KW_LOOKUP; }
 loop { return BisonParserImpl::token::KW_LOOP; }
 match { return BisonParserImpl::token::KW_MATCH; }

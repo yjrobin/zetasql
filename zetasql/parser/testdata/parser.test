@@ -2513,3 +2513,4 @@ ERROR: Syntax error: Function call cannot be applied to this expression. Functio
        ( foo)
        ^
 ==
+

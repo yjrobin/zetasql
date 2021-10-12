@@ -1,0 +1,55 @@
+DEPLOY IF NOT EXISTS data_service_1 SELECT 1;
+--
+DeployStatement [0-44]
+  Identifier(data_service_1) [21-35]
+  QueryStatement [36-44]
+    Query [36-44]
+      Select [36-44]
+        SelectList [43-44]
+          SelectColumn [43-44]
+            IntLiteral(1) [43-44]
+--
+DEPLOY IF NOT EXISTS data_service_1
+SELECT
+  1
+==
+
+DEPLOY deploy create table t1 (a int32, b string);
+--
+DeployStatement [0-49]
+  Identifier(deploy) [7-13]
+  CreateTableStatement [14-49]
+    PathExpression [27-29]
+      Identifier(t1) [27-29]
+    TableElementList [30-49]
+      ColumnDefinition [31-38]
+        Identifier(a) [31-32]
+        SimpleColumnSchema [33-38]
+          PathExpression [33-38]
+            Identifier(int32) [33-38]
+      ColumnDefinition [40-48]
+        Identifier(b) [40-41]
+        SimpleColumnSchema [42-48]
+          PathExpression [42-48]
+            Identifier(string) [42-48]
+--
+DEPLOY deploy CREATE TABLE t1
+(
+  a int32,
+  b string
+)
+==
+
+DEPLOY IF NOT EXISTS SELECT 1;
+--
+ERROR: Syntax error: Unexpected keyword SELECT [at 1:22]
+DEPLOY IF NOT EXISTS SELECT 1;
+                     ^
+==
+
+DEPLOY foo;
+--
+ERROR: Syntax error: Unexpected ";" [at 1:11]
+DEPLOY foo;
+          ^
+==

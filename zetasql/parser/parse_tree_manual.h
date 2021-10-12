@@ -183,6 +183,27 @@ class ASTDescriptorColumnList final : public ASTNode {
   absl::Span<const ASTDescriptorColumn* const> descriptor_column_list_;
 };
 
+class ASTShowTargetExpression final : public ASTExpression {
+ public:
+  static constexpr ASTNodeKind kConcreteNodeKind = AST_SHOW_TARGET_EXPRESSION;
+
+  ASTShowTargetExpression() : ASTExpression(kConcreteNodeKind) {}
+  void Accept(ParseTreeVisitor* visitor, void* data) const override;
+  zetasql_base::StatusOr<VisitResult> Accept(
+      NonRecursiveParseTreeVisitor* visitor) const override;
+
+  const ASTPathExpression* target() const { return target_; }
+
+  bool IsAllowedInComparison() const override { return parenthesized(); }
+
+ private:
+  void InitFields() final {
+    FieldLoader fl(this);
+    fl.AddRequired(&target_);
+  }
+  const ASTPathExpression* target_ = nullptr;
+};
+
 // Represents a SHOW statement.
 class ASTShowStatement final : public ASTStatement {
  public:
@@ -198,14 +219,20 @@ class ASTShowStatement final : public ASTStatement {
     return optional_like_string_;
   }
 
+  const ASTShowTargetExpression* optional_target_name() const {
+    return optional_target_name_;
+  }
+
  private:
   void InitFields() final {
     FieldLoader fl(this);
     fl.AddRequired(&identifier_);
+    fl.AddOptional(&optional_target_name_, AST_SHOW_TARGET_EXPRESSION);
     fl.AddOptional(&optional_name_, AST_PATH_EXPRESSION);
     fl.AddOptional(&optional_like_string_, AST_STRING_LITERAL);
   }
   const ASTIdentifier* identifier_ = nullptr;
+  const ASTShowTargetExpression* optional_target_name_ = nullptr;
   const ASTPathExpression* optional_name_ = nullptr;
   const ASTStringLiteral* optional_like_string_ = nullptr;
 };
@@ -615,6 +642,32 @@ class ASTDropMaterializedViewStatement final : public ASTDdlStatement {
   bool is_if_exists_ = false;
 };
 
+class ASTDeployStatement final : public ASTStatement {
+ public:
+  static constexpr ASTNodeKind kConcreteNodeKind = AST_DEPLOY_STATEMENT;
+
+  ASTDeployStatement() : ASTStatement(kConcreteNodeKind) {}
+  void Accept(ParseTreeVisitor* visitor, void* data) const override;
+  zetasql_base::StatusOr<VisitResult> Accept(
+      NonRecursiveParseTreeVisitor* visitor) const override;
+
+  const ASTIdentifier* name() const { return name_; }
+  const ASTStatement* stmt() const { return stmt_; }
+
+  bool is_if_not_exists() const { return is_if_not_exists_; }
+  void set_is_if_not_exists(bool value) { is_if_not_exists_ = value; }
+
+ private:
+  void InitFields() final {
+    FieldLoader fl(this);
+    fl.AddRequired(&name_);
+    fl.AddRequired(&stmt_);
+  }
+  const ASTIdentifier* name_ = nullptr;
+  const ASTStatement* stmt_ = nullptr;
+  bool is_if_not_exists_ = false;
+};
+
 // Represents a RENAME statement.
 class ASTRenameStatement final : public ASTStatement {
  public:
@@ -682,6 +735,38 @@ class ASTImportStatement final : public ASTStatement {
   const ASTIntoAlias* into_alias_ = nullptr;      // May be NULL.
 
   const ASTOptionsList* options_list_ = nullptr;  // May be NULL.
+};
+
+// super class of all load statements
+class ASTLoadStatement : public ASTStatement {
+ public:
+  explicit ASTLoadStatement(ASTNodeKind kind) : ASTStatement(kind) {}
+};
+
+// LOAD DATA INFILE 'filename' INTO TABLE 'table name' OPTIONS (...)
+class ASTLoadDataStatement final : public ASTLoadStatement {
+ public:
+  static constexpr ASTNodeKind kConcreteNodeKind = AST_LOAD_DATA_STATEMENT;
+  explicit ASTLoadDataStatement() : ASTLoadStatement(kConcreteNodeKind) {}
+  void Accept(ParseTreeVisitor* visitor, void* data) const override;
+  zetasql_base::StatusOr<VisitResult> Accept(
+      NonRecursiveParseTreeVisitor* visitor) const override;
+
+  const ASTStringLiteral* in_file() const { return in_file_; }
+  const ASTPathExpression* table_name() const { return table_name_; }
+  const ASTOptionsList* options_list() const { return options_list_; }
+
+ private:
+  void InitFields() final {
+    FieldLoader fl(this);
+    fl.AddRequired(&in_file_);
+    fl.AddRequired(&table_name_);
+    fl.AddOptional(&options_list_, AST_OPTIONS_LIST);
+  }
+
+  const ASTStringLiteral* in_file_ = nullptr;
+  const ASTPathExpression* table_name_ = nullptr;
+  const ASTOptionsList* options_list_ = nullptr;
 };
 
 class ASTUseStatement final : public ASTStatement {

@@ -18,7 +18,12 @@ before_deploy:
 deploy:
   provider: releases
   api_key:
-    secure: "bzUtqEZHFO7F9DV7P8PoTqZl+OF4FIT0KhxGxk1sRtr9ehVyjefmvREkroHjSoYKUp1oHOeDN6OQmWDk0Efeo7aCLL7Cc40rakSKLmzdH0gfFj3nH+R5wjegJskDsOp9tK7yi0F069T0R6hSOfHkgRqWHpdpm3qSp13YKBnzQ6JpeUgGotyqES1558yRqqNRfNBTHKT0I4T70HfC0spBkk30nuyBIaNAkoRq5XLCmM71OGjpNb6wo2m9laN4droLco7dfB5/EotD+kow4NjXqOf97Yhb6DGM2w7z5UP+b8Vf5WXgiue9JZ7K2Af0YGOapSXi6cfnMaQxVy/0N7be273+KY/g+V50ujBoJbC5+svy0QpY/4Op0zxysXRQ9pATcH67EtR3KENZunT7Ko5NAvyc516k7LSsAckICR0C56r0oNUBr14KaOQ2CR1ea7LHuthusK6eBm+VFJ94PJta6rVcwusrqoRnuO5PDw2lJXSD3kQfTVQUYCIrM3Q0ySidhJY69Ymc/zDq6O2zSOrTp6D1ZlGxsGaJvJbf3F4omfAeZIVp91IGvVCPk3nAygoSMCgtKAfpFbkssp5EDmhIoZI4YFMQOwSaiCGuSGakER0Ihj2Jp/B72bjDT/TrPJDHHEQzlgBrvtYL/1GdjIgS5VmN/rcPgzve5aeeUMMqkp8="
+    # steps to produce a encrypted key from GitHub
+    # 1. generate a personal access token at https://github.com/settings/tokens, select only repo:public_repo
+    # 2. generate && copy the token
+    # 3. install travis && run 'travis encrypt <token string> --com'
+    # 4. replace below line with the output
+    secure: "RmzUGAPO3Gi0mXtG/4mUlPGxLu6Fp21oD6NifJV5FnPPmAFIvLU62WU4xzd/Gyt0FKQThoopT1nQRYbOUtkCLRWgXh/qwRRAyymxJlvpoKOk1bCrKBL2Zr3J7YlS8zEYj9SiFEfkFgs+1laW9ddlyk8rU5OO4XvTU0R/zcoecTkiZqpYiHOZsvy+mnwBfacbZuzjS5VjP8Vbh3ut1+yJdYaERYY6EZJ4dQSQeNGTact7BeuNPD/HDxPkuHs1sdcby/N2r6yDaQp59wrzOuTmgVJJlxaU7nBhpT8rmkQKp782lEqTZnu/606aSj0/ArNvVOo5XXUz3ttl4xQleP65/g2OqDi74yc02gHRrN2srz/oUKJX2bqN3KxYvG2LbniHdsFtDa6Yc9jsyc2p9LjSgkAYcM61qPdokWDlEBUdV1wHYfC2oQ/Z8vuMcabynKsg0si9MdoMsu4qUrh/S0QnpxIqX7cSj1azIiHlY1AIttU7/e3DNi6cvOTJAHWCEH7JPAqcLuYh/8rk0oM0qxzc8ttT76XPUc8tOcGj9h0nu7BPQ7ZbzpKeCrNajLWRj3tELbmMw5IT1mJtoRSR1o+pDT1vyCZ9BeSHJvq75WSJphVq4EKpgsNodkEsKCdBsJQx9GdZLv79lcknbTnS8FgurpvVu6P90C1CTAQLtmdR8t8="
   file_glob: true
   file: libzetasql-*.tar.gz
   skip_cleanup: true

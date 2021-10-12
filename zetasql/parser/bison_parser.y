@@ -817,6 +817,8 @@ using zetasql::ASTDropStatement;
 %token KW_DECLARE "DECLARE"
 %token KW_DEFINER "DEFINER"
 %token KW_DELETE "DELETE"
+%token KW_DEPLOY "DEPLOY"
+%token KW_DEPLOYMENT "DEPLOYMENT"
 %token KW_DESCRIBE "DESCRIBE"
 %token KW_DESCRIPTOR "DESCRIPTOR"
 %token KW_DETERMINISTIC "DETERMINISTIC"
@@ -843,6 +845,7 @@ using zetasql::ASTDropStatement;
 %token KW_IMMUTABLE "IMMUTABLE"
 %token KW_IMPORT "IMPORT"
 %token KW_INCLUDE "INCLUDE"
+%token KW_INFILE "INFILE"
 %token KW_INOUT "INOUT"
 %token KW_INSERT "INSERT"
 %token KW_INVOKER "INVOKER"
@@ -853,6 +856,7 @@ using zetasql::ASTDropStatement;
 %token KW_LANGUAGE "LANGUAGE"
 %token KW_LEAVE "LEAVE"
 %token KW_LEVEL "LEVEL"
+%token KW_LOAD "LOAD"
 %token KW_LOOP "LOOP"
 %token KW_MATCH "MATCH"
 %token KW_MATCHED "MATCHED"
@@ -997,6 +1001,7 @@ using zetasql::ASTDropStatement;
 %type <expression> date_or_time_literal
 %type <node> define_table_statement
 %type <node> delete_statement
+%type <node> deploy_statement
 %type <node> describe_info
 %type <node> describe_statement
 %type <node> dml_statement
@@ -1072,6 +1077,8 @@ using zetasql::ASTDropStatement;
 %type <node> repeat_statement
 %type <node> for_in_statement
 %type <node> import_statement
+%type <node> load_statement
+%type <node> load_data_statement
 %type <node> variable_declaration
 %type <node> opt_default_expression
 %type <node> identifier_list
@@ -1261,8 +1268,9 @@ using zetasql::ASTDropStatement;
 %type <node> select_list
 %type <node> select_list_prefix
 %type <node> show_statement
+%type <expression> show_target_expression
 %type <identifier> show_target
-%type <identifier> show_create_procedure_target
+%type <identifier> show_with_name_target
 %type <node> simple_column_schema_inner
 %type <node> sql_function_body
 %type <node> star_except_list
@@ -1577,6 +1585,8 @@ sql_statement_body:
     | import_statement
     | module_statement
     | use_statement
+    | deploy_statement
+    | load_statement
     ;
 
 query_statement:
@@ -1756,6 +1766,8 @@ schema_object_kind:
       { $$ = zetasql::SchemaObjectKind::kSchema; }
     | "VIEW"
       { $$ = zetasql::SchemaObjectKind::kView; }
+    | "DEPLOYMENT"
+      { $$ = zetasql::SchemaObjectKind::kDeployment; }
     ;
 
 alter_statement:
@@ -3371,6 +3383,20 @@ import_statement:
       }
     ;
 
+load_statement:
+    load_data_statement
+    {
+      $$ = $1;
+    }
+    ;
+
+load_data_statement:
+    "LOAD" "DATA" "INFILE" string_literal "INTO" "TABLE" path_expression opt_options_list
+    {
+      $$ = MAKE_NODE(ASTLoadDataStatement, @$, {$4, $7, $8});
+    }
+    ;
+
 module_statement:
     "MODULE" path_expression opt_options_list
       {
@@ -3499,7 +3525,7 @@ show_statement:
       {
         $$ = MAKE_NODE(ASTShowStatement, @$, {$2, $3, $4});
       }
-    | "SHOW" show_create_procedure_target path_expression
+    | "SHOW" show_with_name_target show_target_expression
       {
         $$ = MAKE_NODE(ASTShowStatement, @$, {$2, $3});
       }
@@ -3520,11 +3546,22 @@ show_target:
     }
   ;
 
-show_create_procedure_target:
+show_with_name_target:
   "CREATE" "PROCEDURE"
     {
       $$ = parser->MakeIdentifier(@$, "CREATE PROCEDURE");
     }
+  | "DEPLOYMENT"
+    {
+      $$ = parser->MakeIdentifier(@$, "DEPLOYMENT");
+    }
+  ;
+
+show_target_expression:
+  path_expression
+  {
+    $$ = MAKE_NODE(ASTShowTargetExpression, @$, {$1});
+  }
   ;
 
 opt_like_string_literal:
@@ -7260,6 +7297,8 @@ keyword_as_identifier:
     | "DECLARE"
     | "DEFINER"
     | "DELETE"
+    | "DEPLOY"
+    | "DEPLOYMENT"
     | "DESCRIBE"
     | "DETERMINISTIC"
     | "DO"
@@ -7287,6 +7326,7 @@ keyword_as_identifier:
     | "IMMUTABLE"
     | "IMPORT"
     | "INCLUDE"
+    | "INFILE"
     | "INSERT"
     | "INOUT"
     | "INVOKER"
@@ -7297,6 +7337,7 @@ keyword_as_identifier:
     | "LANGUAGE"
     | "LEAVE"
     | "LEVEL"
+    | "LOAD"
     | "LOOP"
     | "MATCH"
     | "MATCHED"
@@ -8149,6 +8190,15 @@ on_path_expression:
       }
     ;
 
+deploy_statement:
+    "DEPLOY" opt_if_not_exists identifier unterminated_sql_statement
+    {
+      auto deploy_stmt = MAKE_NODE(ASTDeployStatement, @$, {$3, $4});
+      deploy_stmt->set_is_if_not_exists($2);
+      $$ = deploy_stmt;
+    }
+    ;
+
 opt_drop_mode:
     "RESTRICT" { $$ = zetasql::ASTDropStatement::DropMode::RESTRICT; }
     | "CASCADE" { $$ = zetasql::ASTDropStatement::DropMode::CASCADE; }
@@ -8684,6 +8734,7 @@ next_statement_kind_without_hint:
     | describe_keyword
       { $$ = zetasql::ASTDescribeStatement::kConcreteNodeKind; }
     | "SHOW" { $$ = zetasql::ASTShowStatement::kConcreteNodeKind; }
+    | "DEPLOY" { $$ = zetasql::ASTDeployStatement::kConcreteNodeKind; }
     | "DROP" "ALL" "ROW" opt_access "POLICIES"
       {
         $$ = zetasql::ASTDropAllRowAccessPoliciesStatement::kConcreteNodeKind;
@@ -8812,6 +8863,8 @@ next_statement_kind_without_hint:
       { $$ = zetasql::ASTReturnStatement::kConcreteNodeKind; }
     | "IMPORT"
       { $$ = zetasql::ASTImportStatement::kConcreteNodeKind; }
+    | "LOAD" "DATA"
+      { $$ = zetasql::ASTLoadDataStatement::kConcreteNodeKind; }
     | "MODULE"
       { $$ = zetasql::ASTModuleStatement::kConcreteNodeKind; }
     | "ANALYZE"
