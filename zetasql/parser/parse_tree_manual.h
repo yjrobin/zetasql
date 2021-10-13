@@ -740,7 +740,7 @@ class ASTImportStatement final : public ASTStatement {
 class ASTSelectIntoStatement final : public ASTStatement {
   public:
   static constexpr ASTNodeKind kConcreteNodeKind = AST_SELECT_INTO_STATEMENT; 
-  explicit ASTSelectIntoStatement() : ASTStatement(kConcreteNodeKind) {}
+  ASTSelectIntoStatement() : ASTStatement(kConcreteNodeKind) {}
   void Accept(ParseTreeVisitor* visitor, void* data) const override;
   zetasql_base::StatusOr<VisitResult> Accept(
       NonRecursiveParseTreeVisitor* visitor) const override;
