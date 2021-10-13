@@ -677,12 +677,22 @@ class RunParserTest : public ::testing::Test {
 
     // The NodeKind on the AST should match that in the extracted properties.
     ASTNodeKind found_statement_kind = statement->node_kind();
-    EXPECT_EQ(found_statement_kind, extracted_statement_properties.node_kind);
-    if (found_statement_kind != extracted_statement_properties.node_kind) {
-      test_outputs->push_back(absl::StrCat(
-          "FAILED guessing statement kind. Extracted kind ",
-          ASTNode::NodeKindToString(extracted_statement_properties.node_kind),
-          ", got ", ASTNode::NodeKindToString(found_statement_kind)));
+    if (found_statement_kind == AST_SELECT_INTO_STATEMENT) {
+      EXPECT_EQ(AST_QUERY_STATEMENT, extracted_statement_properties.node_kind);
+      if (AST_QUERY_STATEMENT != extracted_statement_properties.node_kind) {
+        test_outputs->push_back(absl::StrCat(
+            "FAILED guessing statement kind. Extracted kind ",
+            ASTNode::NodeKindToString(extracted_statement_properties.node_kind),
+            ", got ", ASTNode::NodeKindToString(AST_QUERY_STATEMENT)));
+      }
+    } else {
+      EXPECT_EQ(found_statement_kind, extracted_statement_properties.node_kind);
+      if (found_statement_kind != extracted_statement_properties.node_kind) {
+        test_outputs->push_back(absl::StrCat(
+            "FAILED guessing statement kind. Extracted kind ",
+            ASTNode::NodeKindToString(extracted_statement_properties.node_kind),
+            ", got ", ASTNode::NodeKindToString(found_statement_kind)));
+      }
     }
 
     // The CREATE scope on the AST should match that in the extracted

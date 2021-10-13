@@ -872,6 +872,7 @@ using zetasql::ASTDropStatement;
 %token KW_ONLY "ONLY"
 %token KW_OPTIONS "OPTIONS"
 %token KW_OUT "OUT"
+%token KW_OUTFILE "OUTFILE"
 %token KW_PERCENT "PERCENT"
 %token KW_PIVOT "PIVOT"
 %token KW_POLICIES "POLICIES"
@@ -1079,6 +1080,8 @@ using zetasql::ASTDropStatement;
 %type <node> import_statement
 %type <node> load_statement
 %type <node> load_data_statement
+%type <node> into_statement 
+%type <node> select_into_statement 
 %type <node> variable_declaration
 %type <node> opt_default_expression
 %type <node> identifier_list
@@ -1587,6 +1590,7 @@ sql_statement_body:
     | use_statement
     | deploy_statement
     | load_statement
+    | select_into_statement 
     ;
 
 query_statement:
@@ -3387,6 +3391,13 @@ load_statement:
     load_data_statement
     {
       $$ = $1;
+    }
+    ;
+
+select_into_statement:
+    query "INTO" "OUTFILE" string_literal opt_options_list
+    {
+      $$ = MAKE_NODE(ASTSelectIntoStatement, @$, {$1, $4, $5})
     }
     ;
 
@@ -7353,6 +7364,7 @@ keyword_as_identifier:
     | "ONLY"
     | "OPTIONS"
     | "OUT"
+    | "OUTFILE"
     | "PERCENT"
     | "PIVOT"
     | "POLICIES"

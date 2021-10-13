@@ -242,6 +242,7 @@ class Unparser : public ParseTreeVisitor {
   void visitASTImportStatement(const ASTImportStatement* node,
                                void* data) override;
   void visitASTLoadDataStatement(const ASTLoadDataStatement* node, void* data) override;
+  void visitASTSelectIntoStatement(const ASTSelectIntoStatement* node, void* data) override;
   void visitASTModuleStatement(const ASTModuleStatement* node,
                                void* data) override;
   void visitASTWithClause(const ASTWithClause* node, void* data) override;

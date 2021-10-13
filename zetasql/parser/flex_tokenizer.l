@@ -560,6 +560,7 @@ options { return BisonParserImpl::token::KW_OPTIONS; }
 or { return BisonParserImpl::token::KW_OR; }
 order { return BisonParserImpl::token::KW_ORDER; }
 out { return BisonParserImpl::token::KW_OUT; }
+outfile { return BisonParserImpl::token::KW_OUTFILE; };
 outer { return BisonParserImpl::token::KW_OUTER; }
 over { return BisonParserImpl::token::KW_OVER; }
 partition { return BisonParserImpl::token::KW_PARTITION; }

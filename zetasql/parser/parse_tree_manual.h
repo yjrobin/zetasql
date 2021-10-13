@@ -737,6 +737,28 @@ class ASTImportStatement final : public ASTStatement {
   const ASTOptionsList* options_list_ = nullptr;  // May be NULL.
 };
 
+class ASTSelectIntoStatement final : public ASTStatement {
+  public:
+  static constexpr ASTNodeKind kConcreteNodeKind = AST_SELECT_INTO_STATEMENT; 
+  explicit ASTSelectIntoStatement() : ASTStatement(kConcreteNodeKind) {}
+  void Accept(ParseTreeVisitor* visitor, void* data) const override;
+  zetasql_base::StatusOr<VisitResult> Accept(
+      NonRecursiveParseTreeVisitor* visitor) const override;
+  const ASTQuery* query() const { return query_; }
+  const ASTStringLiteral* out_file() const { return out_file_; }
+  const ASTOptionsList* options_list() const { return options_list_; }
+private:
+  void InitFields() final {
+    FieldLoader fl(this);
+    fl.AddRequired(&query_);
+    fl.AddRequired(&out_file_);
+    fl.AddOptional(&options_list_, AST_OPTIONS_LIST);
+  }
+
+  const ASTQuery* query_= nullptr;
+  const ASTStringLiteral* out_file_ = nullptr;
+  const ASTOptionsList* options_list_ = nullptr;
+};
 // super class of all load statements
 class ASTLoadStatement : public ASTStatement {
  public:
