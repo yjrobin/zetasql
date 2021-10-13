@@ -1,0 +1,100 @@
+select col1, col2 from t1 into outfile 'data.csv';
+--
+SelectIntoStatement [0-49]
+  Query [0-25]
+    Select [0-25]
+      SelectList [7-17]
+        SelectColumn [7-11]
+          PathExpression [7-11]
+            Identifier(col1) [7-11]
+        SelectColumn [13-17]
+          PathExpression [13-17]
+            Identifier(col2) [13-17]
+      FromClause [18-25]
+        TablePathExpression [23-25]
+          PathExpression [23-25]
+            Identifier(t1) [23-25]
+  StringLiteral('data.csv') [39-49]
+--
+SELECT
+  col1,
+  col2
+FROM
+  t1
+INTO OUTFILE 'data.csv'
+==
+
+select col1, col2 from t1 into outfile 'data.csv' options (charset = 'utf-8');
+--
+SelectIntoStatement [0-77]
+  Query [0-25]
+    Select [0-25]
+      SelectList [7-17]
+        SelectColumn [7-11]
+          PathExpression [7-11]
+            Identifier(col1) [7-11]
+        SelectColumn [13-17]
+          PathExpression [13-17]
+            Identifier(col2) [13-17]
+      FromClause [18-25]
+        TablePathExpression [23-25]
+          PathExpression [23-25]
+            Identifier(t1) [23-25]
+  StringLiteral('data.csv') [39-49]
+  OptionsList [58-77]
+    OptionsEntry [59-76]
+      Identifier(charset) [59-66]
+      StringLiteral('utf-8') [69-76]
+--
+SELECT
+  col1,
+  col2
+FROM
+  t1
+INTO OUTFILE 'data.csv' OPTIONS(charset = 'utf-8')
+==
+
+select col1, col2 from db1.t1 into outfile 'data.csv' options (charset = 'utf-8');
+--
+SelectIntoStatement [0-81]
+  Query [0-29]
+    Select [0-29]
+      SelectList [7-17]
+        SelectColumn [7-11]
+          PathExpression [7-11]
+            Identifier(col1) [7-11]
+        SelectColumn [13-17]
+          PathExpression [13-17]
+            Identifier(col2) [13-17]
+      FromClause [18-29]
+        TablePathExpression [23-29]
+          PathExpression [23-29]
+            Identifier(db1) [23-26]
+            Identifier(t1) [27-29]
+  StringLiteral('data.csv') [43-53]
+  OptionsList [62-81]
+    OptionsEntry [63-80]
+      Identifier(charset) [63-70]
+      StringLiteral('utf-8') [73-80]
+--
+SELECT
+  col1,
+  col2
+FROM
+  db1.t1
+INTO OUTFILE 'data.csv' OPTIONS(charset = 'utf-8')
+==
+
+select col1, col2 from db1.t1 into outfile;
+--
+ERROR: Syntax error: Expected string literal but got ";" [at 1:43]
+select col1, col2 from db1.t1 into outfile;
+                                          ^
+==
+
+select col1, col2 from db1.t1 into outfile options (charset = 'utf-8');
+--
+ERROR: Syntax error: Expected string literal but got keyword OPTIONS [at 1:44]
+select col1, col2 from db1.t1 into outfile options (charset = 'utf-8');
+                                           ^
+==

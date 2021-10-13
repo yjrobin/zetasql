@@ -7,6 +7,15 @@ SingleAssignment [0-7]
 SET a = 3
 ==
 
+SET SELECT_MODE = 'TRINO'
+--
+SingleAssignment [0-25]
+  Identifier(SELECT_MODE) [4-15]
+  StringLiteral('TRINO') [18-25]
+--
+SET SELECT_MODE = 'TRINO'
+==
+
 set a = (((a + 1) + 1) + 1)
 --
 SingleAssignment [0-27]
