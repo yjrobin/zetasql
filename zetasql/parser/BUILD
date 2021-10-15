@@ -220,6 +220,7 @@ cc_library(
         "parse_tree.cc",
         "parse_tree_accept_methods.inc",
         "parse_tree_errors.cc",
+        "unparser.cc",
     ],
     hdrs = [
         "ast_node.h",
@@ -231,6 +232,7 @@ cc_library(
         "parse_tree_manual.h",
         "parse_tree_visitor.h",
         "visit_result.h",
+        "unparser.h",
     ],
     copts = [
         "-Wno-char-subscripts",
