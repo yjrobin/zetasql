@@ -4,11 +4,50 @@
 
 set -eE
 
+#===  FUNCTION  ================================================================
+#         NAME:  usage
+#  DESCRIPTION:  Display usage information.
+#===============================================================================
+function usage ()
+{
+    echo "Usage :  $0 [options] [--]
+
+    Options:
+    -h       Display this message
+    -i       Request install to given directory after pack"
+
+}    # ----------  end of function usage  ----------
+
+#-----------------------------------------------------------------------
+#  Handle command line arguments
+#-----------------------------------------------------------------------
+
+INSTALL_DIR=
+while getopts ":hi:" opt
+do
+  case $opt in
+
+    h )  usage; exit 0   ;;
+
+    i )
+      INSTALL_DIR=$OPTARG
+      mkdir -p "$INSTALL_DIR"
+      INSTALL_DIR=$(cd "$INSTALL_DIR" 2>/dev/null && pwd)
+      ;;
+
+    * )  echo -e "\n  Option does not exist : OPTARG\n"
+                usage; exit 1   ;;
+
+  esac    # --- end of case ---
+done
+shift $((OPTIND-1))
+
 pushd "$(dirname "$0")"
 pushd "$(git rev-parse --show-toplevel)"
 
 VERSION=${TAG:-$(git rev-parse --short HEAD)}
-export ROOT=$(pwd)
+ROOT=$(pwd)
+export ROOT
 export ZETASQL_LIB_NAME="libzetasql-$VERSION"
 export PREFIX="$ROOT/${ZETASQL_LIB_NAME}"
 
@@ -124,9 +163,14 @@ else
 fi
 
 if [[ $OSTYPE = 'darwin'* ]]; then
-    tar czf "${ZETASQL_LIB_NAME}-darwin-$(uname -m).tar.gz" "${ZETASQL_LIB_NAME}"/
+    OUT_FILE="${ZETASQL_LIB_NAME}-darwin-$(uname -m).tar.gz"
 else
-    tar czf "${ZETASQL_LIB_NAME}-$OSTYPE-$(uname -m).tar.gz" "${ZETASQL_LIB_NAME}"/
+    OUT_FILE="${ZETASQL_LIB_NAME}-$OSTYPE-$(uname -m).tar.gz"
+fi
+tar czf "$OUT_FILE" "$ZETASQL_LIB_NAME"/
+
+if [ -n "$INSTALL_DIR" ] ; then
+    tar xzf "$OUT_FILE" -C "$INSTALL_DIR" --strip-components=1
 fi
 
 popd
