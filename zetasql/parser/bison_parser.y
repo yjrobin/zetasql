@@ -6455,6 +6455,10 @@ function_name_from_keyword:
       {
         $$ = parser->MakeIdentifier(@1, parser->GetInputText(@1));
       }
+    | "AT"
+      {
+        $$ = parser->MakeIdentifier(@1, parser->GetInputText(@1));
+      }
     ;
 
 // These rules have "expression" as their first part rather than

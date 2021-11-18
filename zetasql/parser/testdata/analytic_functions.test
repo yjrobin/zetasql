@@ -22,6 +22,31 @@ FROM
   T
 ==
 
+# 'at' analytic function call
+select at() over () from T
+--
+QueryStatement [0-26]
+  Query [0-26]
+    Select [0-26]
+      SelectList [7-19]
+        SelectColumn [7-19]
+          AnalyticFunctionCall [7-19]
+            FunctionCall [7-11]
+              PathExpression [7-9]
+                Identifier(`at`) [7-9]
+            WindowSpecification [17-19]
+      FromClause [20-26]
+        TablePathExpression [25-26]
+          PathExpression [25-26]
+            Identifier(T) [25-26]
+
+--
+SELECT
+  `at`() OVER ()
+FROM
+  T
+==
+
 # Missing over.
 select f() () from T
 --
