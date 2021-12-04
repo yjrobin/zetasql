@@ -870,17 +870,23 @@ void Unparser::visitASTShowStatement(const ASTShowStatement* node, void* data) {
   }
 }
 
-void Unparser::visitASTShowTargetExpression(const ASTShowTargetExpression* node, void* data) {
+void Unparser::visitASTTargetName(const ASTTargetName* node, void* data) {
   node->target()->Accept(this, data);
 }
 
 void Unparser::visitASTDeployStatement(const ASTDeployStatement *node, void *data) {
-    print("DEPLOY");
-    if (node->is_if_not_exists()) {
-        print("IF NOT EXISTS");
-    }
-    node->name()->Accept(this, data);
-    node->stmt()->Accept(this, data);
+  print("DEPLOY");
+  if (node->is_if_not_exists()) {
+    print("IF NOT EXISTS");
+  }
+  node->name()->Accept(this, data);
+  node->stmt()->Accept(this, data);
+}
+
+void Unparser::visitASTStopStatement(const ASTStopStatement* node, void* data) {
+  print("STOP");
+  node->identifier()->Accept(this, data);
+  node->target_name()->Accept(this, data);
 }
 
 void Unparser::visitASTBeginStatement(
@@ -1906,6 +1912,12 @@ void Unparser::visitASTBetweenExpression(const ASTBetweenExpression* node,
   PrintCloseParenIfNeeded(node);
 }
 
+void Unparser::visitASTEscapedExpression(const ASTEscapedExpression* node, void* data) {
+  node->expr()->Accept(this, data);
+  print("ESCAPE");
+  node->escape()->Accept(this, data);
+}
+
 void Unparser::visitASTFunctionCall(const ASTFunctionCall* node, void* data) {
   PrintOpenParenIfNeeded(node);
   node->function()->Accept(this, data);
@@ -2313,6 +2325,10 @@ void Unparser::visitASTDeleteStatement(const ASTDeleteStatement* node,
   print("DELETE");
   // GetTargetPathForNested() is strictly more general than "ForNonNested()".
   node->GetTargetPathForNested()->Accept(this, data);
+
+  if (node->opt_target_name() != nullptr) {
+    node->opt_target_name()->Accept(this, data);
+  }
   if (node->alias() != nullptr) {
     node->alias()->Accept(this, data);
   }

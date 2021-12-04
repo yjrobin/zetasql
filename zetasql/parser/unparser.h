@@ -191,9 +191,10 @@ class Unparser : public ParseTreeVisitor {
                                  void* data) override;
   void visitASTShowStatement(const ASTShowStatement* node,
                              void* data) override;
-  void visitASTShowTargetExpression(const ASTShowTargetExpression* node,
+  void visitASTTargetName(const ASTTargetName* node,
                              void* data) override;
   void visitASTDeployStatement(const ASTDeployStatement* node, void* data) override;
+  void visitASTStopStatement(const ASTStopStatement* node, void* data) override;
   void visitASTBeginStatement(const ASTBeginStatement* node,
                               void* data) override;
   void visitASTTransactionIsolationLevel(
@@ -382,6 +383,7 @@ class Unparser : public ParseTreeVisitor {
       const ASTIndexUnnestExpressionList* node, void* data) override;
   void visitASTBetweenExpression(const ASTBetweenExpression* node,
                                  void* data) override;
+  void visitASTEscapedExpression(const ASTEscapedExpression* node, void* data) override;
   void visitASTFunctionCall(const ASTFunctionCall* node, void* data) override;
   void visitASTWithGroupRows(const ASTWithGroupRows* node, void* data) override;
   void visitASTArrayElement(const ASTArrayElement* node, void* data) override;

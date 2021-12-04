@@ -183,25 +183,25 @@ class ASTDescriptorColumnList final : public ASTNode {
   absl::Span<const ASTDescriptorColumn* const> descriptor_column_list_;
 };
 
-class ASTShowTargetExpression final : public ASTExpression {
+// a tiny wraper over expresion, used when a target comand requires an extra name
+// e.g 1. SHOW target expr 2. DELETE target expr 3. STOP target expr
+class ASTTargetName final : public ASTNode {
  public:
-  static constexpr ASTNodeKind kConcreteNodeKind = AST_SHOW_TARGET_EXPRESSION;
+  static constexpr ASTNodeKind kConcreteNodeKind = AST_TARGET_NAME;
 
-  ASTShowTargetExpression() : ASTExpression(kConcreteNodeKind) {}
+  ASTTargetName() : ASTNode(kConcreteNodeKind) {}
   void Accept(ParseTreeVisitor* visitor, void* data) const override;
   zetasql_base::StatusOr<VisitResult> Accept(
       NonRecursiveParseTreeVisitor* visitor) const override;
 
-  const ASTPathExpression* target() const { return target_; }
-
-  bool IsAllowedInComparison() const override { return parenthesized(); }
+  const ASTExpression* target() const { return target_; }
 
  private:
   void InitFields() final {
     FieldLoader fl(this);
     fl.AddRequired(&target_);
   }
-  const ASTPathExpression* target_ = nullptr;
+  const ASTExpression* target_ = nullptr;
 };
 
 // Represents a SHOW statement.
@@ -219,7 +219,7 @@ class ASTShowStatement final : public ASTStatement {
     return optional_like_string_;
   }
 
-  const ASTShowTargetExpression* optional_target_name() const {
+  const ASTTargetName* optional_target_name() const {
     return optional_target_name_;
   }
 
@@ -227,12 +227,12 @@ class ASTShowStatement final : public ASTStatement {
   void InitFields() final {
     FieldLoader fl(this);
     fl.AddRequired(&identifier_);
-    fl.AddOptional(&optional_target_name_, AST_SHOW_TARGET_EXPRESSION);
+    fl.AddOptional(&optional_target_name_, AST_TARGET_NAME);
     fl.AddOptional(&optional_name_, AST_PATH_EXPRESSION);
     fl.AddOptional(&optional_like_string_, AST_STRING_LITERAL);
   }
   const ASTIdentifier* identifier_ = nullptr;
-  const ASTShowTargetExpression* optional_target_name_ = nullptr;
+  const ASTTargetName* optional_target_name_ = nullptr;
   const ASTPathExpression* optional_name_ = nullptr;
   const ASTStringLiteral* optional_like_string_ = nullptr;
 };
@@ -668,6 +668,29 @@ class ASTDeployStatement final : public ASTStatement {
   const ASTIdentifier* name_ = nullptr;
   const ASTStatement* stmt_ = nullptr;
   bool is_if_not_exists_ = false;
+};
+
+class ASTStopStatement final : public ASTStatement {
+ public:
+  static constexpr ASTNodeKind kConcreteNodeKind = AST_STOP_STATEMENT;
+
+  ASTStopStatement() : ASTStatement(kConcreteNodeKind) {}
+  void Accept(ParseTreeVisitor* visitor, void* data) const override;
+  zetasql_base::StatusOr<VisitResult> Accept(
+      NonRecursiveParseTreeVisitor* visitor) const override;
+
+  const ASTIdentifier* identifier() const { return identifier_; }
+  const ASTTargetName* target_name() const { return target_name_; }
+
+ private:
+  void InitFields() final {
+    FieldLoader fl(this);
+    fl.AddRequired(&identifier_);
+    fl.AddRequired(&target_name_);
+  }
+
+  const ASTIdentifier* identifier_ = nullptr;
+  const ASTTargetName* target_name_ = nullptr;
 };
 
 // Represents a RENAME statement.
@@ -2160,6 +2183,32 @@ class ASTBetweenExpression final : public ASTExpression {
   const ASTExpression* lhs_ = nullptr;
   const ASTExpression* low_ = nullptr;
   const ASTExpression* high_ = nullptr;
+};
+
+// expression ESCAPE string_literal
+//  it is used for LIKE predicate's pattern.
+//  e.g: 'a_c' LIKE 'a$_c' ESCAPE '$'
+class ASTEscapedExpression final : public ASTExpression {
+ public:
+  static constexpr ASTNodeKind kConcreteNodeKind = AST_ESCAPED_EXPRESSION;
+  ASTEscapedExpression() : ASTExpression(AST_ESCAPED_EXPRESSION) {}
+
+  void Accept(ParseTreeVisitor* visitor, void* data) const override;
+  zetasql_base::StatusOr<VisitResult> Accept(
+      NonRecursiveParseTreeVisitor* visitor) const override;
+
+  const ASTExpression* expr() const { return expr_; }
+  const ASTStringLiteral* escape() const { return escape_; }
+
+ private:
+  void InitFields() final {
+    FieldLoader fl(this);
+    fl.AddRequired(&expr_);
+    fl.AddRequired(&escape_);
+  }
+
+  const ASTExpression* expr_ = nullptr;
+  const ASTStringLiteral* escape_ = nullptr;
 };
 
 class ASTUnaryExpression final : public ASTExpression {
@@ -5367,6 +5416,7 @@ class ASTDeleteStatement final : public ASTStatement {
   const ASTGeneralizedPathExpression* GetTargetPathForNested() const {
     return target_path_;
   }
+  const ASTTargetName* opt_target_name() const { return opt_target_name_; }
   const ASTAlias* alias() const { return alias_; }
   const ASTWithOffset* offset() const { return offset_; }
   const ASTExpression* where() const { return where_; }
@@ -5379,6 +5429,7 @@ class ASTDeleteStatement final : public ASTStatement {
   void InitFields() final {
     FieldLoader fl(this);
     fl.AddRequired(&target_path_);
+    fl.AddOptional(&opt_target_name_, AST_TARGET_NAME);
     fl.AddOptional(&alias_, AST_ALIAS);
     fl.AddOptional(&offset_, AST_WITH_OFFSET);
     fl.AddOptionalExpression(&where_);
@@ -5387,6 +5438,7 @@ class ASTDeleteStatement final : public ASTStatement {
   }
 
   const ASTGeneralizedPathExpression* target_path_ = nullptr;    // Required
+  const ASTTargetName* opt_target_name_ = nullptr;               // Optional
   const ASTAlias* alias_ = nullptr;                              // Optional
   const ASTWithOffset* offset_ = nullptr;                        // Optional
   const ASTExpression* where_ = nullptr;                         // Optional

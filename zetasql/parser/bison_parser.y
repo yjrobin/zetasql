@@ -557,6 +557,7 @@ class DashedIdentifierTmpNode final : public zetasql::ASTNode {
 %left "XOR"
 %left UNARY_NOT_PRECEDENCE
 %nonassoc "=" "==" "<>" ">" "<" ">=" "<=" "!=" "LIKE" "IN" "DISTINCT" "BETWEEN" "IS" "NOT_SPECIAL"
+%nonassoc "ESCAPE"
 %left "|"
 %left "^"
 %left "&"
@@ -851,6 +852,7 @@ using zetasql::ASTDropStatement;
 %token KW_INVOKER "INVOKER"
 %token KW_ITERATE "ITERATE"
 %token KW_ISOLATION "ISOLATION"
+%token KW_JOB "JOB"
 %token KW_JSON "JSON"
 %token KW_KEY "KEY"
 %token KW_LANGUAGE "LANGUAGE"
@@ -911,6 +913,7 @@ using zetasql::ASTDropStatement;
 %token KW_STATUS "STATUS"
 %token KW_STORED "STORED"
 %token KW_STORING "STORING"
+%token KW_STOP "STOP"
 %token KW_SYSTEM "SYSTEM"
 %token KW_SYSTEM_TIME "SYSTEM_TIME"
 %token KW_TABLE "TABLE"
@@ -1080,8 +1083,9 @@ using zetasql::ASTDropStatement;
 %type <node> import_statement
 %type <node> load_statement
 %type <node> load_data_statement
-%type <node> into_statement 
-%type <node> select_into_statement 
+%type <node> into_statement
+%type <node> select_into_statement
+%type <node> stop_statement
 %type <node> variable_declaration
 %type <node> opt_default_expression
 %type <node> identifier_list
@@ -1103,6 +1107,7 @@ using zetasql::ASTDropStatement;
 %type <node> insert_values_row_prefix
 %type <expression> int_literal_or_parameter
 %type <expression> integer_literal
+%type <node> opt_delete_target_name
 %type <expression> interval_literal
 %type <node> join
 %type <node> join_input
@@ -1271,7 +1276,7 @@ using zetasql::ASTDropStatement;
 %type <node> select_list
 %type <node> select_list_prefix
 %type <node> show_statement
-%type <expression> show_target_expression
+%type <node> target_name
 %type <identifier> show_target
 %type <identifier> show_with_name_target
 %type <node> simple_column_schema_inner
@@ -1590,7 +1595,8 @@ sql_statement_body:
     | use_statement
     | deploy_statement
     | load_statement
-    | select_into_statement 
+    | into_statement
+    | stop_statement
     ;
 
 query_statement:
@@ -3394,6 +3400,13 @@ load_statement:
     }
     ;
 
+into_statement:
+    select_into_statement
+    {
+      $$ = $1;
+    }
+    ;
+
 select_into_statement:
     query "INTO" "OUTFILE" string_literal opt_options_list
     {
@@ -3536,7 +3549,7 @@ show_statement:
       {
         $$ = MAKE_NODE(ASTShowStatement, @$, {$2, $3, $4});
       }
-    | "SHOW" show_with_name_target show_target_expression
+    | "SHOW" show_with_name_target target_name
       {
         $$ = MAKE_NODE(ASTShowStatement, @$, {$2, $3});
       }
@@ -3566,13 +3579,19 @@ show_with_name_target:
     {
       $$ = parser->MakeIdentifier(@$, "DEPLOYMENT");
     }
+  | "JOB"
+    {
+      $$ = parser->MakeIdentifier(@$, "JOB");
+    }
   ;
 
-show_target_expression:
-  path_expression
-  {
-    $$ = MAKE_NODE(ASTShowTargetExpression, @$, {$1});
-  }
+// a tiny wraper over expresion, used when a target comand requires an extra name
+// e.g 1. SHOW target expr 2. DELETE target expr 3. STOP target expr
+target_name:
+  expression
+    {
+      $$ = MAKE_NODE(ASTTargetName, @$, {$1});
+    }
   ;
 
 opt_like_string_literal:
@@ -5534,6 +5553,10 @@ expression:
           binary_expression->set_op(zetasql::ASTBinaryExpression::LIKE);
           $$ = binary_expression;
         }
+    | expression "ESCAPE" string_literal
+        {
+          $$ = MAKE_NODE(ASTEscapedExpression, @$, {$1, $3})
+        }
     | expression distinct_operator expression %prec "DISTINCT"
         {
           if (parser->language_options() == nullptr
@@ -7347,6 +7370,7 @@ keyword_as_identifier:
     | "INVOKER"
     | "ISOLATION"
     | "ITERATE"
+    | "JOB"
     | "JSON"
     | "KEY"
     | "LANGUAGE"
@@ -7407,6 +7431,7 @@ keyword_as_identifier:
     | "STATUS"
     | "STORED"
     | "STORING"
+    | "STOP"
     | "SYSTEM"
     | "SYSTEM_TIME"
     | "TABLE"
@@ -7875,13 +7900,20 @@ insert_values_list:
     ;
 
 delete_statement:
-    "DELETE" opt_from_keyword maybe_dashed_generalized_path_expression
+    "DELETE" opt_from_keyword maybe_dashed_generalized_path_expression opt_delete_target_name
     opt_as_alias opt_with_offset_and_alias opt_where_expression
     opt_assert_rows_modified opt_returning_clause
       {
-        $$ = MAKE_NODE(ASTDeleteStatement, @$, {$3, $4, $5, $6, $7, $8});
+        $$ = MAKE_NODE(ASTDeleteStatement, @$, {$3, $4, $5, $6, $7, $8, $9});
       }
     ;
+
+opt_delete_target_name:
+    integer_literal
+    {
+      $$ = MAKE_NODE(ASTTargetName, @$, {$1});
+    }
+    | /* Nothing */ { $$ = nullptr; }
 
 opt_with_offset_and_alias:
     "WITH" "OFFSET" opt_as_alias
@@ -8212,6 +8244,13 @@ deploy_statement:
       auto deploy_stmt = MAKE_NODE(ASTDeployStatement, @$, {$3, $4});
       deploy_stmt->set_is_if_not_exists($2);
       $$ = deploy_stmt;
+    }
+    ;
+
+stop_statement:
+    "STOP" identifier target_name
+    {
+      $$ = MAKE_NODE(ASTStopStatement, @$, {$2, $3});
     }
     ;
 
@@ -8891,6 +8930,8 @@ next_statement_kind_without_hint:
       { $$ = zetasql::ASTTruncateStatement::kConcreteNodeKind; }
     | "USE"
       { $$ = zetasql::ASTUseStatement::kConcreteNodeKind; }
+    | "STOP"
+      { $$ = zetasql::ASTStopStatement::kConcreteNodeKind; }
     ;
 
 %%
