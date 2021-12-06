@@ -1999,6 +1999,7 @@ class ASTBinaryExpression final : public ASTExpression {
     CONCAT_OP,    // "||"
     XOR,          // "XOR"
     DISTINCT,     // "IS DISTINCT FROM"
+    ILIKE,        // "ILIKE"
   };
 
   void set_op(Op op) { op_ = op; }
@@ -2016,6 +2017,7 @@ class ASTBinaryExpression final : public ASTExpression {
     if (parenthesized()) return true;
     switch (op()) {
       case LIKE:
+      case ILIKE:
       case IS:
       case EQ:
       case NE:

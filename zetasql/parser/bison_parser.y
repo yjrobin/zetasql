@@ -556,7 +556,7 @@ class DashedIdentifierTmpNode final : public zetasql::ASTNode {
 %left "AND"
 %left "XOR"
 %left UNARY_NOT_PRECEDENCE
-%nonassoc "=" "==" "<>" ">" "<" ">=" "<=" "!=" "LIKE" "IN" "DISTINCT" "BETWEEN" "IS" "NOT_SPECIAL"
+%nonassoc "=" "==" "<>" ">" "<" ">=" "<=" "!=" "LIKE" "ILIKE" "IN" "DISTINCT" "BETWEEN" "IS" "NOT_SPECIAL"
 %nonassoc "ESCAPE"
 %left "|"
 %left "^"
@@ -712,6 +712,7 @@ using zetasql::ASTDropStatement;
 %token KW_LAST "LAST"
 %token KW_LEFT "LEFT"
 %token KW_LIKE "LIKE"
+%token KW_ILIKE "ILIKE"
 %token KW_LIMIT "LIMIT"
 %token KW_LOOKUP "LOOKUP"
 %token KW_MERGE "MERGE"
@@ -1377,6 +1378,7 @@ using zetasql::ASTDropStatement;
 %type <not_keyword_presence> in_operator
 %type <not_keyword_presence> is_operator
 %type <not_keyword_presence> like_operator
+%type <not_keyword_presence> ilike_operator
 %type <not_keyword_presence> distinct_operator
 
 %type <preceding_or_following_keyword> preceding_or_following
@@ -5353,6 +5355,15 @@ like_operator:
       } %prec "LIKE"
     ;
 
+ilike_operator:
+    "ILIKE" { $$ = NotKeywordPresence::kAbsent; } %prec "ILIKE"
+    | "NOT_SPECIAL" "ILIKE"
+      {
+        @$ = @2;  // Error messages should point at the "ILIKE".
+        $$ = NotKeywordPresence::kPresent;
+      } %prec "ILIKE"
+    ;
+
 // Returns NotKeywordPresence to indicate whether NOT was present.
 between_operator:
     "BETWEEN"
@@ -5551,6 +5562,27 @@ expression:
               MAKE_NODE(ASTBinaryExpression, @1, @3, {$1, $3});
           binary_expression->set_is_not($2 == NotKeywordPresence::kPresent);
           binary_expression->set_op(zetasql::ASTBinaryExpression::LIKE);
+          $$ = binary_expression;
+        }
+    | expression ilike_operator expression %prec "ILIKE"
+        {
+          // NOT has lower precedence but can be parsed unparenthesized in the
+          // rhs because it is not ambiguous. This is not allowed.
+          if (IsUnparenthesizedNotExpression($3)) {
+            YYERROR_UNEXPECTED_AND_ABORT_AT(@3);
+          }
+          // Bison allows some cases ilike IN on the left hand side because it's
+          // not ambiguous. The language doesn't allow this.
+          if (!$1->IsAllowedInComparison()) {
+            YYERROR_AND_ABORT_AT(
+                @2,
+                "Syntax error: "
+                "Expression to the left of ILIKE must be parenthesized");
+          }
+          auto* binary_expression =
+              MAKE_NODE(ASTBinaryExpression, @1, @3, {$1, $3});
+          binary_expression->set_is_not($2 == NotKeywordPresence::kPresent);
+          binary_expression->set_op(zetasql::ASTBinaryExpression::ILIKE);
           $$ = binary_expression;
         }
     | expression "ESCAPE" string_literal
@@ -7222,6 +7254,7 @@ reserved_keyword_rule:
     | "HAVING"
     | "IF"
     | "IGNORE"
+    | "ILIKE"
     | "IN"
     | "INNER"
     | "INSTANCE_NOT_IN_WINDOW"

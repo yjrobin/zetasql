@@ -35,6 +35,19 @@ col1 like 'kk' escape abc
                       ^
 ==
 
+# ilike
+col1 NOT ILIKE '&_' escape '&'
+--
+BinaryExpression(NOT ILIKE) [0-30]
+  PathExpression [0-4]
+    Identifier(col1) [0-4]
+  EscapedExpression [15-30]
+    StringLiteral('&_') [15-19]
+    StringLiteral('&') [27-30]
+--
+col1 NOT ILIKE '&_' ESCAPE '&'
+==
+
 
 abc + @param + @@sysvar + count(*) + (select 1) + (select x from y)
 --
