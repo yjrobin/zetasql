@@ -185,6 +185,7 @@ constexpr KeywordInfoPOD kAllKeywords[] = {
     {"left", KW_LEFT, KeywordInfo::kReserved},
     {"level", KW_LEVEL},
     {"like", KW_LIKE, KeywordInfo::kReserved},
+    {"ilike", KW_ILIKE, KeywordInfo::kReserved},
     {"limit", KW_LIMIT, KeywordInfo::kReserved},
     {"load", KW_LOAD},
     {"lookup", KW_LOOKUP, KeywordInfo::kReserved},

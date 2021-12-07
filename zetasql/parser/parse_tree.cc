@@ -762,6 +762,8 @@ std::string ASTBinaryExpression::GetSQLForOperator() const {
       return "XOR";
     case DISTINCT:
       return is_not_ ? "IS NOT DISTINCT FROM" : "IS DISTINCT FROM";
+    case ILIKE:
+      return is_not_ ? "NOT ILIKE" : "ILIKE";
   }
 }
 

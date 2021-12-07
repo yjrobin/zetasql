@@ -154,7 +154,7 @@ SELECT
 # Syntax error
 SELECT 1 NOT DISTINCT FROM 2;
 --
-ERROR: Syntax error: Expected keyword BETWEEN or keyword IN or keyword LIKE but got keyword DISTINCT [at 1:14]
+ERROR: Syntax error: Expected keyword BETWEEN or keyword ILIKE or keyword IN or keyword LIKE but got keyword DISTINCT [at 1:14]
 SELECT 1 NOT DISTINCT FROM 2;
              ^
 ==
