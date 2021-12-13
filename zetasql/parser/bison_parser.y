@@ -840,6 +840,7 @@ using zetasql::ASTDropStatement;
 %token KW_FORMAT "FORMAT"
 %token KW_FUNCTION "FUNCTION"
 %token KW_GENERATED "GENERATED"
+%token KW_GLOBAL "GLOBAL"
 %token KW_GRANT "GRANT"
 %token KW_GROUP_ROWS "GROUP_ROWS"
 %token KW_HIDDEN "HIDDEN"
@@ -905,6 +906,7 @@ using zetasql::ASTDropStatement;
 %token KW_SCHEMA "SCHEMA"
 %token KW_SEARCH "SEARCH"
 %token KW_SECURITY "SECURITY"
+%token KW_SESSION "SESSION"
 %token KW_SHOW "SHOW"
 %token KW_SIMPLE "SIMPLE"
 %token KW_SOURCE "SOURCE"
@@ -934,6 +936,7 @@ using zetasql::ASTDropStatement;
 %token KW_USE "USE"
 %token KW_VALUE "VALUE"
 %token KW_VALUES "VALUES"
+%token KW_VARIABLES "VARIABLES"
 %token KW_VOLATILE "VOLATILE"
 %token KW_VIEW "VIEW"
 %token KW_VIEWS "VIEWS"
@@ -3565,6 +3568,14 @@ show_target:
   | "PROCEDURE" "STATUS"
     {
       $$ = parser->MakeIdentifier(@$, "PROCEDURE STATUS");
+    }
+  | "GLOBAL" "VARIABLES"
+    {
+      $$ = parser->MakeIdentifier(@$, "GLOBAL VARIABLES");
+    }
+  | "SESSION" "VARIABLES"
+    {
+      $$ = parser->MakeIdentifier(@$, "SESSION VARIABLES");
     }
   | identifier
     {
@@ -7390,6 +7401,7 @@ keyword_as_identifier:
     | "FORMAT"
     | "FUNCTION"
     | "GENERATED"
+    | "GLOBAL"
     | "GRANT"
     | "GROUP_ROWS"
     | "HIDDEN"
@@ -7455,6 +7467,7 @@ keyword_as_identifier:
     | "SCHEMA"
     | "SEARCH"
     | "SECURITY"
+    | "SESSION"
     | "SHOW"
     | "SIMPLE"
     | "SOURCE"
@@ -7484,6 +7497,7 @@ keyword_as_identifier:
     | "USE"
     | "VALUE"
     | "VALUES"
+    | "VARIABLES"
     | "VIEW"
     | "VIEWS"
     | "VOLATILE"

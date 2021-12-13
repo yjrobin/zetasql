@@ -469,6 +469,7 @@ from { return BisonParserImpl::token::KW_FROM; }
 full { return BisonParserImpl::token::KW_FULL; }
 function { return BisonParserImpl::token::KW_FUNCTION; }
 generated { return BisonParserImpl::token::KW_GENERATED; }
+global { return BisonParserImpl::token::KW_GLOBAL; }
 grant { return BisonParserImpl::token::KW_GRANT; }
 group { return BisonParserImpl::token::KW_GROUP; }
 group_rows { return BisonParserImpl::token::KW_GROUP_ROWS; }
@@ -603,6 +604,7 @@ safe_cast { return BisonParserImpl::token::KW_SAFE_CAST; }
 schema { return BisonParserImpl::token::KW_SCHEMA; }
 search { return BisonParserImpl::token::KW_SEARCH; }
 security { return BisonParserImpl::token::KW_SECURITY; }
+session { return BisonParserImpl::token::KW_SESSION; }
 select { return BisonParserImpl::token::KW_SELECT; }
 set { return BisonParserImpl::token::KW_SET; }
 show { return BisonParserImpl::token::KW_SHOW; }
@@ -646,6 +648,7 @@ use { return BisonParserImpl::token::KW_USE; }
 using { return BisonParserImpl::token::KW_USING; }
 value { return BisonParserImpl::token::KW_VALUE; }
 values { return BisonParserImpl::token::KW_VALUES; }
+variables { return BisonParserImpl::token::KW_VARIABLES; }
 view { return BisonParserImpl::token::KW_VIEW; }
 views { return BisonParserImpl::token::KW_VIEWS; }
 volatile { return BisonParserImpl::token::KW_VOLATILE; }
