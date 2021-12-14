@@ -126,6 +126,14 @@ ShowStatement [0-9]
 SHOW JOBS
 ==
 
+show VARIABLES;
+--
+ShowStatement [0-14]
+  Identifier(VARIABLES) [5-14]
+--
+SHOW VARIABLES
+==
+
 show VARIABLES like 'server_name';
 --
 ShowStatement [0-33]
@@ -133,6 +141,22 @@ ShowStatement [0-33]
   StringLiteral('server_name') [20-33]
 --
 SHOW VARIABLES LIKE 'server_name'
+==
+
+show GLOBAL VARIABLES;
+--
+ShowStatement [0-21]
+  Identifier(`GLOBAL VARIABLES`) [5-21]
+--
+SHOW `GLOBAL VARIABLES`
+==
+
+show SESSION VARIABLES;
+--
+ShowStatement [0-22]
+  Identifier(`SESSION VARIABLES`) [5-22]
+--
+SHOW `SESSION VARIABLES`
 ==
 
 show TABLES from adwords like b'abc%';
