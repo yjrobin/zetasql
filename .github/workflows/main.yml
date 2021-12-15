@@ -73,6 +73,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: setup dependencies
+        run: |
+          apt-get update
+          apt-get install -y curl
+
       - uses: actions/setup-java@v2
         with:
           distribution: 'adopt' # See 'Supported distributions' for available options
