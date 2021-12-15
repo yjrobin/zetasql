@@ -74,7 +74,7 @@ jobs:
       - name: setup dependencies
         run: |
           apt-get update
-          DEBIAN_FRONTEND=noninteractive apt-get install -y -q curl build-essential unzip python3 git
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -q curl build-essential unzip python3-dev git
           update-alternatives --install /usr/bin/python python /usr/bin/python3 100
 
       - uses: actions/checkout@v2
