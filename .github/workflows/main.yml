@@ -76,7 +76,8 @@ jobs:
       - name: setup dependencies
         run: |
           apt-get update
-          DEBIAN_FRONTEND=noninteractive apt-get install -y curl build-essential autoconf libtool-bin pkg-config python3-dev
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -q curl build-essential unzip python3
+          update-alternatives --install /usr/bin/python python /usr/bin/python3 100
 
       - uses: actions/setup-java@v2
         with:
