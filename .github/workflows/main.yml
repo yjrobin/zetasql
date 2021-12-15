@@ -76,7 +76,7 @@ jobs:
       - name: setup dependencies
         run: |
           apt-get update
-          apt-get install -y curl
+          apt-get install -y curl build-essential autoconf libtool-bin pkg-config
 
       - uses: actions/setup-java@v2
         with:
