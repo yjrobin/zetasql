@@ -71,13 +71,13 @@ jobs:
     container:
       image: ubuntu:20.04
     steps:
-      - uses: actions/checkout@v2
-
       - name: setup dependencies
         run: |
           apt-get update
           DEBIAN_FRONTEND=noninteractive apt-get install -y -q curl build-essential unzip python3 git
           update-alternatives --install /usr/bin/python python /usr/bin/python3 100
+
+      - uses: actions/checkout@v2
 
       - uses: actions/setup-java@v2
         with:
