@@ -806,6 +806,7 @@ using zetasql::ASTDropStatement;
 %token KW_COLUMNS "COLUMNS"
 %token KW_COMMIT "COMMIT"
 %token KW_CONNECTION "CONNECTION"
+%token KW_CONFIG "CONFIG"
 %token KW_CONTINUE "CONTINUE"
 %token KW_CONST "CONST"
 %token KW_CONSTANT "CONSTANT"
@@ -1182,6 +1183,7 @@ using zetasql::ASTDropStatement;
 %type <node> opt_like_string_literal
 %type <node> opt_like_path_expression
 %type <node> opt_limit_offset_clause
+%type <node> opt_with_config_clause
 %type <node> opt_maxsize
 %type <node> opt_on_or_using_clause_list
 %type <node> on_or_using_clause_list
@@ -3420,9 +3422,9 @@ select_into_statement:
     ;
 
 load_data_statement:
-    "LOAD" "DATA" "INFILE" string_literal "INTO" "TABLE" path_expression opt_options_list
+    "LOAD" "DATA" "INFILE" string_literal "INTO" "TABLE" path_expression opt_options_list opt_with_config_clause
     {
-      $$ = MAKE_NODE(ASTLoadDataStatement, @$, {$4, $7, $8});
+      $$ = MAKE_NODE(ASTLoadDataStatement, @$, {$4, $7, $8, $9});
     }
     ;
 
@@ -5071,6 +5073,14 @@ opt_limit_offset_clause:
       {
         $$ = MAKE_NODE(ASTLimitOffset, @$, {$2});
       }
+    | /* Nothing */ { $$ = nullptr; }
+    ;
+
+opt_with_config_clause:
+    "WITH" "CONFIG" options_list
+    {
+      $$ = MAKE_NODE(ASTWithConfigClause, @$, {$3});
+    }
     | /* Nothing */ { $$ = nullptr; }
     ;
 
@@ -7365,6 +7375,7 @@ keyword_as_identifier:
     | "COLUMN"
     | "COLUMNS"
     | "COMMIT"
+    | "CONFIG"
     | "CONNECTION"
     | "CONST"
     | "CONSTANT"

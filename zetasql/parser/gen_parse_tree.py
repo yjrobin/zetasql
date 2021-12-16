@@ -376,6 +376,9 @@ def main(argv):
           Field(
               'window_clause',
               'ASTWindowClause'),
+          Field(
+            'with_config_clause',
+            'ASTWithConfigClause'),
       ])
 
   gen.AddNode(

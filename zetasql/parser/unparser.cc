@@ -1090,6 +1090,9 @@ void Unparser::visitASTLoadDataStatement(const ASTLoadDataStatement* node, void*
     print("OPTIONS");
     node->options_list()->Accept(this, data);
   }
+  if (node->opt_with_config() != nullptr) {
+    node->opt_with_config()->Accept(this, data);
+  }
 }
 
 void Unparser::visitASTSelectIntoStatement(const ASTSelectIntoStatement* node, void* data) {
@@ -1463,6 +1466,11 @@ void Unparser::visitASTLimitOffset(const ASTLimitOffset* node, void* data) {
   println();
   print("LIMIT");
   UnparseChildrenWithSeparator(node, data, "OFFSET");
+}
+
+void Unparser::visitASTWithConfigClause(const ASTWithConfigClause* node, void* data) {
+  print("WITH CONFIG");
+  node->options_list()->Accept(this, data);
 }
 
 void Unparser::visitASTHavingModifier(const ASTHavingModifier* node,

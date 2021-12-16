@@ -392,6 +392,7 @@ collate { return BisonParserImpl::token::KW_COLLATE; }
 column { return BisonParserImpl::token::KW_COLUMN; }
 columns { return BisonParserImpl::token::KW_COLUMNS; }
 commit { return BisonParserImpl::token::KW_COMMIT; }
+config { return BisonParserImpl::token::KW_CONFIG; }
 connection { return BisonParserImpl::token::KW_CONNECTION; }
 const { return BisonParserImpl::token::KW_CONST; }
 constant { return BisonParserImpl::token::KW_CONSTANT; }

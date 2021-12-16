@@ -805,6 +805,7 @@ class ASTLoadDataStatement final : public ASTLoadStatement {
   const ASTStringLiteral* in_file() const { return in_file_; }
   const ASTPathExpression* table_name() const { return table_name_; }
   const ASTOptionsList* options_list() const { return options_list_; }
+  const ASTWithConfigClause* opt_with_config() const { return opt_with_config_; }
 
  private:
   void InitFields() final {
@@ -812,11 +813,13 @@ class ASTLoadDataStatement final : public ASTLoadStatement {
     fl.AddRequired(&in_file_);
     fl.AddRequired(&table_name_);
     fl.AddOptional(&options_list_, AST_OPTIONS_LIST);
+    fl.AddOptional(&opt_with_config_, AST_WITH_CONFIG_CLAUSE);
   }
 
   const ASTStringLiteral* in_file_ = nullptr;
   const ASTPathExpression* table_name_ = nullptr;
   const ASTOptionsList* options_list_ = nullptr;
+  const ASTWithConfigClause* opt_with_config_ = nullptr;
 };
 
 class ASTUseStatement final : public ASTStatement {
@@ -1884,6 +1887,26 @@ class ASTLimitOffset final : public ASTNode {
   const ASTExpression* limit_ = nullptr;
   // The OFFSET value. NULL if no OFFSET specified.
   const ASTExpression* offset_ = nullptr;
+};
+
+class ASTWithConfigClause final : public ASTNode {
+ public:
+  static constexpr ASTNodeKind kConcreteNodeKind = AST_WITH_CONFIG_CLAUSE;
+
+  ASTWithConfigClause() : ASTNode(kConcreteNodeKind) {}
+  void Accept(ParseTreeVisitor* visitor, void* data) const override;
+  zetasql_base::StatusOr<VisitResult> Accept(
+      NonRecursiveParseTreeVisitor* visitor) const override;
+
+  const ASTOptionsList* options_list() const { return options_list_; }
+
+ private:
+  void InitFields() final {
+    FieldLoader fl(this);
+    fl.AddRequired(&options_list_);
+  }
+
+  const ASTOptionsList* options_list_ = nullptr;
 };
 
 class ASTHavingModifier final : public ASTNode {
