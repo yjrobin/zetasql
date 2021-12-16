@@ -14,6 +14,7 @@ function usage ()
 
     Options:
     -h       Display this message
+    -d       Linux distribution name, e.g centos, ubuntu
     -i       Request install to given directory after pack"
 
 }    # ----------  end of function usage  ----------
@@ -23,11 +24,16 @@ function usage ()
 #-----------------------------------------------------------------------
 
 INSTALL_DIR=
-while getopts ":hi:" opt
+# linux distribution name
+DISTRO=
+
+while getopts ":hi:d:" opt
 do
   case $opt in
 
     h )  usage; exit 0   ;;
+
+    d ) DISTRO=$OPTARG ;;
 
     i )
       INSTALL_DIR=$OPTARG
@@ -167,7 +173,7 @@ fi
 if [[ $OSTYPE = 'darwin'* ]]; then
     OUT_FILE="${ZETASQL_LIB_NAME}-darwin-$(uname -m).tar.gz"
 else
-    OUT_FILE="${ZETASQL_LIB_NAME}-$OSTYPE-$(uname -m).tar.gz"
+    OUT_FILE="${ZETASQL_LIB_NAME}-$OSTYPE-$(uname -m)-$DISTRO.tar.gz"
 fi
 tar czf "$OUT_FILE" "$ZETASQL_LIB_NAME"/
 
