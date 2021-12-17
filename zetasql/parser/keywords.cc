@@ -84,7 +84,7 @@ constexpr KeywordInfoPOD kAllKeywords[] = {
     {"column", KW_COLUMN},
     {"columns", KW_COLUMNS},
     {"commit", KW_COMMIT},
-    {"config", KW_CONFIG},
+    {"config", KW_CONFIG, KeywordInfo::kReserved},
     {"connection", KW_CONNECTION},
     {"const", KW_CONST},
     {"constant", KW_CONSTANT},

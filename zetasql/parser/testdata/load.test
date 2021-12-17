@@ -38,25 +38,26 @@ load data infile 'data.file' into table;
 ==
 
 # load data with config
-load data infile 'data.csv' into table foo with config (charset = 'utf-8');
+load data infile 'data.csv' into table foo config (charset = 'utf-8');
 --
-LoadDataStatement [0-74]
+LoadDataStatement [0-69]
   StringLiteral('data.csv') [17-27]
   PathExpression [39-42]
     Identifier(foo) [39-42]
-  WithConfigClause [43-74]
-    OptionsList [55-74]
-      OptionsEntry [56-73]
-        Identifier(charset) [56-63]
-        StringLiteral('utf-8') [66-73]
+  ConfigClause [43-69]
+    OptionsList [50-69]
+      OptionsEntry [51-68]
+        Identifier(charset) [51-58]
+        StringLiteral('utf-8') [61-68]
 --
-LOAD DATA INFILE 'data.csv' INTO TABLE foo WITH CONFIG(charset = 'utf-8')
+LOAD DATA INFILE 'data.csv' INTO TABLE foo
+CONFIG(charset = 'utf-8')
 ==
 
 # load data with config
-load data infile 'data.csv' into table foo options (charset = 'utf-8') with config (charset = 'utf-8');
+load data infile 'data.csv' into table foo options (charset = 'utf-8') config (charset = 'utf-8');
 --
-LoadDataStatement [0-102]
+LoadDataStatement [0-97]
   StringLiteral('data.csv') [17-27]
   PathExpression [39-42]
     Identifier(foo) [39-42]
@@ -64,11 +65,12 @@ LoadDataStatement [0-102]
     OptionsEntry [52-69]
       Identifier(charset) [52-59]
       StringLiteral('utf-8') [62-69]
-  WithConfigClause [71-102]
-    OptionsList [83-102]
-      OptionsEntry [84-101]
-        Identifier(charset) [84-91]
-        StringLiteral('utf-8') [94-101]
+  ConfigClause [71-97]
+    OptionsList [78-97]
+      OptionsEntry [79-96]
+        Identifier(charset) [79-86]
+        StringLiteral('utf-8') [89-96]
 --
-LOAD DATA INFILE 'data.csv' INTO TABLE foo OPTIONS(charset = 'utf-8') WITH CONFIG(charset = 'utf-8')
+LOAD DATA INFILE 'data.csv' INTO TABLE foo OPTIONS(charset = 'utf-8')
+CONFIG(charset = 'utf-8')
 ==

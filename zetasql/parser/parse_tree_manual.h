@@ -772,6 +772,7 @@ class ASTSelectIntoStatement final : public ASTStatement {
   const ASTQuery* query() const { return query_; }
   const ASTStringLiteral* out_file() const { return out_file_; }
   const ASTOptionsList* options_list() const { return options_list_; }
+  const ASTConfigClause* opt_config() const { return opt_config_; }
 
   std::string UnparseQuery() const;
 
@@ -781,11 +782,13 @@ class ASTSelectIntoStatement final : public ASTStatement {
     fl.AddRequired(&query_);
     fl.AddRequired(&out_file_);
     fl.AddOptional(&options_list_, AST_OPTIONS_LIST);
+    fl.AddOptional(&opt_config_, AST_CONFIG_CLAUSE);
   }
 
   const ASTQuery* query_ = nullptr;
   const ASTStringLiteral* out_file_ = nullptr;
   const ASTOptionsList* options_list_ = nullptr;
+  const ASTConfigClause* opt_config_ = nullptr;
 };
 // super class of all load statements
 class ASTLoadStatement : public ASTStatement {
@@ -805,7 +808,7 @@ class ASTLoadDataStatement final : public ASTLoadStatement {
   const ASTStringLiteral* in_file() const { return in_file_; }
   const ASTPathExpression* table_name() const { return table_name_; }
   const ASTOptionsList* options_list() const { return options_list_; }
-  const ASTWithConfigClause* opt_with_config() const { return opt_with_config_; }
+  const ASTConfigClause* opt_config() const { return opt_config_; }
 
  private:
   void InitFields() final {
@@ -813,13 +816,13 @@ class ASTLoadDataStatement final : public ASTLoadStatement {
     fl.AddRequired(&in_file_);
     fl.AddRequired(&table_name_);
     fl.AddOptional(&options_list_, AST_OPTIONS_LIST);
-    fl.AddOptional(&opt_with_config_, AST_WITH_CONFIG_CLAUSE);
+    fl.AddOptional(&opt_config_, AST_CONFIG_CLAUSE);
   }
 
   const ASTStringLiteral* in_file_ = nullptr;
   const ASTPathExpression* table_name_ = nullptr;
   const ASTOptionsList* options_list_ = nullptr;
-  const ASTWithConfigClause* opt_with_config_ = nullptr;
+  const ASTConfigClause* opt_config_ = nullptr;
 };
 
 class ASTUseStatement final : public ASTStatement {
@@ -1889,11 +1892,11 @@ class ASTLimitOffset final : public ASTNode {
   const ASTExpression* offset_ = nullptr;
 };
 
-class ASTWithConfigClause final : public ASTNode {
+class ASTConfigClause final : public ASTNode {
  public:
-  static constexpr ASTNodeKind kConcreteNodeKind = AST_WITH_CONFIG_CLAUSE;
+  static constexpr ASTNodeKind kConcreteNodeKind = AST_CONFIG_CLAUSE;
 
-  ASTWithConfigClause() : ASTNode(kConcreteNodeKind) {}
+  ASTConfigClause() : ASTNode(kConcreteNodeKind) {}
   void Accept(ParseTreeVisitor* visitor, void* data) const override;
   zetasql_base::StatusOr<VisitResult> Accept(
       NonRecursiveParseTreeVisitor* visitor) const override;
