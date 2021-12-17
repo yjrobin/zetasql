@@ -335,6 +335,9 @@ def main(argv):
               'query',
               'ASTQuery',
               field_loader=FieldLoaderMethod.REQUIRED),
+          Field(
+            'config_clause',
+            'ASTConfigClause'),
       ])
 
   gen.AddNode(

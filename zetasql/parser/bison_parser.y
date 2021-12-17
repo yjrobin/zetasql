@@ -668,6 +668,7 @@ using zetasql::ASTDropStatement;
 %token KW_CASE "CASE"
 %token KW_CAST "CAST"
 %token KW_COLLATE "COLLATE"
+%token KW_CONFIG "CONFIG"
 %token KW_CREATE "CREATE"
 %token KW_CROSS "CROSS"
 %token KW_CURRENT "CURRENT"
@@ -1182,6 +1183,7 @@ using zetasql::ASTDropStatement;
 %type <node> opt_like_string_literal
 %type <node> opt_like_path_expression
 %type <node> opt_limit_offset_clause
+%type <node> opt_config_clause
 %type <node> opt_maxsize
 %type <node> opt_on_or_using_clause_list
 %type <node> on_or_using_clause_list
@@ -1605,9 +1607,9 @@ sql_statement_body:
     ;
 
 query_statement:
-    query
+    query opt_config_clause
       {
-        $$ = MAKE_NODE(ASTQueryStatement, @$, {$1});
+        $$ = MAKE_NODE(ASTQueryStatement, @$, {$1, $2});
       }
     ;
 
@@ -3413,16 +3415,16 @@ into_statement:
     ;
 
 select_into_statement:
-    query "INTO" "OUTFILE" string_literal opt_options_list
+    query "INTO" "OUTFILE" string_literal opt_options_list opt_config_clause
     {
-      $$ = MAKE_NODE(ASTSelectIntoStatement, @$, {$1, $4, $5})
+      $$ = MAKE_NODE(ASTSelectIntoStatement, @$, {$1, $4, $5, $6})
     }
     ;
 
 load_data_statement:
-    "LOAD" "DATA" "INFILE" string_literal "INTO" "TABLE" path_expression opt_options_list
+    "LOAD" "DATA" "INFILE" string_literal "INTO" "TABLE" path_expression opt_options_list opt_config_clause
     {
-      $$ = MAKE_NODE(ASTLoadDataStatement, @$, {$4, $7, $8});
+      $$ = MAKE_NODE(ASTLoadDataStatement, @$, {$4, $7, $8, $9});
     }
     ;
 
@@ -5071,6 +5073,14 @@ opt_limit_offset_clause:
       {
         $$ = MAKE_NODE(ASTLimitOffset, @$, {$2});
       }
+    | /* Nothing */ { $$ = nullptr; }
+    ;
+
+opt_config_clause:
+    "CONFIG" options_list
+    {
+      $$ = MAKE_NODE(ASTConfigClause, @$, {$2});
+    }
     | /* Nothing */ { $$ = nullptr; }
     ;
 
@@ -7241,6 +7251,7 @@ reserved_keyword_rule:
     | "CASE"
     | "CAST"
     | "COLLATE"
+    | "CONFIG"
     | "CREATE"
     | "CROSS"
     | "CURRENT"
