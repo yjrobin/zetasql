@@ -880,6 +880,11 @@ std::string ASTDropMaterializedViewStatement::SingleNodeDebugString() const {
   return absl::StrCat(node_name, "(is_if_exists)");
 }
 
+std::string ASTDeployStatement::SingleNodeDebugString() const {
+  return absl::StrCat(ASTNode::SingleNodeDebugString(),
+                      is_if_not_exists() ? "(is_if_not_exists)" : "");
+}
+
 std::string ASTPathExpression::ToIdentifierPathString(
     size_t max_prefix_size) const {
   const int end = max_prefix_size == 0
@@ -1141,6 +1146,11 @@ bool ASTFunctionDeclaration::IsTemplated() const {
     }
   }
   return false;
+}
+
+std::string ASTCreateDatabaseStatement::SingleNodeDebugString() const {
+  return absl::StrCat(ASTNode::SingleNodeDebugString(),
+                      is_if_not_exists() ? "(is_if_not_exists)" : "");
 }
 
 std::string ASTCreateFunctionStmtBase::SingleNodeDebugString() const {
