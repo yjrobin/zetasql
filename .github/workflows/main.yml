@@ -77,7 +77,7 @@ jobs:
           DEBIAN_FRONTEND=noninteractive apt-get install -y -q curl build-essential unzip python3-dev git
           update-alternatives --install /usr/bin/python python /usr/bin/python3 100
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - uses: actions/setup-java@v2
         with:
@@ -102,6 +102,7 @@ jobs:
 
       - name: pack libzetasql
         run: |
+          git config --global --add safe.directory "$(pwd)"
           ./pack_zetasql.sh -d ubuntu
         env:
           TAG: ${{ env.TAG }}
@@ -120,7 +121,7 @@ jobs:
       build_argv: '--features=-supports_dynamic_linker '
       bazel_version: '3.7.2'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: update bazel version
         run: echo ${{ env.bazel_version }} > .bazelversion
