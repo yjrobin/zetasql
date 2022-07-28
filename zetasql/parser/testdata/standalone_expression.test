@@ -48,6 +48,16 @@ BinaryExpression(NOT ILIKE) [0-30]
 col1 NOT ILIKE '&_' ESCAPE '&'
 ==
 
+# rlike
+col1 NOT RLIKE '.a'
+--
+BinaryExpression(NOT RLIKE) [0-19]
+  PathExpression [0-4]
+    Identifier(col1) [0-4]
+  StringLiteral('.a') [15-19]
+--
+col1 NOT RLIKE '.a'
+==
 
 abc + @param + @@sysvar + count(*) + (select 1) + (select x from y)
 --

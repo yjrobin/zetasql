@@ -2030,6 +2030,7 @@ class ASTBinaryExpression final : public ASTExpression {
     XOR,          // "XOR"
     DISTINCT,     // "IS DISTINCT FROM"
     ILIKE,        // "ILIKE"
+    RLIKE,        // "RLIKE"
   };
 
   void set_op(Op op) { op_ = op; }
@@ -2048,6 +2049,7 @@ class ASTBinaryExpression final : public ASTExpression {
     switch (op()) {
       case LIKE:
       case ILIKE:
+      case RLIKE:
       case IS:
       case EQ:
       case NE:

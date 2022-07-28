@@ -556,7 +556,7 @@ class DashedIdentifierTmpNode final : public zetasql::ASTNode {
 %left "AND"
 %left "XOR"
 %left UNARY_NOT_PRECEDENCE
-%nonassoc "=" "==" "<>" ">" "<" ">=" "<=" "!=" "LIKE" "ILIKE" "IN" "DISTINCT" "BETWEEN" "IS" "NOT_SPECIAL"
+%nonassoc "=" "==" "<>" ">" "<" ">=" "<=" "!=" "LIKE" "ILIKE" "RLIKE" "IN" "DISTINCT" "BETWEEN" "IS" "NOT_SPECIAL"
 %nonassoc "ESCAPE"
 %left "|"
 %left "^"
@@ -714,6 +714,7 @@ using zetasql::ASTDropStatement;
 %token KW_LEFT "LEFT"
 %token KW_LIKE "LIKE"
 %token KW_ILIKE "ILIKE"
+%token KW_RLIKE "RLIKE"
 %token KW_LIMIT "LIMIT"
 %token KW_LOOKUP "LOOKUP"
 %token KW_MERGE "MERGE"
@@ -1385,6 +1386,7 @@ using zetasql::ASTDropStatement;
 %type <not_keyword_presence> is_operator
 %type <not_keyword_presence> like_operator
 %type <not_keyword_presence> ilike_operator
+%type <not_keyword_presence> rlike_operator
 %type <not_keyword_presence> distinct_operator
 
 %type <preceding_or_following_keyword> preceding_or_following
@@ -5405,6 +5407,15 @@ ilike_operator:
       } %prec "ILIKE"
     ;
 
+rlike_operator:
+    "RLIKE" { $$ = NotKeywordPresence::kAbsent; } %prec "RLIKE"
+    | "NOT_SPECIAL" "RLIKE"
+      {
+        @$ = @2;  // Error messages should point at the "RLIKE".
+        $$ = NotKeywordPresence::kPresent;
+      } %prec "RLIKE"
+    ;
+
 // Returns NotKeywordPresence to indicate whether NOT was present.
 between_operator:
     "BETWEEN"
@@ -5629,6 +5640,27 @@ expression:
     | expression "ESCAPE" string_literal
         {
           $$ = MAKE_NODE(ASTEscapedExpression, @$, {$1, $3})
+        }
+    | expression rlike_operator expression %prec "RLIKE"
+        {
+          // NOT has lower precedence but can be parsed unparenthesized in the
+          // rhs because it is not ambiguous. This is not allowed.
+          if (IsUnparenthesizedNotExpression($3)) {
+            YYERROR_UNEXPECTED_AND_ABORT_AT(@3);
+          }
+          // Bison allows some cases like IN on the left hand side because it's
+          // not ambiguous. The language doesn't allow this.
+          if (!$1->IsAllowedInComparison()) {
+            YYERROR_AND_ABORT_AT(
+                @2,
+                "Syntax error: "
+                "Expression to the left of RIKE must be parenthesized");
+          }
+          auto* binary_expression =
+              MAKE_NODE(ASTBinaryExpression, @1, @3, {$1, $3});
+          binary_expression->set_is_not($2 == NotKeywordPresence::kPresent);
+          binary_expression->set_op(zetasql::ASTBinaryExpression::RLIKE);
+          $$ = binary_expression;
         }
     | expression distinct_operator expression %prec "DISTINCT"
         {
@@ -7353,6 +7385,7 @@ reserved_keyword_rule:
     | "RECURSIVE"
     | "RESPECT"
     | "RIGHT"
+    | "RLIKE"
     | "ROLLUP"
     | "ROWS"
     | "ROWS_RANGE"

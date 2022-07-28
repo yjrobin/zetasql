@@ -770,6 +770,8 @@ std::string ASTBinaryExpression::GetSQLForOperator() const {
       return is_not_ ? "IS NOT DISTINCT FROM" : "IS DISTINCT FROM";
     case ILIKE:
       return is_not_ ? "NOT ILIKE" : "ILIKE";
+    case RLIKE:
+      return is_not_ ? "NOT RLIKE" : "RLIKE";
   }
 }
 

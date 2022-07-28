@@ -512,6 +512,7 @@ left { return BisonParserImpl::token::KW_LEFT; }
 level { return BisonParserImpl::token::KW_LEVEL; }
 like { return BisonParserImpl::token::KW_LIKE; }
 ilike { return BisonParserImpl::token::KW_ILIKE; }
+rlike { return BisonParserImpl::token::KW_RLIKE; }
 limit { return BisonParserImpl::token::KW_LIMIT; }
 load { return BisonParserImpl::token::KW_LOAD; }
 lookup { return BisonParserImpl::token::KW_LOOKUP; }
@@ -539,14 +540,14 @@ no { return BisonParserImpl::token::KW_NO; }
     file will cause bad error messages. There is no situation where that is
     valid syntax, so there will never be any rejections as a result.
  */
-not{whitespace}(between|in|like|ilike|distinct)[^A-Z_0-9] {
+not{whitespace}(between|in|like|ilike|rlike|distinct)[^A-Z_0-9] {
   SET_RETURN_PREFIX_LENGTH(3);
   if (mode_ == BisonParserMode::kTokenizer) {
     return BisonParserImpl::token::KW_NOT;
   }
   return BisonParserImpl::token::KW_NOT_SPECIAL;
 }
-"!"{whitespace}(between|in|like|ilike|distinct)[^A-Z_0-9] {
+"!"{whitespace}(between|in|like|ilike|rlike|distinct)[^A-Z_0-9] {
   SET_RETURN_PREFIX_LENGTH(1);
   if (mode_ == BisonParserMode::kTokenizer) {
     return BisonParserImpl::token::KW_NOT;
