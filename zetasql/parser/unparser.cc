@@ -2248,6 +2248,10 @@ void Unparser::visitASTLikeTableClause(const ASTLikeTableClause *node,
       print("PARQUET");
       break;
     }
+    case ASTLikeTableClause::HIVE: {
+      print("HIVE");
+      break;
+    }
   }
   node->path()->Accept(this, data);
 }
