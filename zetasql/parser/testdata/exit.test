@@ -1,0 +1,27 @@
+EXIT;
+--
+ExitStatement [0-4]
+--
+EXIT
+==
+
+QUIT;
+--
+ExitStatement [0-4]
+--
+EXIT
+==
+
+QUIT ;
+--
+ExitStatement [0-4]
+--
+EXIT
+==
+
+EXIT aaa;
+--
+ERROR: Syntax error: Expected end of input but got identifier "aaa" [at 1:6]
+EXIT aaa;
+     ^
+==

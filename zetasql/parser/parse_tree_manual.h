@@ -697,6 +697,20 @@ class ASTStopStatement final : public ASTStatement {
   const ASTTargetName* target_name_ = nullptr;
 };
 
+class ASTExitStatement final : public ASTStatement {
+ public:
+  static constexpr ASTNodeKind kConcreteNodeKind = AST_EXIT_STATEMENT;
+
+  ASTExitStatement() : ASTStatement(kConcreteNodeKind) {}
+  void Accept(ParseTreeVisitor* visitor, void* data) const override;
+  zetasql_base::StatusOr<VisitResult> Accept(
+      NonRecursiveParseTreeVisitor* visitor) const override;
+
+ private:
+  void InitFields() final {}
+};
+
+
 // Represents a RENAME statement.
 class ASTRenameStatement final : public ASTStatement {
  public:

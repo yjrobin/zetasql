@@ -904,6 +904,10 @@ void Unparser::visitASTStopStatement(const ASTStopStatement* node, void* data) {
   node->target_name()->Accept(this, data);
 }
 
+void Unparser::visitASTExitStatement(const ASTExitStatement* node, void* data) {
+  print("EXIT");
+}
+
 void Unparser::visitASTBeginStatement(
     const ASTBeginStatement* node, void* data) {
   print("BEGIN TRANSACTION");

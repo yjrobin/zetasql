@@ -276,6 +276,8 @@ constexpr KeywordInfoPOD kAllKeywords[] = {
     {"source", KW_SOURCE},
     {"storing", KW_STORING},
     {"stop", KW_STOP},
+    {"exit", KW_EXIT},
+    {"quit", KW_QUIT},
     {"sql", KW_SQL},
     {"stable", KW_STABLE},
     {"start", KW_START},

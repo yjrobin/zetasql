@@ -924,6 +924,8 @@ using zetasql::ASTDropStatement;
 %token KW_STORED "STORED"
 %token KW_STORING "STORING"
 %token KW_STOP "STOP"
+%token KW_QUIT "QUIT"
+%token KW_EXIT "EXIT"
 %token KW_SYSTEM "SYSTEM"
 %token KW_SYSTEM_TIME "SYSTEM_TIME"
 %token KW_TABLE "TABLE"
@@ -1135,6 +1137,7 @@ using zetasql::ASTDropStatement;
 %type <node> model_clause
 %type <node> module_statement
 %type <node> use_statement
+%type <node> exit_statement
 %type <node> nested_dml_statement
 %type <expression> new_constructor
 %type <node> new_constructor_arg
@@ -1614,6 +1617,7 @@ sql_statement_body:
     | load_statement
     | into_statement
     | stop_statement
+    | exit_statement
     ;
 
 query_statement:
@@ -7603,6 +7607,8 @@ keyword_as_identifier:
     | "STORED"
     | "STORING"
     | "STOP"
+    | "QUIT"
+    | "EXIT"
     | "SYSTEM"
     | "SYSTEM_TIME"
     | "TABLE"
@@ -8426,6 +8432,11 @@ stop_statement:
     }
     ;
 
+exit_statement:
+    "EXIT" { $$ = MAKE_NODE(ASTExitStatement, @$); }
+    | "QUIT" { $$ = MAKE_NODE(ASTExitStatement, @$); }
+    ;
+
 opt_drop_mode:
     "RESTRICT" { $$ = zetasql::ASTDropStatement::DropMode::RESTRICT; }
     | "CASCADE" { $$ = zetasql::ASTDropStatement::DropMode::CASCADE; }
@@ -9108,6 +9119,10 @@ next_statement_kind_without_hint:
       { $$ = zetasql::ASTUseStatement::kConcreteNodeKind; }
     | "STOP"
       { $$ = zetasql::ASTStopStatement::kConcreteNodeKind; }
+    | "EXIT"
+      { $$ = zetasql::ASTExitStatement::kConcreteNodeKind; }
+    | "QUIT"
+      { $$ = zetasql::ASTExitStatement::kConcreteNodeKind; }
     ;
 
 %%
