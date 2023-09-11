@@ -864,6 +864,11 @@ void Unparser::visitASTShowStatement(const ASTShowStatement* node, void* data) {
     // e.g in 'show create procedure p1', unparse sql is 'SHOW `CREATE PROCEDURE` p1',
     // which will fail to compile
     print("CREATE PROCEDURE");
+  } else if (node->identifier()->GetAsStringView() == "CREATE TABLE") {
+    // HACK: this is a hack to pass the unparser test for show statement with target name,
+    // e.g in 'show create table p1', unparse sql is 'SHOW `CREATE TABLE` p1',
+    // which will fail to compile
+    print("CREATE TABLE");
   } else {
     node->identifier()->Accept(this, data);
   }

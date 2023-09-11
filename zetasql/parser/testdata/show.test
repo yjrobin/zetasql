@@ -52,6 +52,27 @@ ShowStatement [0-24]
 SHOW TABLES FROM adwords
 ==
 
+show JOBS from adwords;
+--
+ShowStatement [0-22]
+  Identifier(JOBS) [5-9]
+  PathExpression [15-22]
+    Identifier(adwords) [15-22]
+--
+SHOW JOBS FROM adwords
+==
+
+show JOBS from adwords like '11';
+--
+ShowStatement [0-32]
+  Identifier(JOBS) [5-9]
+  PathExpression [15-22]
+    Identifier(adwords) [15-22]
+  StringLiteral('11') [28-32]
+--
+SHOW JOBS FROM adwords LIKE '11'
+==
+
 show TABLES from catalog.adwords;
 --
 ShowStatement [0-32]
@@ -232,6 +253,29 @@ ShowStatement [0-29]
       Identifier(name) [25-29]
 --
 SHOW CREATE PROCEDURE db.name
+==
+
+SHOW CREATE TABLE name;
+--
+ShowStatement [0-22]
+  Identifier(`CREATE TABLE`) [5-17]
+  TargetName [18-22]
+    PathExpression [18-22]
+      Identifier(name) [18-22]
+--
+SHOW CREATE TABLE name
+==
+
+SHOW CREATE TABLE db.name;
+--
+ShowStatement [0-25]
+  Identifier(`CREATE TABLE`) [5-17]
+  TargetName [18-25]
+    PathExpression [18-25]
+      Identifier(db) [18-20]
+      Identifier(name) [21-25]
+--
+SHOW CREATE TABLE db.name
 ==
 
 SHOW DEPLOYMENTS;

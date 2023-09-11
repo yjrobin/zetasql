@@ -3633,6 +3633,10 @@ show_with_name_target:
     {
       $$ = parser->MakeIdentifier(@$, "CREATE PROCEDURE");
     }
+  | "CREATE" "TABLE"
+    {
+      $$ = parser->MakeIdentifier(@$, "CREATE TABLE");
+    }
   | "DEPLOYMENT"
     {
       $$ = parser->MakeIdentifier(@$, "DEPLOYMENT");
