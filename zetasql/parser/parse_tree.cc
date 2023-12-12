@@ -76,6 +76,7 @@ static absl::flat_hash_map<ASTNodeKind, std::string> CreateNodeNamesMap() {
   map[AST_ALTER_TABLE_STATEMENT] = "AlterTableStatement";
   map[AST_ALTER_SCHEMA_STATEMENT]= "AlterSchemaStatement";
   map[AST_ALTER_VIEW_STATEMENT] = "AlterViewStatement";
+  map[AST_ALTER_USER_STATEMENT] = "AlterUserStatement";
   map[AST_ANALYTIC_FUNCTION_CALL] = "AnalyticFunctionCall";
   map[AST_ANALYZE_STATEMENT] = "AnalyzeStatement";
   map[AST_AND_EXPR] = "AndExpr";
@@ -119,6 +120,7 @@ static absl::flat_hash_map<ASTNodeKind, std::string> CreateNodeNamesMap() {
   map[AST_CREATE_EXTERNAL_TABLE_STATEMENT] = "CreateExternalTableStatement";
   map[AST_CREATE_FUNCTION_STATEMENT] = "CreateFunctionStatement";
   map[AST_CREATE_INDEX_STATEMENT] = "CreateIndexStatement";
+  map[AST_CREATE_USER_STATEMENT] = "CreateUserStatement";
   map[AST_CREATE_PROCEDURE_STATEMENT] = "CreateProcedureStatement";
   map[AST_CREATE_MODEL_STATEMENT] = "CreateModelStatement";
   map[AST_CREATE_ROW_ACCESS_POLICY_STATEMENT] =
@@ -152,6 +154,7 @@ static absl::flat_hash_map<ASTNodeKind, std::string> CreateNodeNamesMap() {
   map[AST_DROP_ROW_ACCESS_POLICY_STATEMENT] = "DropRowAccessPolicyStatement";
   map[AST_DROP_STATEMENT] = "DropStatement";
   map[AST_DROP_MATERIALIZED_VIEW_STATEMENT] = "DropMaterializedViewStatement";
+  map[AST_DROP_USER_STATEMENT] = "DropUserStatement";
   map[AST_ELSEIF_CLAUSE] = "ElseIf";
   map[AST_ELSEIF_CLAUSE_LIST] = "ElseIfList";
   map[AST_EXCEPTION_HANDLER] = "ExceptionHandler";
@@ -1694,6 +1697,8 @@ absl::string_view SchemaObjectKindToName(SchemaObjectKind schema_object_kind) {
       return "VIEW";
     case SchemaObjectKind::kDeployment:
       return "DEPLOYMENT";
+    case SchemaObjectKind::kUser:
+      return "USER";
     default:
       return "<INVALID SCHEMA OBJECT KIND>";
   }

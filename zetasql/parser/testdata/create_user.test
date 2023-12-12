@@ -1,0 +1,30 @@
+create user root;
+--
+CreateUserStatement [0-16]
+  PathExpression [12-16]
+    Identifier(root) [12-16]
+--
+CREATE USER root
+==
+
+create user if not exists root;
+--
+CreateUserStatement(is_if_not_exists) [0-30]
+  PathExpression [26-30]
+    Identifier(root) [26-30]
+--
+CREATE USER IF NOT EXISTS root
+==
+
+create user root options (password='abc');
+--
+CreateUserStatement [0-41]
+  PathExpression [12-16]
+    Identifier(root) [12-16]
+  OptionsList [25-41]
+    OptionsEntry [26-40]
+      Identifier(password) [26-34]
+      StringLiteral('abc') [35-40]
+--
+CREATE USER root OPTIONS(password = 'abc')
+==

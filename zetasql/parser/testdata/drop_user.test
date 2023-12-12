@@ -1,0 +1,17 @@
+drop user root;
+--
+DropUserStatement [0-14]
+  PathExpression [10-14]
+    Identifier(root) [10-14]
+--
+DROP USER root
+==
+
+drop user if exists user1;
+--
+DropUserStatement [0-25]
+  PathExpression [20-25]
+    Identifier(user1) [20-25]
+--
+DROP USER IF EXISTS user1
+==

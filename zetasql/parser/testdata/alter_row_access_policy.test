@@ -792,7 +792,7 @@ alter row access policy p1 on t1 grant to (null);
 # Grant to: grantee strings must be quoted.
 alter row access policy p1 on t1 grant to (user);
 --
-ERROR: Syntax error: Expected "@" or "@@" or string literal but got identifier "user" [at 1:44]
+ERROR: Syntax error: Expected "@" or "@@" or string literal but got keyword USER [at 1:44]
 alter row access policy p1 on t1 grant to (user);
                                            ^
 ==
@@ -929,7 +929,7 @@ alter row access policy p1 on t1 revoke from (null);
 # Revoke from: invalid non-string-literal revokee.
 alter row access policy p1 on t1 revoke from (user);
 --
-ERROR: Syntax error: Expected "@" or "@@" or string literal but got identifier "user" [at 1:47]
+ERROR: Syntax error: Expected "@" or "@@" or string literal but got keyword USER [at 1:47]
 alter row access policy p1 on t1 revoke from (user);
                                               ^
 ==

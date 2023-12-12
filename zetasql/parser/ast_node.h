@@ -73,6 +73,7 @@ enum class SchemaObjectKind {
   kTableFunction,
   kView,
   kDeployment,
+  kUser,
   __SchemaObjectKind__switch_must_have_a_default__ = -1,
 };
 

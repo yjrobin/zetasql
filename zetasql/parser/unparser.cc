@@ -3095,6 +3095,32 @@ void Unparser::visitASTAlterAllRowAccessPoliciesStatement(
   node->alter_action()->Accept(this, data);
 }
 
+void Unparser::visitASTDropUserStatement(const ASTDropUserStatement* node,
+                                           void* data) {
+  print("DROP");
+  print("USER");
+  if (node->is_if_exists()) print("IF EXISTS");
+  node->name()->Accept(this, data);
+}
+
+void Unparser::visitASTAlterUserStatement(const ASTAlterUserStatement* node,
+                                           void* data) {
+  print("ALTER USER");
+  VisitAlterStatementBase(node, data);
+}
+
+void Unparser::visitASTCreateUserStatement(const ASTCreateUserStatement* node,
+                                           void* data) {
+  print("CREATE");
+  print("USER");
+  if (node->is_if_not_exists()) print("IF NOT EXISTS");
+  node->name()->Accept(this, data);
+  if (node->options_list() != nullptr) {
+    print("OPTIONS");
+    node->options_list()->Accept(this, data);
+  }
+}
+
 void Unparser::visitASTCreateIndexStatement(const ASTCreateIndexStatement* node,
                                             void* data) {
   print("CREATE");

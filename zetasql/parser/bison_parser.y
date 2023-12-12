@@ -944,6 +944,7 @@ using zetasql::ASTDropStatement;
 %token KW_UNTIL "UNTIL"
 %token KW_UPDATE "UPDATE"
 %token KW_USE "USE"
+%token KW_USER "USER"
 %token KW_VALUE "VALUE"
 %token KW_VALUES "VALUES"
 %token KW_VARIABLES "VARIABLES"
@@ -1016,6 +1017,7 @@ using zetasql::ASTDropStatement;
 %type <node> create_table_statement
 %type <node> create_view_statement
 %type <node> create_entity_statement
+%type <node> create_user_statement
 %type <expression> date_or_time_literal
 %type <node> define_table_statement
 %type <node> delete_statement
@@ -1597,6 +1599,7 @@ sql_statement_body:
     | create_table_statement
     | create_view_statement
     | create_entity_statement
+    | create_user_statement
     | define_table_statement
     | describe_statement
     | execute_immediate
@@ -1810,6 +1813,8 @@ schema_object_kind:
       { $$ = zetasql::SchemaObjectKind::kView; }
     | "DEPLOYMENT"
       { $$ = zetasql::SchemaObjectKind::kDeployment; }
+    | "USER"
+      { $$ = zetasql::SchemaObjectKind::kUser; }
     ;
 
 alter_statement:
@@ -1839,6 +1844,8 @@ alter_statement:
           node = MAKE_NODE(ASTAlterViewStatement, @$);
         } else if ($2 == zetasql::SchemaObjectKind::kMaterializedView) {
           node = MAKE_NODE(ASTAlterMaterializedViewStatement, @$);
+        } else if ($2 == zetasql::SchemaObjectKind::kUser) {
+          node = MAKE_NODE(ASTAlterUserStatement, @$);
         } else {
           YYERROR_AND_ABORT_AT(@2, absl::StrCat("ALTER ", absl::AsciiStrToUpper(
             parser->GetInputText(@2)), " is not supported"));
@@ -2088,6 +2095,15 @@ create_database_statement:
     "CREATE" "DATABASE" opt_if_not_exists path_expression opt_options_list
       {
         auto* create = MAKE_NODE(ASTCreateDatabaseStatement, @$, {$4, $5});
+        create->set_is_if_not_exists($3);
+        $$ = create;
+      }
+    ;
+
+create_user_statement:
+    "CREATE" "USER" opt_if_not_exists path_expression opt_options_list
+      {
+        auto* create = MAKE_NODE(ASTCreateUserStatement, @$, {$4, $5});
         create->set_is_if_not_exists($3);
         $$ = create;
       }
@@ -7642,6 +7658,7 @@ keyword_as_identifier:
     | "UNTIL"
     | "UPDATE"
     | "USE"
+    | "USER"
     | "VALUE"
     | "VALUES"
     | "VARIABLES"
@@ -8539,6 +8556,10 @@ drop_statement:
                 MAKE_NODE(ASTDropFunctionStatement, @$, {$4, $5});
             drop_function->set_is_if_exists($3);
             $$ = drop_function;
+        } else if ($2 == zetasql::SchemaObjectKind::kUser) {
+            auto* drop = MAKE_NODE(ASTDropUserStatement, @$, {$4});
+            drop->set_is_if_exists($3);
+            $$ = drop;
         } else {
           if ($5 != nullptr) {
             YYERROR_AND_ABORT_AT(@5,
@@ -9014,6 +9035,9 @@ next_statement_kind_without_hint:
           case zetasql::SchemaObjectKind::kMaterializedView:
             $$ = zetasql::ASTDropMaterializedViewStatement::kConcreteNodeKind;
             break;
+          case zetasql::SchemaObjectKind::kUser:
+            $$ = zetasql::ASTDropUserStatement::kConcreteNodeKind;
+            break;
           default:
             $$ = zetasql::ASTDropStatement::kConcreteNodeKind;
             break;
@@ -9053,6 +9077,8 @@ next_statement_kind_without_hint:
       { $$ = zetasql::ASTAlterTableStatement::kConcreteNodeKind; }
     | "ALTER" "ROW"
       { $$ = zetasql::ASTAlterRowAccessPolicyStatement::kConcreteNodeKind; }
+    | "ALTER" "USER"
+      { $$ = zetasql::ASTAlterUserStatement::kConcreteNodeKind; }
     | "ALTER" "ALL" "ROW" "ACCESS" "POLICIES"
       { $$ =
           zetasql::ASTAlterAllRowAccessPoliciesStatement::kConcreteNodeKind; }
@@ -9102,6 +9128,10 @@ next_statement_kind_without_hint:
       "FUNCTION"
       {
         $$ = zetasql::ASTCreateTableFunctionStatement::kConcreteNodeKind;
+      }
+    | "CREATE" "USER" opt_if_not_exists 
+      {
+        $$ = zetasql::ASTCreateUserStatement::kConcreteNodeKind;
       }
     | "CREATE" next_statement_kind_create_modifiers "EXTERNAL"
       {
