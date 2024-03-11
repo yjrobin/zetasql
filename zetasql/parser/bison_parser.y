@@ -818,6 +818,7 @@ using zetasql::ASTDropStatement;
 %token KW_CURRENT_ROW "CURRENT_ROW"
 %token KW_DATA "DATA"
 %token KW_DATABASE "DATABASE"
+%token KW_DATABASES "DATABASES"
 %token KW_DATE "DATE"
 %token KW_DATETIME "DATETIME"
 %token KW_DECIMAL "DECIMAL"
@@ -880,6 +881,7 @@ using zetasql::ASTDropStatement;
 %token KW_NUMERIC "NUMERIC"
 %token KW_OFFSET "OFFSET"
 %token KW_ONLY "ONLY"
+%token KW_OPTION "OPTION"
 %token KW_OPTIONS "OPTIONS"
 %token KW_OUT "OUT"
 %token KW_OUTFILE "OUTFILE"
@@ -908,6 +910,7 @@ using zetasql::ASTDropStatement;
 %token KW_RETURN "RETURN"
 %token KW_RETURNS "RETURNS"
 %token KW_REVOKE "REVOKE"
+%token KW_ROLE "ROLE"
 %token KW_ROLLBACK "ROLLBACK"
 %token KW_ROW "ROW"
 %token KW_RUN "RUN"
@@ -1255,6 +1258,7 @@ using zetasql::ASTDropStatement;
 %type <node> partition_by_clause_prefix
 %type <node> partition_by_clause_prefix_no_hint
 %type <expression> path_expression
+%type <expression> path_expression_with_asterisk
 %type <dashed_identifier> dashed_identifier
 %type <expression> dashed_path_expression
 %type <expression> maybe_dashed_path_expression
@@ -1418,6 +1422,7 @@ using zetasql::ASTDropStatement;
 %type <boolean> opt_filter
 %type <boolean> opt_if_exists
 %type <boolean> opt_if_not_exists
+%type <boolean> opt_grant_option
 %type <boolean> opt_natural
 %type <boolean> opt_not_aggregate
 %type <boolean> opt_or_replace
@@ -3375,22 +3380,59 @@ export_model_statement:
     ;
 
 grant_statement:
-    "GRANT" privileges "ON" identifier path_expression "TO" grantee_list
+    "GRANT" privileges "ON" identifier path_expression_with_asterisk "TO" grantee_list opt_grant_option
       {
-        $$ = MAKE_NODE(ASTGrantStatement, @$, {$2, $4, $5, $7});
+        auto* grant = MAKE_NODE(ASTGrantStatement, @$, {$2, $4, $5, $7});
+        grant->set_with_grant_option($8);
+        $$ = grant;
       }
-    | "GRANT" privileges "ON" path_expression "TO" grantee_list
+    | "GRANT" privileges "ON" path_expression_with_asterisk "TO" grantee_list opt_grant_option
       {
-        $$ = MAKE_NODE(ASTGrantStatement, @$, {$2, $4, $6});
+        auto* grant = MAKE_NODE(ASTGrantStatement, @$, {$2, $4, $6});
+        grant->set_with_grant_option($7);
+        $$ = grant;
       }
     ;
 
+path_expression_with_asterisk:
+    path_expression
+    {
+      $$ = $1;
+    }
+    | path_expression ".*"
+    {
+        auto* id = parser->MakeIdentifier(@2, "*");
+        auto location = parser->GetBisonLocation(id->GetParseLocationRange());
+        // extra space allowed between DOT and STAR
+        location.begin = location.end - 1;
+        id = WithStartLocation(id, location);
+        auto* extended_path = WithEndLocation(WithExtraChildren($1, {id}), @2);
+        $$ = extended_path;
+    }
+    | "*"
+    {
+        auto* id = parser->MakeIdentifier(@1, parser->GetInputText(@1));
+        $$ = MAKE_NODE(ASTPathExpression, @1, {id});
+    }
+    | "*" ".*"
+    {
+        auto* id1 = parser->MakeIdentifier(@1, parser->GetInputText(@1));
+        auto* id2 = parser->MakeIdentifier(@2, "*");
+        auto location = parser->GetBisonLocation(id2->GetParseLocationRange());
+        // extra space allowed between DOT and STAR
+        location.begin = location.end - 1;
+        id2 = WithStartLocation(id2, location);
+        $$ = MAKE_NODE(ASTPathExpression, @$, {id1, id2});
+    }
+    ;
+
+
 revoke_statement:
-    "REVOKE" privileges "ON" identifier path_expression "FROM" grantee_list
+    "REVOKE" privileges "ON" identifier path_expression_with_asterisk "FROM" grantee_list
       {
         $$ = MAKE_NODE(ASTRevokeStatement, @$, {$2, $4, $5, $7});
       }
-    | "REVOKE" privileges "ON" path_expression "FROM" grantee_list
+    | "REVOKE" privileges "ON" path_expression_with_asterisk "FROM" grantee_list
       {
         $$ = MAKE_NODE(ASTRevokeStatement, @$, {$2, $4, $6});
       }
@@ -3435,10 +3477,61 @@ privilege_name:
       {
         $$ = $1;
       }
-    | KW_SELECT
+    | "SELECT"
       {
         // The SELECT keyword is allowed to be a privilege name.
         $$ = parser->MakeIdentifier(@1, parser->GetInputText(@1));
+      }
+    | "CREATE"
+      {
+        $$ = parser->MakeIdentifier(@1, parser->GetInputText(@1));
+      }
+    | "INDEX"
+      {
+        $$ = parser->MakeIdentifier(@1, parser->GetInputText(@1));
+      }
+    | "ALTER" "USER"
+      {
+        $$ = parser->MakeIdentifier(@$, "ALTER USER");
+      }
+    | "CREATE" "USER"
+      {
+        $$ = parser->MakeIdentifier(@$, "CREATE USER");
+      }
+    | "CREATE" "ROLE"
+      {
+        $$ = parser->MakeIdentifier(@$, "CREATE ROLE");
+      }
+    | "DROP" "DEPLOYMENT"
+      {
+        $$ = parser->MakeIdentifier(@$, "DROP DEPLOYMENT");
+      }
+    | "DROP" "USER"
+      {
+        $$ = parser->MakeIdentifier(@$, "DROP USER");
+      }
+    | "DROP" "ROLE"
+      {
+        $$ = parser->MakeIdentifier(@$, "DROP ROLE");
+      }
+    | "SHOW" "DATABASES"
+      {
+        $$ = parser->MakeIdentifier(@$, "SHOW DATABASES");
+      }
+    | "GRANT" "OPTION"
+      {
+        $$ = parser->MakeIdentifier(@$, "GRANT OPTION");
+      }
+    ;
+
+opt_grant_option:
+    "WITH" "GRANT" "OPTION"
+      {
+        $$ = true;
+      }
+    | /* Nothing */
+      {
+        $$ = false;
       }
     ;
 
@@ -7557,6 +7650,7 @@ keyword_as_identifier:
     | "CURRENT_ROW"
     | "DATA"
     | "DATABASE"
+    | "DATABASES"
     | "DATE"
     | "DATETIME"
     | "DECIMAL"
@@ -7620,6 +7714,7 @@ keyword_as_identifier:
     | "NUMERIC"
     | "OFFSET"
     | "ONLY"
+    | "OPTION"
     | "OPTIONS"
     | "OUT"
     | "OUTFILE"
@@ -7648,6 +7743,7 @@ keyword_as_identifier:
     | "RETURNS"
     | "RETURN"
     | "REVOKE"
+    | "ROLE"
     | "ROLLBACK"
     | "ROW"
     | "RUN"

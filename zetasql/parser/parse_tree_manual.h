@@ -6843,6 +6843,9 @@ class ASTGrantStatement final : public ASTStatement {
   const ASTPathExpression* target_path() const { return target_path_; }
   const ASTGranteeList* grantee_list() const { return grantee_list_; }
 
+  bool with_grant_option() const { return with_grant_option_; }
+  void set_with_grant_option(bool value) { with_grant_option_ = value; }
+
  private:
   void InitFields() final {
     FieldLoader fl(this);
@@ -6856,6 +6859,7 @@ class ASTGrantStatement final : public ASTStatement {
   const ASTIdentifier* target_type_ = nullptr;      // Optional
   const ASTPathExpression* target_path_ = nullptr;  // Required
   const ASTGranteeList* grantee_list_ = nullptr;    // Required
+  bool with_grant_option_ = false;
 };
 
 class ASTRevokeStatement final : public ASTStatement {
