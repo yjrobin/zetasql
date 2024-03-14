@@ -21,12 +21,6 @@ set -eE
 pushd "$(dirname "$0")"
 pushd "$(git rev-parse --show-toplevel)"
 
-if grep -q centos /etc/os-release ; then
-    # for thoese using rhel devtoolset
-    export BAZEL_LINKOPTS='-static-libstdc++:-lm'
-    export BAZEL_LINKLIBS='-l%:libstdc++.a'
-fi
-
 if [[ $(arch) = 'aarch64' ]]; then
     git checkout .
     # need upgrade abseil and bazel to compile on aarch64
@@ -36,7 +30,7 @@ fi
 echo "build with python: $(python -V), python3: $(python3 -V)"
 
 TARGET='//zetasql/parser/...'
-BUILD_ARGV=(--features=-supports_dynamic_linker --sandbox_debug)
+BUILD_ARGV=(--config=static)
 
 bazel build "$TARGET" "${BUILD_ARGV[@]}"
 bazel test "$TARGET" "${BUILD_ARGV[@]}"
