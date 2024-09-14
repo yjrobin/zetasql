@@ -68,7 +68,7 @@ install_lib() {
     local file
     file=$1
     local libname
-    libname=lib$(echo "$file" | tr '/' '_' | sed -e 's/lib//')
+    libname=lib$(echo "$file" | tr '/' '_' | sed -e 's/lib//' | sed -e 's/\.pic\.a$/.a/')
 
     if [[ "$OSTYPE" == "linux-gnu"* ]]
     then
@@ -76,7 +76,7 @@ install_lib() {
     else
         INSTALL_BIN="ginstall"
     fi
-    ${INSTALL_BIN} -D "$file" "$ROOT/tmp-lib/$libname"
+    ${INSTALL_BIN} -Dv "$file" "$ROOT/tmp-lib/$libname"
 }
 
 install_gen_include_file() {
@@ -91,21 +91,21 @@ install_gen_include_file() {
     else
         INSTALL_BIN="ginstall"
     fi
-    ${INSTALL_BIN} -D "$file" "$PREFIX/include/$outfile"
+    ${INSTALL_BIN} -Dv "$file" "$PREFIX/include/$outfile"
 }
 
 install_external_lib() {
     local file
     file=$1
     local libname
-    libname=$(basename "$file")
+    libname=$(basename "$file" | sed -e 's/\.pic\.a$/.a/')
     if [[ "$OSTYPE" == "linux-gnu"* ]]
     then
         INSTALL_BIN="install"
     else
         INSTALL_BIN="ginstall"
     fi
-    ${INSTALL_BIN} -D "$file" "$PREFIX/lib/$libname"
+    ${INSTALL_BIN} -Dv "$file" "$PREFIX/lib/$libname"
 }
 
 export -f install_gen_include_file
@@ -121,7 +121,7 @@ else
 fi
 
 pushd bazel-bin/
-find zetasql -type f -iname '*.a' -exec bash -c 'install_lib $0' {} \;
+find zetasql -type f -iname '*.pic..a' -exec bash -c 'install_lib $0' {} \;
 
 # external lib headers
 pushd "$(realpath .)/../../../../../external/com_googlesource_code_re2"
@@ -140,9 +140,9 @@ popd
 pushd external
 
 find icu -type f -iname '*.a' -exec bash -c 'install_external_lib $0' {} \;
-find com_googlesource_code_re2 -type f -iname '*.a' -exec bash -c 'install_external_lib $0' {} \;
-find com_googleapis_googleapis -type f -iname '*.a' -exec bash -c 'install_external_lib $0' {} \;
-find com_google_file_based_test_driver -type f -iname '*.a' -exec bash -c 'install_external_lib $0' {} \;
+find com_googlesource_code_re2 -type f -iname '*.pic.a' -exec bash -c 'install_external_lib $0' {} \;
+find com_googleapis_googleapis -type f -iname '*.pic.a' -exec bash -c 'install_external_lib $0' {} \;
+find com_google_file_based_test_driver -type f -iname '*.pic.a' -exec bash -c 'install_external_lib $0' {} \;
 
 popd
 

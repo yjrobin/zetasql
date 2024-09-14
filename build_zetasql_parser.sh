@@ -30,7 +30,7 @@ fi
 echo "build with python: $(python -V), python3: $(python3 -V)"
 
 TARGET='//zetasql/parser/...'
-BUILD_ARGV=(--config=static)
+BUILD_ARGV=(--config=release-static)
 
 bazel build "$TARGET" "${BUILD_ARGV[@]}"
 bazel test "$TARGET" "${BUILD_ARGV[@]}"
@@ -41,9 +41,6 @@ bazel query "deps(//zetasql/parser:parser)" | grep //zetasql | xargs bazel build
 bazel build "@com_googleapis_googleapis//:all" "${BUILD_ARGV[@]}"
 bazel query "@com_google_file_based_test_driver//..." | xargs bazel build "${BUILD_ARGV[@]}"
 bazel build "@com_googlesource_code_re2//:re2" "${BUILD_ARGV[@]}"
-
-unset BAZEL_LINKLIBS
-unset BAZEL_LINKOPTS
 
 popd
 popd
