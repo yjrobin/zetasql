@@ -121,7 +121,7 @@ else
 fi
 
 pushd bazel-bin/
-find zetasql -type f -iname '*.pic..a' -exec bash -c 'install_lib $0' {} \;
+find zetasql -type f -iname '*.pic.a' -exec bash -c 'install_lib $0' {} \;
 
 # external lib headers
 pushd "$(realpath .)/../../../../../external/com_googlesource_code_re2"
@@ -139,7 +139,7 @@ popd
 # external lib
 pushd external
 
-find icu -type f -iname '*.a' -exec bash -c 'install_external_lib $0' {} \;
+find icu -type f -iname '*.pic.a' -exec bash -c 'install_external_lib $0' {} \;
 find com_googlesource_code_re2 -type f -iname '*.pic.a' -exec bash -c 'install_external_lib $0' {} \;
 find com_googleapis_googleapis -type f -iname '*.pic.a' -exec bash -c 'install_external_lib $0' {} \;
 find com_google_file_based_test_driver -type f -iname '*.pic.a' -exec bash -c 'install_external_lib $0' {} \;
