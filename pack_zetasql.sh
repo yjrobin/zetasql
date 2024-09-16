@@ -15,6 +15,7 @@ function usage ()
     Options:
     -h       Display this message
     -d       Linux distribution name, e.g centos, ubuntu, default empty
+    -p       Pick PIC libraries only, OFF by default
     -i       Request install to given directory after pack"
 
 }    # ----------  end of function usage  ----------
@@ -26,14 +27,17 @@ function usage ()
 INSTALL_DIR=
 # linux distribution name
 DISTRO=
+PICK_PIC=OFF
 
-while getopts ":hi:d:" opt
+while getopts ":hi:d:p:" opt
 do
   case $opt in
 
     h )  usage; exit 0   ;;
 
     d ) DISTRO=$OPTARG ;;
+
+    p ) PICK_PIC=$OPTARG ;;
 
     i )
       INSTALL_DIR=$OPTARG
@@ -47,6 +51,12 @@ do
   esac    # --- end of case ---
 done
 shift $((OPTIND-1))
+
+if [[ "$PICK_PIC" == 'ON' ]] ; then
+    LIB_PATTERN='*.pic.a'
+else
+    LIB_PATTERN='*.a'
+fi
 
 pushd "$(dirname "$0")"
 pushd "$(git rev-parse --show-toplevel)"
@@ -68,7 +78,10 @@ install_lib() {
     local file
     file=$1
     local libname
-    libname=lib$(echo "$file" | tr '/' '_' | sed -e 's/lib//' | sed -e 's/\.pic\.a$/.a/')
+    libname=lib$(echo "$file" | tr '/' '_' | sed -e 's/lib//' )
+    if [[ "$PICK_PIC" == 'ON' ]]; then
+        libname=$(echo "$libname" | sed -e 's/\.pic\.a$/.a/')
+    fi
 
     if [[ "$OSTYPE" == "linux-gnu"* ]]
     then
@@ -85,12 +98,6 @@ install_gen_include_file() {
     local outfile
     outfile=$(echo "$file" | sed -e 's/^.*proto\///')
 
-    if [[ "$OSTYPE" == "linux-gnu"* ]]
-    then
-        INSTALL_BIN="install"
-    else
-        INSTALL_BIN="ginstall"
-    fi
     ${INSTALL_BIN} -Dv "$file" "$PREFIX/include/$outfile"
 }
 
@@ -98,7 +105,10 @@ install_external_lib() {
     local file
     file=$1
     local libname
-    libname=$(basename "$file" | sed -e 's/\.pic\.a$/.a/')
+    libname=$(basename "$file")
+    if [[ "$PICK_PIC" == 'ON' ]]; then
+        libname=$(echo "$libname" | sed -e 's/\.pic\.a$/.a/')
+    fi
     if [[ "$OSTYPE" == "linux-gnu"* ]]
     then
         INSTALL_BIN="install"
@@ -121,38 +131,38 @@ else
 fi
 
 pushd bazel-bin/
-find zetasql -type f -iname '*.pic.a' -exec bash -c 'install_lib $0' {} \;
+find zetasql -type f -iname "$LIB_PATTERN" -exec bash -c 'install_lib $0' {} \;
 
 # external lib headers
 pushd "$(realpath .)/../../../../../external/com_googlesource_code_re2"
-find re2 -iname "*.h" -exec ${INSTALL_BIN} -D {} "$PREFIX"/include/{} \;
+find re2 -iname "*.h" -exec ${INSTALL_BIN} -Dv {} "$PREFIX"/include/{} \;
 popd
 
 pushd "$(realpath .)/../../../../../external/com_googleapis_googleapis"
-find google -iname "*.h" -exec ${INSTALL_BIN} -D {} "$PREFIX"/include/{} \;
+find google -iname "*.h" -exec ${INSTALL_BIN} -Dv {} "$PREFIX"/include/{} \;
 popd
 
 pushd "$(realpath .)/../../../../../external/com_google_file_based_test_driver"
-find file_based_test_driver -iname "*.h" -exec ${INSTALL_BIN} -D {} "$PREFIX"/include/{} \;
+find file_based_test_driver -iname "*.h" -exec ${INSTALL_BIN} -Dv {} "$PREFIX"/include/{} \;
 popd
 
 # external lib
 pushd external
 
-find icu -type f -iname '*.pic.a' -exec bash -c 'install_external_lib $0' {} \;
-find com_googlesource_code_re2 -type f -iname '*.pic.a' -exec bash -c 'install_external_lib $0' {} \;
-find com_googleapis_googleapis -type f -iname '*.pic.a' -exec bash -c 'install_external_lib $0' {} \;
-find com_google_file_based_test_driver -type f -iname '*.pic.a' -exec bash -c 'install_external_lib $0' {} \;
+find icu -type f -iname "$LIB_PATTERN" -exec bash -c 'install_external_lib $0' {} \;
+find com_googlesource_code_re2 -type f -iname "$LIB_PATTERN" -exec bash -c 'install_external_lib $0' {} \;
+find com_googleapis_googleapis -type f -iname "$LIB_PATTERN" -exec bash -c 'install_external_lib $0' {} \;
+find com_google_file_based_test_driver -type f -iname "$LIB_PATTERN" -exec bash -c 'install_external_lib $0' {} \;
 
 popd
 
 # zetasql generated files: protobuf & template generated files
-find zetasql -type f -iname "*.h" -exec ${INSTALL_BIN} -D {} "$PREFIX"/include/{} \;
+find zetasql -type f -iname "*.h" -exec ${INSTALL_BIN} -Dv {} "$PREFIX"/include/{} \;
 find zetasql -iregex ".*/_virtual_includes/.*\.h\$" -exec bash -c 'install_gen_include_file $0' {} \;
 popd # bazel-bin
 
 # header files from source
-find zetasql -type f -iname "*.h" -exec ${INSTALL_BIN} -D {} "$PREFIX"/include/{} \;
+find zetasql -type f -iname "*.h" -exec ${INSTALL_BIN} -Dv {} "$PREFIX"/include/{} \;
 
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]

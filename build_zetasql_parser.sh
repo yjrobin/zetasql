@@ -29,8 +29,56 @@ fi
 
 echo "build with python: $(python -V), python3: $(python3 -V)"
 
+#===  FUNCTION  ================================================================
+#         NAME:  usage
+#  DESCRIPTION:  Display usage information.
+#===============================================================================
+function usage ()
+{
+    echo "Usage :  $0 [options] [--]
+
+    Options:
+    -c            Build profile. static|release|release-static, default static
+    -h|help       Display this message"
+
+}    # ----------  end of function usage  ----------
+
+#-----------------------------------------------------------------------
+#  Handle command line arguments
+#-----------------------------------------------------------------------
+
+# NOTE: default to static profile: compile all as archive but not define `NDEBUG`
+# since pre-compiled lib may used in Release/Debug profile in OpenMLDB
+#
+# acceptable values:
+# - release: `-O2 -DNDEBUG`, shared libs
+# - static:  static libs
+# - release-static: `-O2 -DNDEBUG`, static libs
+PROFILE=static
+ACCEPT_PROFILES=(static release release-static)
+
+while getopts ":hc:" opt
+do
+  case $opt in
+
+    c ) PROFILE=$OPTARG ;;
+
+    h|help     )  usage; exit 0   ;;
+
+    * )  echo -e "\n  Option does not exist : $OPTARG\n"
+          usage; exit 1   ;;
+
+  esac    # --- end of case ---
+done
+shift $((OPTIND-1))
+
+if [[ ! " ${ACCEPT_PROFILES[*]} " =~ " ${PROFILE} " ]] ; then
+    echo "profile named $PROFILE not found in accept profile list: ${ACCEPT_PROFILES[*]}"
+    exit 1
+fi
+
 TARGET='//zetasql/parser/...'
-BUILD_ARGV=(--config=release-static)
+BUILD_ARGV=(--config="$PROFILE")
 
 bazel build "$TARGET" "${BUILD_ARGV[@]}"
 bazel test "$TARGET" "${BUILD_ARGV[@]}"
