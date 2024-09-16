@@ -158,6 +158,10 @@ jobs:
           VERSION=$(echo $VERSION | sed -e 's/^v//')
           echo "TAG=$VERSION" >> $GITHUB_ENV
 
+      - name: debug
+        run: |
+          find bazel-bin/ -type f -iname '*.a'
+
       - name: pack libzetasql
         run: |
           ./pack_zetasql.sh
