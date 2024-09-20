@@ -879,6 +879,7 @@ exports_files(["data"])
             "https://ftp.gnu.org/gnu/bison/bison-3.6.2.tar.gz",
             "https://mirrors.kernel.org/gnu/bison/bison-3.6.2.tar.gz",
         ],
+        patches = ["@com_google_zetasql//bazel:bison.patch"],
     )
 
     http_archive(
@@ -900,7 +901,6 @@ exports_files(["data"])
                 "https://ftp.gnu.org/gnu/m4/m4-1.4.19.tar.gz",
                 "https://mirrors.kernel.org/gnu/m4/m4-1.4.19.tar.gz",
             ],
-            patches = ["@com_google_zetasql//bazel:m4_new.patch"],
         )
 
     http_archive(
