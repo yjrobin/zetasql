@@ -1,5 +1,5 @@
---- ./obstack.c
-+++ ./obstack.c
+--- lib/obstack.c
++++ lib/obstack.c
 @@ -326,7 +326,7 @@
  #   include <libio/iolibio.h>
  #  endif
