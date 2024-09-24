@@ -19,4 +19,14 @@
 # c++1z was used prior to c++17 being standardized, and is therefore more
 # widely accepted by compilers. This may lead to strange behavior or compiler
 # errors in earlier compilers.
-build --cxxopt="-std=c++1z"
+build --cxxopt="-std=c++1z" --sandbox_debug --incompatible_linkopts_to_linklibs
+
+# --config=release
+build:release -c opt
+
+# --config=static
+build:static --dynamic_mode='off' --features=-supports_dynamic_linker
+
+# --config=release-static
+# fully static profile
+build:release-static --config=release --config=static

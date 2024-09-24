@@ -20,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/aceforeverd/hybridsql-base:0.4.0
+    env:
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
     steps:
       - uses: actions/checkout@v2
 
@@ -30,6 +32,9 @@ jobs:
 
       - name: Install Java
         run: |
+          sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo
+          sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo
+          sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
           yum install -y java-1.8.0-openjdk-devel
 
       - name: build zetasql parser
@@ -53,7 +58,7 @@ jobs:
 
       - name: Upload Artifacts
         if: ${{ github.event_name == 'push' }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           path: libzetasql-*.tar.gz
           name: release-artifacts
@@ -69,7 +74,7 @@ jobs:
           DEBIAN_FRONTEND=noninteractive apt-get install -y -q curl build-essential unzip python3-dev git
           update-alternatives --install /usr/bin/python python /usr/bin/python3 100
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: actions/setup-java@v3
         with:
@@ -101,7 +106,7 @@ jobs:
 
       - name: Upload Artifacts
         if: ${{ github.event_name == 'push' }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           path: libzetasql-*.tar.gz
           name: release-artifacts
@@ -109,10 +114,8 @@ jobs:
   macos-build:
     runs-on: macos-12
     timeout-minutes: 120
-    env:
-      bazel_version: '3.7.2'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # xcode 14.0.1 comes with macOS SDK 12.3, ref https://github.com/actions/runner-images/blob/main/images/macos/macos-12-Readme.md#installed-sdks
       # so pre-compile zetasql requires macOS >= 12.3
@@ -129,9 +132,6 @@ jobs:
       - name: Setup Android SDK via sdkmanager
         run: |
           sdkmanager tools "platforms;android-27" "platforms;android-28" "platforms;android-29" "platforms;android-30"
-
-      - name: update bazel version
-        run: echo ${{ env.bazel_version }} > .bazelversion
 
       - name: setup python3.9
         uses: actions/setup-python@v4
@@ -171,7 +171,7 @@ jobs:
 
       - name: Upload Artifacts
         if: ${{ github.event_name == 'push' }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           path: libzetasql-*.tar.gz
           name: release-artifacts
@@ -183,7 +183,7 @@ jobs:
     timeout-minutes: 120
     steps:
       - name: Download Release Artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: release-artifacts
 
@@ -193,7 +193,7 @@ jobs:
 
       - name: Release
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             libzetasql-*.tar.gz
